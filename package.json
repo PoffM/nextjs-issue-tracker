@@ -28,10 +28,12 @@
   },
   "dependencies": {
     "@prisma/client": "^4.2.1",
+    "@rehooks/local-storage": "^2.4.4",
     "@trpc/client": "^9.27.2",
     "@trpc/next": "^9.27.2",
     "@trpc/react": "^9.27.2",
     "@trpc/server": "^9.27.2",
+    "clsx": "^1.2.1",
     "lodash": "^4.17.21",
     "next": "12.2.5",
     "react": "18.2.0",

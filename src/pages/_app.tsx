@@ -4,10 +4,11 @@ import { withTRPC } from "@trpc/next";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { ReactElement } from "react";
+import "../../styles/globals.css";
 import { DefaultLayout } from "../components/DefaultLayout";
 import { AppRouter } from "../server/routers/appRouter";
+import { ColorModeApplier } from "../utils/ColorModeApplier";
 import { SSRContext } from "../utils/trpc";
-import "../../styles/globals.css";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactElement<unknown> | null;
@@ -17,11 +18,16 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+function IssueTrackerApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout =
     Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
 
-  return getLayout(<Component {...pageProps} />);
+  return (
+    <>
+      <ColorModeApplier />
+      {getLayout(<Component {...pageProps} />)}
+    </>
+  );
 }
 
 function getBaseUrl() {
@@ -98,4 +104,4 @@ export default withTRPC<AppRouter>({
     // For app caching with SSR see https://trpc.io/docs/caching
     return {};
   },
-})(MyApp);
+})(IssueTrackerApp);
