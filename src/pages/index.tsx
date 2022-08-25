@@ -13,7 +13,9 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>Health check: {isFetching ? "Loading..." : data};</main>
+      <main className="flex justify-center items-center">
+        Health check: {isFetching ? "Loading..." : data};
+      </main>
     </div>
   );
 };

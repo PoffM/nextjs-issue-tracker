@@ -7,6 +7,7 @@ import { ReactElement } from "react";
 import { DefaultLayout } from "../components/DefaultLayout";
 import { AppRouter } from "../server/routers/appRouter";
 import { SSRContext } from "../utils/trpc";
+import "../../styles/globals.css";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactElement<unknown> | null;
