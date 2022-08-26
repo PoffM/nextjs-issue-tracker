@@ -1,5 +1,5 @@
 import { compact } from "lodash";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { env } from "../../../server/env";
@@ -41,6 +41,8 @@ const DEV_ONLY_LOCAL_PROVIDER =
     },
   });
 
-export default NextAuth({
+export const nextAuthOptions: NextAuthOptions = {
   providers: compact([GOOGLE_PROVIDER, DEV_ONLY_LOCAL_PROVIDER]),
-});
+};
+
+export default NextAuth(nextAuthOptions);

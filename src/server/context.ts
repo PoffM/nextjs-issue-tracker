@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import * as trpc from "@trpc/server";
+import { TRPCError } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
+import { unstable_getServerSession as getServerSession } from "next-auth";
+import { nextAuthOptions } from "../pages/api/auth/[...nextauth]";
 import { env } from "./env";
 
 // Prisma needs to be set up in a certain way in Next.js to avoid a common bug:
@@ -26,11 +29,30 @@ export const globalContext = { prisma };
  * Creates context for an incoming request
  * @link https://trpc.io/docs/context
  */
-export function requestContext(
+export async function requestContext(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  opts: Partial<trpcNext.CreateNextContextOptions>
+  opts?: Partial<trpcNext.CreateNextContextOptions>
 ) {
-  return { ...globalContext };
+  async function getSession() {
+    if (!opts?.req || !opts?.res) {
+      return null;
+    }
+
+    return await getServerSession(opts?.req, opts?.res, nextAuthOptions);
+  }
+
+  async function requireSession() {
+    const session = await getSession();
+    if (!session) {
+      throw new TRPCError({
+        message: "No session",
+        code: "UNAUTHORIZED",
+      });
+    }
+    return session;
+  }
+
+  return { ...globalContext, getSession, requireSession };
 }
 
 export type RequestContext = trpc.inferAsyncReturnType<typeof requestContext>;
