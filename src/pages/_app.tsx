@@ -2,6 +2,7 @@ import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
 import { NextPage } from "next";
+import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { ReactElement } from "react";
 import "../../styles/globals.css";
@@ -23,10 +24,10 @@ function IssueTrackerApp({ Component, pageProps }: AppPropsWithLayout) {
     Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
 
   return (
-    <>
+    <SessionProvider>
       <ColorModeApplier />
       {getLayout(<Component {...pageProps} />)}
-    </>
+    </SessionProvider>
   );
 }
 

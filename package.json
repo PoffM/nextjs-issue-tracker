@@ -27,6 +27,7 @@
     "seed": "npx ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "^4.2.1",
     "@rehooks/local-storage": "^2.4.4",
     "@trpc/client": "^9.27.2",
@@ -36,6 +37,7 @@
     "clsx": "^1.2.1",
     "lodash": "^4.17.21",
     "next": "12.2.5",
+    "next-auth": "^4.10.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.34.2",
@@ -43,6 +45,7 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.184",
     "@types/node": "18.7.13",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",

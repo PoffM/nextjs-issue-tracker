@@ -15,7 +15,7 @@ export const appRouter = createRouter()
    * Add a health check endpoint to be called with `/api/trpc/healthz`
    */
   .query("healthz", {
-    resolve: () => "yay!",
+    resolve: () => "UP",
   })
   .formatError(({ shape, error }) => {
     return {
