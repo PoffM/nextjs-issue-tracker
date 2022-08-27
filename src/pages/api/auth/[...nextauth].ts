@@ -42,6 +42,7 @@ const DEV_ONLY_LOCAL_PROVIDER =
   });
 
 export const nextAuthOptions: NextAuthOptions = {
+  // adapter: PrismaAdapter(globalContext.prisma),
   providers: compact([GOOGLE_PROVIDER, DEV_ONLY_LOCAL_PROVIDER]),
 };
 

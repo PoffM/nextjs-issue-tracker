@@ -40,7 +40,9 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
         </div>
       </div>
 
-      {children}
+      <div className="flex justify-center">
+        <div className="w-full max-w-[1280px]">{children}</div>
+      </div>
 
       {process.env.NODE_ENV !== "production" && (
         <ReactQueryDevtools initialIsOpen={false} />

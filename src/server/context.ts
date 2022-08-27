@@ -3,7 +3,6 @@ import * as trpc from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 import { unstable_getServerSession as getServerSession } from "next-auth";
-import { nextAuthOptions } from "../pages/api/auth/[...nextauth]";
 import { env } from "./env";
 
 // Prisma needs to be set up in a certain way in Next.js to avoid a common bug:
@@ -37,6 +36,9 @@ export async function requestContext(
     if (!opts?.req || !opts?.res) {
       return null;
     }
+
+    // Async import to avoid circular dependency as nextAuth imports prisma:
+    const { nextAuthOptions } = await import("../pages/api/auth/[...nextauth]");
 
     return await getServerSession(opts?.req, opts?.res, nextAuthOptions);
   }

@@ -3,6 +3,7 @@
  */
 import { ZodError } from "zod";
 import { createRouter } from "../createRouter";
+import { issueRouter } from "./issueRouter";
 
 /**
  * Create your application's root router
@@ -17,6 +18,7 @@ export const appRouter = createRouter()
   .query("healthz", {
     resolve: () => "UP",
   })
+  .merge("issue.", issueRouter)
   .formatError(({ shape, error }) => {
     return {
       ...shape,

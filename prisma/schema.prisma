@@ -15,6 +15,7 @@ model Issue {
   title String
 }
 
+// next-auth Account
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -34,6 +35,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+// next-auth Session
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -42,6 +44,7 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// next-auth User
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -52,6 +55,7 @@ model User {
   sessions      Session[]
 }
 
+// next-auth VerificationToken
 model VerificationToken {
   identifier String
   token      String   @unique
