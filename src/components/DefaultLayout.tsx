@@ -9,13 +9,13 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
   const { status } = useSession();
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="fixed inset-0 flex flex-col gap-8 overflow-y-auto">
       <Head>
         <title>Issue Tracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex items-center px-8 py-2 bg-gray-900">
+      <div className="flex items-center bg-gray-900 px-8 py-2">
         <div className="flex-1"></div>
         <div className="flex flex-1 justify-center text-3xl font-bold">
           Issue Tracker
@@ -40,12 +40,14 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
         </div>
       </div>
 
-      <div className="flex justify-center">
+      <div className="mx-2 flex grow justify-center">
         <div className="w-full max-w-[1280px]">{children}</div>
       </div>
 
       {process.env.NODE_ENV !== "production" && (
-        <ReactQueryDevtools initialIsOpen={false} />
+        <div className="fixed">
+          <ReactQueryDevtools initialIsOpen={false} />
+        </div>
       )}
     </div>
   );

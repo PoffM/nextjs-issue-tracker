@@ -3,17 +3,18 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { trpc } from "../utils/trpc";
 
 const columnHelper = createColumnHelper<Issue>();
 const columns = [columnHelper.accessor("title", {})];
 
 export function IssueTable() {
+  const tableRef = useRef<HTMLTableElement>(null);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -31,6 +32,10 @@ export function IssueTable() {
           "issue.list",
           { take: pageSize, skip: (pageIndex + 1) * pageSize },
         ]);
+      },
+      onSettled() {
+        // Scroll to the top of the table:
+        tableRef.current?.scrollIntoView();
       },
     }
   );
@@ -50,7 +55,6 @@ export function IssueTable() {
 
     // Pagination props:
     pageCount,
-    getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     manualPagination: true,
 
@@ -58,8 +62,11 @@ export function IssueTable() {
   });
 
   return (
-    <div>
-      <table className="table-zebra table-compact table w-full">
+    <div className="flex flex-col gap-4">
+      <table
+        className="table-zebra table-compact table w-full scroll-my-2"
+        ref={tableRef}
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
