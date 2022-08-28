@@ -1,6 +1,7 @@
 /**
  * This file contains the root router of your tRPC-backend
  */
+import superjson from "superjson";
 import { ZodError } from "zod";
 import { createRouter } from "../createRouter";
 import { issueRouter } from "./issueRouter";
@@ -28,6 +29,7 @@ export const appRouter = createRouter()
           error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
-  });
+  })
+  .transformer(superjson);
 
 export type AppRouter = typeof appRouter;

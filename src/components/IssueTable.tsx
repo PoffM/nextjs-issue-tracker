@@ -10,7 +10,14 @@ import { useRef, useState } from "react";
 import { trpc } from "../utils/trpc";
 
 const columnHelper = createColumnHelper<Issue>();
-const columns = [columnHelper.accessor("title", {})];
+const columns = [
+  columnHelper.accessor("title", {}),
+  columnHelper.accessor("status", {}),
+  columnHelper.accessor("createdAt", {
+    // eslint-disable-next-line
+    cell: (ctx) => ctx.getValue().toISOString().slice(0, 10),
+  }),
+];
 
 export function IssueTable() {
   const tableRef = useRef<HTMLTableElement>(null);

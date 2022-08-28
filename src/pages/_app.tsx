@@ -9,6 +9,7 @@ import "../../styles/globals.css";
 import { DefaultLayout } from "../components/DefaultLayout";
 import { AppRouter } from "../server/routers/appRouter";
 import { ColorModeApplier } from "../utils/color-mode/ColorModeApplier";
+import superjson from "superjson";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactElement<unknown> | null;
@@ -70,6 +71,7 @@ export default withTRPC<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
+      transformer: superjson,
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */

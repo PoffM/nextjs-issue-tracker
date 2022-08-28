@@ -10,9 +10,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Status {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
 model Issue {
-  id    Int    @id @default(autoincrement())
-  title String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) 
+  title     String
+  content   String?
+  status    Status   @default(NEW)
 }
 
 // next-auth Account
