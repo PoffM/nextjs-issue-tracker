@@ -1,4 +1,3 @@
-import { Issue } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -7,9 +6,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useRef, useState } from "react";
-import { trpc } from "../utils/trpc";
+import { inferQueryOutput, trpc } from "../utils/trpc";
 
-const columnHelper = createColumnHelper<Issue>();
+const columnHelper =
+  createColumnHelper<inferQueryOutput<"issue.list">["issues"][number]>();
 const columns = [
   columnHelper.accessor("title", {}),
   columnHelper.accessor("status", {}),
