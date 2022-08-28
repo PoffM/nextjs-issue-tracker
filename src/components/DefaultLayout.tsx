@@ -15,28 +15,30 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex items-center bg-gray-900 px-8 py-2">
-        <div className="flex-1"></div>
-        <div className="flex flex-1 justify-center text-3xl font-bold">
-          Issue Tracker
-        </div>
-        <div className="flex flex-1 justify-end">
-          {status === "unauthenticated" && (
-            <button
-              className="btn btn-primary"
-              onClick={() => void signIn("google")}
-            >
-              Login
-            </button>
-          )}
-          {status === "authenticated" && (
-            <button
-              className="btn btn-outline btn-secondary"
-              onClick={() => void signOut()}
-            >
-              Logout
-            </button>
-          )}
+      <div className="flex justify-center bg-gray-900 py-2">
+        <div className="mx-2 flex w-full max-w-[1280px] items-center">
+          <div className="flex-1"></div>
+          <div className="flex flex-1 justify-center text-3xl font-bold">
+            Issue Tracker
+          </div>
+          <div className="flex flex-1 justify-end">
+            {status === "unauthenticated" && (
+              <button
+                className="btn btn-primary"
+                onClick={() => void signIn("google")}
+              >
+                Login
+              </button>
+            )}
+            {status === "authenticated" && (
+              <button
+                className="btn btn-outline btn-secondary"
+                onClick={() => void signOut()}
+              >
+                Logout
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
