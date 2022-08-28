@@ -7,10 +7,13 @@ export const issueRouter = createRouter().query("list", {
     skip: z.number(),
   }),
   async resolve({ ctx, input: { take, skip } }) {
-    return await ctx.prisma.issue.findMany({
+    const count = await ctx.prisma.issue.count();
+    const issues = await ctx.prisma.issue.findMany({
       select: { id: true, title: true },
       take,
       skip,
     });
+
+    return { issues, count };
   },
 });
