@@ -19,7 +19,6 @@
     "test-dev": "start-server-and-test dev 3000 test:e2e",
     "test-start": "start-server-and-test start 3000 test:e2e",
     "test:e2e": "playwright test",
-    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\"",
     "postinstall": "prisma generate",
     "prepare": "husky install"
   },
@@ -65,6 +64,7 @@
     "playwright": "^1.25.1",
     "postcss": "^8.4.16",
     "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "prisma": "^4.2.1",
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^3.1.8",
