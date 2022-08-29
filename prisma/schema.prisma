@@ -10,7 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Status {
+enum IssueStatus {
   NEW
   IN_PROGRESS
   RESOLVED
@@ -18,11 +18,22 @@ enum Status {
 }
 
 model Issue {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
   title       String
   description String?
-  status      Status   @default(NEW)
+  status      IssueStatus  @default(NEW)
+  IssueEvent  IssueEvent[]
+}
+
+model IssueEvent {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  comment   String?
+  status    IssueStatus?
+
+  issueId Int
+  issue   Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
 }
 
 // next-auth Account

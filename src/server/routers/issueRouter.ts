@@ -1,3 +1,4 @@
+import { compact } from "lodash";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
 
@@ -26,18 +27,40 @@ export const issueRouter = createRouter()
       });
     },
   })
-  .mutation("update", {
+  // Adds an event, e.g. adding a comment or updating the status:
+  .mutation("addEvent", {
     input: z.object({
-      id: z.number().int(),
+      issueId: z.number().int(),
 
-      title: z.string().optional(),
-      description: z.string().optional(),
+      comment: z.string().optional(),
       status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
     }),
-    async resolve({ ctx, input: { id, ...attributes } }) {
-      return await ctx.prisma.issue.update({
-        where: { id },
-        data: attributes,
+    async resolve({ ctx, input: { issueId, status, comment } }) {
+      await ctx.prisma.$transaction(
+        compact([
+          status &&
+            ctx.prisma.issue.update({
+              where: { id: issueId },
+              data: { status },
+            }),
+          ctx.prisma.issueEvent.create({
+            data: { comment, status, issueId },
+          }),
+        ])
+      );
+    },
+  })
+  .query("listEvents", {
+    input: z.object({
+      issueId: z.number().int(),
+      cursor: z.number().int().optional(),
+    }),
+    async resolve({ ctx, input: { issueId, cursor } }) {
+      return ctx.prisma.issueEvent.findMany({
+        where: { issueId },
+        take: 20,
+        orderBy: { createdAt: "asc" },
+        cursor: cursor ? { id: cursor } : undefined,
       });
     },
   });

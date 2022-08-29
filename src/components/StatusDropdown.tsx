@@ -1,4 +1,4 @@
-import { Status } from "@prisma/client";
+import { IssueStatus } from "@prisma/client";
 import clsx from "clsx";
 import { inferQueryOutput, trpc } from "../utils/trpc";
 
@@ -9,13 +9,17 @@ interface StatusDropdownProps {
 /** Dropdown to change the Issue status. Calls the update mutation on click. */
 export function StatusDropdown({ issue }: StatusDropdownProps) {
   const trpcCtx = trpc.useContext();
-  const mutation = trpc.useMutation(["issue.update"], {
+  const mutation = trpc.useMutation(["issue.addEvent"], {
     async onSuccess() {
       await trpcCtx.invalidateQueries(["issue.get", { id: issue.id }]);
+      await trpcCtx.invalidateQueries([
+        "issue.listEvents",
+        { issueId: issue.id },
+      ]);
     },
   });
 
-  function labelText(status: Status) {
+  function labelText(status: IssueStatus) {
     return status.replace("_", " ");
   }
 
@@ -31,11 +35,11 @@ export function StatusDropdown({ issue }: StatusDropdownProps) {
         tabIndex={0}
         className="dropdown-content menu rounded-box w-52 bg-base-200 p-2 shadow"
       >
-        {(Object.keys(Status) as Status[]).map((option) => (
+        {(Object.keys(IssueStatus) as IssueStatus[]).map((option) => (
           <li key={option}>
             <button
               onClick={(e) => {
-                mutation.mutate({ id: issue.id, status: option });
+                mutation.mutate({ issueId: issue.id, status: option });
                 (e.target as HTMLButtonElement).blur();
               }}
             >
