@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import Link from "next/link";
 import { ReactNode } from "react";
 import { ReactQueryDevtools } from "react-query/devtools";
 
@@ -18,8 +19,10 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
       <div className="flex justify-center bg-gray-900 py-2">
         <div className="mx-2 flex w-full max-w-[1280px] items-center">
           <div className="flex-1"></div>
-          <div className="flex flex-1 justify-center text-3xl font-bold">
-            Issue Tracker
+          <div className="flex flex-1 justify-center">
+            <Link href="/">
+              <a className="text-3xl font-bold">Issue Tracker</a>
+            </Link>
           </div>
           <div className="flex flex-1 justify-end">
             {status === "unauthenticated" && (
