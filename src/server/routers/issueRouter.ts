@@ -25,4 +25,19 @@ export const issueRouter = createRouter()
         where: { id: input.id },
       });
     },
+  })
+  .mutation("update", {
+    input: z.object({
+      id: z.number().int(),
+
+      title: z.string().optional(),
+      description: z.string().optional(),
+      status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
+    }),
+    async resolve({ ctx, input: { id, ...attributes } }) {
+      return await ctx.prisma.issue.update({
+        where: { id },
+        data: attributes,
+      });
+    },
   });

@@ -5,20 +5,30 @@ import {
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { inferQueryOutput, trpc } from "../utils/trpc";
 
 const columnHelper =
   createColumnHelper<inferQueryOutput<"issue.list">["issues"][number]>();
+
 const columns = [
-  columnHelper.accessor("title", {}),
-  columnHelper.accessor("status", {}),
+  columnHelper.accessor("title", {
+    cell: (ctx) => (
+      <Link href={`/issue/${ctx.row.original.id}`}>
+        <a className="link link-accent">{ctx.getValue()}</a>
+      </Link>
+    ),
+  }),
+  columnHelper.accessor("status", {
+    cell: (ctx) => ctx.getValue().replace("_", " "),
+  }),
   columnHelper.accessor("createdAt", {
-    // eslint-disable-next-line
     cell: (ctx) => ctx.getValue().toISOString().slice(0, 10),
   }),
 ];
 
+/** Lists the issues from the database. */
 export function IssueTable() {
   const tableRef = useRef<HTMLTableElement>(null);
 
