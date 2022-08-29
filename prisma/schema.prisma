@@ -18,11 +18,11 @@ enum Status {
 }
 
 model Issue {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) 
-  title     String
-  content   String?
-  status    Status   @default(NEW)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  title       String
+  description String?
+  status      Status   @default(NEW)
 }
 
 // next-auth Account
