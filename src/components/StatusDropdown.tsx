@@ -1,6 +1,5 @@
 import { Status } from "@prisma/client";
 import clsx from "clsx";
-import { useState } from "react";
 import { inferQueryOutput, trpc } from "../utils/trpc";
 
 interface StatusDropdownProps {
@@ -16,36 +15,35 @@ export function StatusDropdown({ issue }: StatusDropdownProps) {
     },
   });
 
-  const [open, setOpen] = useState(false);
-
   function labelText(status: Status) {
     return status.replace("_", " ");
   }
 
   return (
-    <div className={clsx("dropdown", open && "dropdown-open")}>
-      <button tabIndex={0} className="btn m-1" onClick={() => setOpen(true)}>
-        {labelText(issue.status)}
+    <div className="dropdown">
+      <button
+        tabIndex={0}
+        className={clsx("btn m-1 w-32", mutation.isLoading && "loading")}
+      >
+        {!mutation.isLoading && labelText(issue.status)}
       </button>
-      {open && (
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu rounded-box w-52 bg-base-200 p-2 shadow"
-        >
-          {(Object.keys(Status) as Status[]).map((option) => (
-            <li key={option}>
-              <button
-                onClick={() => {
-                  setOpen(false);
-                  mutation.mutate({ id: issue.id, status: option });
-                }}
-              >
-                {labelText(option)}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul
+        tabIndex={0}
+        className="dropdown-content menu rounded-box w-52 bg-base-200 p-2 shadow"
+      >
+        {(Object.keys(Status) as Status[]).map((option) => (
+          <li key={option}>
+            <button
+              onClick={(e) => {
+                mutation.mutate({ id: issue.id, status: option });
+                (e.target as HTMLButtonElement).blur();
+              }}
+            >
+              {labelText(option)}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
