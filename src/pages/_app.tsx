@@ -8,7 +8,7 @@ import { ReactElement } from "react";
 import "../../styles/globals.css";
 import { DefaultLayout } from "../components/DefaultLayout";
 import { AppRouter } from "../server/routers/appRouter";
-import { ColorModeApplier } from "../utils/color-mode/ColorModeApplier";
+import { ColorModeApplier } from "../components/color-mode/ColorModeApplier";
 import superjson from "superjson";
 
 export type NextPageWithLayout = NextPage & {
