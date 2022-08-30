@@ -1,7 +1,7 @@
 import { IssueEvent } from "@prisma/client";
 import { flatMap } from "lodash";
 import { useRouter } from "next/router";
-import { StatusDropdown } from "../../components/StatusDropdown";
+import { IssueCommentForm } from "../../components/issue/IssueCommentForm";
 import { trpc } from "../../utils/trpc";
 
 export default function IssuePage() {
@@ -20,7 +20,9 @@ export default function IssuePage() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold">{issue.title}</h1>
-            <StatusDropdown issue={issue} />
+            <span className="badge badge-lg">
+              {issue.status.replace("_", " ")}
+            </span>
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -32,12 +34,11 @@ export default function IssuePage() {
           {events && (
             <div className="flex flex-col gap-4">
               {flatMap(events.pages).map((event) => (
-                <div key={event.id}>
-                  <IssueEventListItem event={event} />
-                </div>
+                <IssueEventListItem key={event.id} event={event} />
               ))}
             </div>
           )}
+          <IssueCommentForm issue={issue} />
         </div>
       )}
     </main>

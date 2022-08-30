@@ -1,4 +1,3 @@
-import { compact } from "lodash";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
 
@@ -32,22 +31,23 @@ export const issueRouter = createRouter()
     input: z.object({
       issueId: z.number().int(),
 
-      comment: z.string().optional(),
+      comment: z.string().min(1).optional(),
       status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
     }),
     async resolve({ ctx, input: { issueId, status, comment } }) {
-      await ctx.prisma.$transaction(
-        compact([
-          status &&
-            ctx.prisma.issue.update({
-              where: { id: issueId },
-              data: { status },
-            }),
-          ctx.prisma.issueEvent.create({
-            data: { comment, status, issueId },
-          }),
-        ])
-      );
+      const [issue, event] = await ctx.prisma.$transaction([
+        // Update the Issue:
+        ctx.prisma.issue.update({
+          where: { id: issueId },
+          data: { status },
+        }),
+        // Create the IssueEvent:
+        ctx.prisma.issueEvent.create({
+          data: { comment, status, issueId },
+        }),
+      ]);
+
+      return { issue, event };
     },
   })
   .query("listEvents", {
