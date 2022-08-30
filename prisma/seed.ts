@@ -9,7 +9,7 @@ import { range } from "lodash";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Insert test posts:
+  // Insert test posts to an empty database:
   if ((await prisma.issue.count()) === 0) {
     const testIssueNums = range(1, 100 + 1);
 
@@ -27,6 +27,7 @@ async function main() {
           },
         },
       }),
+      // Insert test posts:
       prisma.issue.createMany({
         data: testIssueNums.map((issueNum) => ({
           title: `Test Issue ${issueNum}`,

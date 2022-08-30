@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { IssueCommentForm } from "../../components/issue/IssueCommentForm";
 import { IssueEventList } from "../../components/issue/IssueEventList";
 import { trpc } from "../../utils/trpc";
 
@@ -26,8 +25,7 @@ export default function IssuePage() {
             </div>
             <div>{issue.description}</div>
           </div>
-          <IssueEventList issueId={issue.id} />
-          <IssueCommentForm issue={issue} />
+          <IssueEventList issue={issue} />
         </div>
       )}
     </main>

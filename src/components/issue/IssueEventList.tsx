@@ -1,18 +1,21 @@
+import { Issue } from "@prisma/client";
 import { flatMap } from "lodash";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { trpc } from "../../utils/trpc";
+import { IssueCommentForm } from "./IssueCommentForm";
 import { IssueEventListItem } from "./IssueEventListItem";
 
-interface IssueEventListProps {
-  issueId: number;
+export interface IssueEventListProps {
+  issue: Issue;
 }
-export function IssueEventList({ issueId }: IssueEventListProps) {
+
+export function IssueEventList({ issue }: IssueEventListProps) {
   const {
-    data: events,
+    data: eventsData,
     hasNextPage,
     fetchNextPage,
-  } = trpc.useInfiniteQuery(["issue.listEvents", { issueId }], {
+  } = trpc.useInfiniteQuery(["issue.listEvents", { issueId: issue.id }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     refetchOnWindowFocus: false,
   });
@@ -24,9 +27,9 @@ export function IssueEventList({ issueId }: IssueEventListProps) {
     }
   }, [loadButtonInView, fetchNextPage, hasNextPage]);
 
-  return events ? (
+  return eventsData ? (
     <div className="flex flex-col gap-4">
-      {flatMap(events.pages.map((it) => it.events)).map((event) => (
+      {flatMap(eventsData.pages.map((it) => it.events)).map((event) => (
         <IssueEventListItem key={event.id} event={event} />
       ))}
       {hasNextPage && (
@@ -41,6 +44,7 @@ export function IssueEventList({ issueId }: IssueEventListProps) {
           </button>
         </div>
       )}
+      <IssueCommentForm issue={issue} />
     </div>
   ) : null;
 }
