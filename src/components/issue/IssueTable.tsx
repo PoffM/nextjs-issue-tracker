@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { inferQueryOutput, trpc } from "../utils/trpc";
+import { inferQueryOutput, trpc } from "../../utils/trpc";
 
 const columnHelper =
   createColumnHelper<inferQueryOutput<"issue.list">["issues"][number]>();
