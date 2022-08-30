@@ -27,10 +27,12 @@ model Issue {
 }
 
 model IssueEvent {
-  id        Int          @id @default(autoincrement())
-  createdAt DateTime     @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
   comment   String?
-  status    IssueStatus?
+
+  description String?
+  status      IssueStatus?
 
   issueId Int
   issue   Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)

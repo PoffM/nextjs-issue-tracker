@@ -35,16 +35,16 @@ export const issueRouter = createRouter()
       description: z.string().min(1).max(10_000).optional(),
       status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
     }),
-    async resolve({ ctx, input: { issueId, status, comment } }) {
+    async resolve({ ctx, input: { issueId, status, comment, description } }) {
       const [issue, event] = await ctx.prisma.$transaction([
         // Update the Issue:
         ctx.prisma.issue.update({
           where: { id: issueId },
-          data: { status },
+          data: { status, description },
         }),
         // Create the IssueEvent:
         ctx.prisma.issueEvent.create({
-          data: { comment, status, issueId },
+          data: { comment, status, description, issueId },
         }),
       ]);
 
