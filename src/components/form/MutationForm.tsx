@@ -15,11 +15,11 @@ type MutationKey = keyof AppRouter["_def"]["mutations"];
 
 export interface MutationFormProps<
   TPath extends MutationKey,
-  TMutationInput = inferMutationInput<TPath>,
-  TMutationOutput = inferMutationOutput<TPath>,
+  TMutationInput extends inferMutationInput<TPath> = inferMutationInput<TPath>,
+  TMutationOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>,
   TFormShape = TMutationInput
 > {
-  form: UseFormReturn<TMutationInput>;
+  form: UseFormReturn<TFormShape>;
   mutation: UseMutationResult<
     TMutationOutput,
     ReturnType<typeof trpc.useMutation>["error"],
@@ -47,8 +47,8 @@ export type OnSuccessFn<
  */
 export function MutationForm<
   TPath extends MutationKey,
-  TInput = inferMutationInput<TPath>,
-  TOutput = inferMutationOutput<TPath>
+  TInput extends inferMutationInput<TPath> = inferMutationInput<TPath>,
+  TOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>
 >({
   children,
   form,

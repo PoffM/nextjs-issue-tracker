@@ -31,7 +31,8 @@ export const issueRouter = createRouter()
     input: z.object({
       issueId: z.number().int(),
 
-      comment: z.string().min(1).optional(),
+      comment: z.string().min(1).max(10_000).optional(),
+      description: z.string().min(1).max(10_000).optional(),
       status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
     }),
     async resolve({ ctx, input: { issueId, status, comment } }) {

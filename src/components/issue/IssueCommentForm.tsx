@@ -29,7 +29,7 @@ export function IssueCommentForm({ issue }: IssueCommentFormProps) {
   const form = useTypeForm({ defaultValues });
 
   return (
-    <MutationForm
+    <MutationForm<"issue.addEvent">
       form={form}
       mutation={mutation}
       preSubmitTransform={(input) => ({
@@ -39,6 +39,8 @@ export function IssueCommentForm({ issue }: IssueCommentFormProps) {
           issue.status === input.status
             ? undefined
             : (input.status as IssueStatus),
+        // Omit the comment if it's blank:
+        comment: input.comment?.trim() || undefined,
       })}
       onSuccess={({ data }) =>
         form.reset({ ...defaultValues, status: data.issue.status })

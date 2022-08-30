@@ -39,7 +39,9 @@ export function TextField({
     <div className="form-control">
       <label>
         <div className="label">
-          <span className="label-text font-bold">{labelText}</span>
+          <span className={clsx("label-text font-bold", error && "text-error")}>
+            {labelText}
+          </span>
         </div>
         {textarea ? (
           <TextareaAutosize minRows={3} {...inputProps} />
