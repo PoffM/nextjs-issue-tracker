@@ -15,26 +15,29 @@ type MutationKey = keyof AppRouter["_def"]["mutations"];
 
 export interface MutationFormProps<
   TPath extends MutationKey,
-  TInput = inferMutationInput<TPath>,
-  TOutput = inferMutationOutput<TPath>
+  TMutationInput = inferMutationInput<TPath>,
+  TMutationOutput = inferMutationOutput<TPath>,
+  TFormShape = TMutationInput
 > {
-  form: UseFormReturn<TInput>;
+  form: UseFormReturn<TMutationInput>;
   mutation: UseMutationResult<
-    TOutput,
+    TMutationOutput,
     ReturnType<typeof trpc.useMutation>["error"],
-    TInput
+    TMutationInput
   >;
-  onSuccess?: OnSuccessFn<TPath, TInput, TOutput>;
+  onSuccess?: OnSuccessFn<TPath, TMutationInput, TMutationOutput>;
+  preSubmitTransform?: (formValues: TFormShape) => TMutationInput;
   children?: ReactNode;
 }
 
 export type OnSuccessFn<
   TPath extends MutationKey,
-  TInput = inferMutationInput<TPath>,
-  TOutput = inferMutationOutput<TPath>
+  TMutationInput = inferMutationInput<TPath>,
+  TMutationOutput = inferMutationOutput<TPath>,
+  TFormShape = TMutationInput
 > = (args: {
-  form: UseFormReturn<TInput>;
-  data: TOutput;
+  form: UseFormReturn<TFormShape>;
+  data: TMutationOutput;
 }) => Promise<unknown> | void;
 
 /**
@@ -51,11 +54,14 @@ export function MutationForm<
   form,
   mutation,
   onSuccess,
+  preSubmitTransform,
 }: MutationFormProps<TPath, TInput, TOutput>) {
   // Top-level form error message:
   const [formError, setFormError] = useState<string | null>(null);
 
-  const onSubmit = form.handleSubmit(async (input) => {
+  const onSubmit = form.handleSubmit(async (formValues) => {
+    const input = preSubmitTransform?.(formValues) ?? formValues;
+
     setFormError(null);
     try {
       const data = await mutation.mutateAsync(input, {
