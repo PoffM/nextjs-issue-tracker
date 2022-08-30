@@ -15,10 +15,20 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     data: eventsData,
     hasNextPage,
     fetchNextPage,
+    refetch,
   } = trpc.useInfiniteQuery(["issue.listEvents", { issueId: issue.id }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     refetchOnWindowFocus: false,
   });
+
+  function refetchLastPage() {
+    void refetch({
+      refetchPage(_, index, allPages) {
+        // Only refetch the last page because that's where the new comment is:
+        return index === allPages.length - 1;
+      },
+    });
+  }
 
   const [loadButtonRef, loadButtonInView] = useInView();
   useEffect(() => {
@@ -44,7 +54,7 @@ export function IssueEventList({ issue }: IssueEventListProps) {
           </button>
         </div>
       )}
-      <IssueCommentForm issue={issue} />
+      <IssueCommentForm issue={issue} onSuccess={refetchLastPage} />
     </div>
   ) : null;
 }

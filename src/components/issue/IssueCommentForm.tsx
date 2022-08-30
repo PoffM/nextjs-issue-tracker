@@ -8,17 +8,17 @@ import { useTypeForm } from "../form/useTypeForm";
 
 interface IssueCommentFormProps {
   issue: Issue;
+  onSuccess?: () => void;
 }
 
 /** Form for adding IssueEvents (comments / status changes etc to an Issue) */
-export function IssueCommentForm({ issue }: IssueCommentFormProps) {
+export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   const ctx = trpc.useContext();
   const mutation = trpc.useMutation(["issue.addEvent"], {
-    onSuccess: () =>
-      Promise.all([
-        ctx.invalidateQueries(["issue.get", { id: issue.id }]),
-        ctx.invalidateQueries(["issue.listEvents"]),
-      ]),
+    onSuccess: () => {
+      void ctx.invalidateQueries(["issue.get", { id: issue.id }]);
+      onSuccess?.();
+    },
   });
 
   const defaultValues: inferMutationInput<"issue.addEvent"> = {
