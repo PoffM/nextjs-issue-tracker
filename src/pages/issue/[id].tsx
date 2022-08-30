@@ -65,7 +65,7 @@ function IssueEventListItem({ event }: IssueEventListItemProps) {
               {event.createdAt.toDateString()}
             </span>
           </div>
-          <div className="p-2">{event.comment}</div>
+          <div className="whitespace-pre-line p-2">{event.comment}</div>
         </div>
       )}
     </>
