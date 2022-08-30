@@ -23,7 +23,7 @@ model Issue {
   title       String
   description String?
   status      IssueStatus  @default(NEW)
-  IssueEvent  IssueEvent[]
+  events      IssueEvent[]
 }
 
 model IssueEvent {

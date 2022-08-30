@@ -57,11 +57,23 @@ export const issueRouter = createRouter()
       cursor: z.number().int().optional(),
     }),
     async resolve({ ctx, input: { issueId, cursor } }) {
-      return ctx.prisma.issueEvent.findMany({
+      const limit = 20;
+
+      const items = await ctx.prisma.issueEvent.findMany({
         where: { issueId },
-        take: 20,
-        orderBy: { createdAt: "asc" },
+        take: limit + 1, // Get an extra item at the end which we'll use as next cursor
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
         cursor: cursor ? { id: cursor } : undefined,
       });
+
+      const nextItem = items[limit];
+      if (nextItem) {
+        items.pop();
+      }
+
+      return {
+        events: items,
+        nextCursor: nextItem?.id,
+      };
     },
   });

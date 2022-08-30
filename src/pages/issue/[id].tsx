@@ -1,7 +1,6 @@
-import { IssueEvent } from "@prisma/client";
-import { flatMap } from "lodash";
 import { useRouter } from "next/router";
 import { IssueCommentForm } from "../../components/issue/IssueCommentForm";
+import { IssueEventList } from "../../components/issue/IssueEventList";
 import { trpc } from "../../utils/trpc";
 
 export default function IssuePage() {
@@ -9,10 +8,6 @@ export default function IssuePage() {
   const id = Number(query.id);
 
   const { data: issue } = trpc.useQuery(["issue.get", { id }]);
-  const { data: events } = trpc.useInfiniteQuery([
-    "issue.listEvents",
-    { issueId: id },
-  ]);
 
   return (
     <main>
@@ -31,43 +26,10 @@ export default function IssuePage() {
             </div>
             <div>{issue.description}</div>
           </div>
-          {events && (
-            <div className="flex flex-col gap-4">
-              {flatMap(events.pages).map((event) => (
-                <IssueEventListItem key={event.id} event={event} />
-              ))}
-            </div>
-          )}
+          <IssueEventList issueId={issue.id} />
           <IssueCommentForm issue={issue} />
         </div>
       )}
     </main>
-  );
-}
-
-interface IssueEventListItemProps {
-  event: IssueEvent;
-}
-
-function IssueEventListItem({ event }: IssueEventListItemProps) {
-  return (
-    <>
-      {event.status && (
-        <div className="">
-          (Username) changed the status to {event.status.replaceAll("_", " ")}
-        </div>
-      )}
-      {event.comment && (
-        <div className="rounded-md border">
-          <div className="border-b p-2">
-            (Username) commented on{" "}
-            <span title={event.createdAt.toTimeString()}>
-              {event.createdAt.toDateString()}
-            </span>
-          </div>
-          <div className="whitespace-pre-line p-2">{event.comment}</div>
-        </div>
-      )}
-    </>
   );
 }
