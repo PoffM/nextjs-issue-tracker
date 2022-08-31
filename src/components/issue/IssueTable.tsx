@@ -14,6 +14,7 @@ const columnHelper =
 
 const columns = [
   columnHelper.accessor("title", {
+    header: "Title",
     cell: (ctx) => (
       <Link href={`/issue/${ctx.row.original.id}`}>
         <a className="link link-accent">{ctx.getValue()}</a>
@@ -21,10 +22,16 @@ const columns = [
     ),
   }),
   columnHelper.accessor("status", {
+    header: "Status",
     cell: (ctx) => ctx.getValue().replace("_", " "),
   }),
   columnHelper.accessor("createdAt", {
-    cell: (ctx) => ctx.getValue().toISOString().slice(0, 10),
+    header: "Created At",
+    cell: (ctx) => (
+      <span title={ctx.getValue().toTimeString()}>
+        {ctx.getValue().toISOString().slice(0, 10)}
+      </span>
+    ),
   }),
 ];
 
