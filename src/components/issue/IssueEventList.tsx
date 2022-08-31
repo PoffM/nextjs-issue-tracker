@@ -1,5 +1,4 @@
 import { Issue } from "@prisma/client";
-import { flatMap } from "lodash";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { trpc } from "../../utils/trpc";
@@ -39,9 +38,12 @@ export function IssueEventList({ issue }: IssueEventListProps) {
 
   return eventsData ? (
     <div className="flex flex-col gap-4">
-      {flatMap(eventsData.pages.map((it) => it.events)).map((event) => (
-        <IssueEventListItem key={event.id} event={event} />
-      ))}
+      {eventsData.pages
+        .map((it) => it.events)
+        .flat()
+        .map((event) => (
+          <IssueEventListItem key={event.id} event={event} />
+        ))}
       {hasNextPage && (
         <div className="flex justify-center">
           <button
