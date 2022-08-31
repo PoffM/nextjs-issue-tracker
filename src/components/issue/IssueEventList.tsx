@@ -15,6 +15,7 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     hasNextPage,
     fetchNextPage,
     refetch,
+    isFetching,
   } = trpc.useInfiniteQuery(["issue.listEvents", { issueId: issue.id }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     refetchOnWindowFocus: false,
@@ -52,7 +53,7 @@ export function IssueEventList({ issue }: IssueEventListProps) {
             ref={loadButtonRef}
             onClick={() => void fetchNextPage()}
           >
-            Load More
+            {isFetching ? "Loading..." : "Load More"}
           </button>
         </div>
       )}
