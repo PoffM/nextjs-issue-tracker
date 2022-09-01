@@ -20,10 +20,11 @@
     "test-start": "start-server-and-test start 3000 test:e2e",
     "test:e2e": "playwright test",
     "postinstall": "prisma generate",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
   },
   "prisma": {
-    "seed": "npx ts-node prisma/seed.ts"
+    "seed": "npm run ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.4",
