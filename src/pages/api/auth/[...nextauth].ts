@@ -2,6 +2,7 @@ import { compact } from "lodash";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { globalContext } from "../../../server/context";
 import { env } from "../../../server/env";
 
 const GOOGLE_PROVIDER =
@@ -30,10 +31,18 @@ const DEV_ONLY_LOCAL_PROVIDER =
       const password = credentials?.password;
 
       if (username === "admin" && password === "admin") {
-        return { id: "admin-id", name: "Admin", email: "admin@example.com" };
+        return await globalContext.prisma.user.upsert({
+          create: { id: "admin-id", name: "Admin", email: "admin@example.com" },
+          update: {},
+          where: { id: "admin-id" },
+        });
       }
       if (username === "user" && password === "user") {
-        return { id: "user-id", name: "User", email: "user@example.com" };
+        return await globalContext.prisma.user.upsert({
+          create: { id: "user-id", name: "User", email: "user@example.com" },
+          update: {},
+          where: { id: "user-id" },
+        });
       }
 
       // If you return null then an error will be displayed advising the user to check their details.

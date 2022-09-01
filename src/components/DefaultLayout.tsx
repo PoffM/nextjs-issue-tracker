@@ -7,7 +7,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 type DefaultLayoutProps = { children: ReactNode };
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
-  const { status } = useSession();
+  const session = useSession();
 
   return (
     <div className="fixed inset-0 flex flex-col gap-8 overflow-y-auto">
@@ -24,8 +24,8 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
               <a className="text-3xl font-bold">Issue Tracker</a>
             </Link>
           </div>
-          <div className="flex flex-1 justify-end">
-            {status === "unauthenticated" && (
+          <div className="flex flex-1 items-center justify-end gap-2">
+            {session.status === "unauthenticated" && (
               <button
                 className="btn btn-primary"
                 onClick={() => void signIn("google")}
@@ -33,13 +33,16 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
                 Login
               </button>
             )}
-            {status === "authenticated" && (
-              <button
-                className="btn btn-outline btn-secondary"
-                onClick={() => void signOut()}
-              >
-                Logout
-              </button>
+            {session.status === "authenticated" && (
+              <>
+                <span>Logged in as {session.data.user?.name}</span>
+                <button
+                  className="btn btn-outline btn-secondary"
+                  onClick={() => void signOut()}
+                >
+                  Logout
+                </button>
+              </>
             )}
           </div>
         </div>
