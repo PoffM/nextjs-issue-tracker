@@ -24,19 +24,20 @@ Full-stack TypeScript Issue Tracker web application.
 ## Local Development Setup
 
 ```bash
-yarn
-yarn dx
+npm i
+npm run db-up
+npm run dx
 ```
 
 ## Commands
 
 ```bash
-yarn build      # runs `prisma generate` + `prisma migrate` + `next build`
-yarn db-nuke    # resets local db
-yarn dev        # starts next.js
-yarn dx         # starts postgres db + runs migrations + seeds + starts next.js
-yarn test       # runs normal jest unit tests
-yarn test-dev   # runs e2e tests on dev
-yarn test-start # runs e2e tests on `next start` - build required before
-yarn test:e2e   # runs e2e tests
+npm run build      # runs `prisma generate` + `prisma migrate` + `next build`
+npm run db-nuke    # resets local db
+npm run dev        # starts next.js
+npm run dx         # starts postgres db + runs migrations + seeds + starts next.js
+npm test           # runs normal jest unit tests
+npm run test-dev   # runs e2e tests on dev
+npm run test-start # runs e2e tests on `next start` - build required before
+npm run test:e2e   # runs e2e tests
 ```
