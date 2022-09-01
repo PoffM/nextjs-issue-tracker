@@ -21,7 +21,7 @@ model Issue {
   id          Int          @id @default(autoincrement())
   createdAt   DateTime     @default(now())
   title       String
-  description String?
+  description String       @default("")
   status      IssueStatus  @default(NEW)
   events      IssueEvent[]
 }

@@ -30,13 +30,12 @@ export function TextField({
     className: clsx(
       "w-full",
       textarea ? "textarea textarea-bordered" : "input input-bordered",
-      error && "input-error",
-      className
+      error && "input-error"
     ),
   };
 
   return (
-    <div className="form-control">
+    <div className={clsx("form-control", className)}>
       <label>
         <div className="label">
           <span className={clsx("label-text font-bold", error && "text-error")}>

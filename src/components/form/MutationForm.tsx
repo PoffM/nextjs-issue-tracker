@@ -2,6 +2,7 @@ import { TRPCClientError } from "@trpc/client";
 import { toPairs } from "lodash";
 import { ReactNode, useState } from "react";
 import { Path, UseFormReturn } from "react-hook-form";
+import { VscError } from "react-icons/vsc";
 import { UseMutationResult } from "react-query";
 import type { AppRouter } from "../../server/routers/appRouter";
 import {
@@ -9,24 +10,22 @@ import {
   inferMutationOutput,
   trpc,
 } from "../../utils/trpc";
-import { VscError } from "react-icons/vsc";
 
 type MutationKey = keyof AppRouter["_def"]["mutations"];
 
 export interface MutationFormProps<
   TPath extends MutationKey,
   TMutationInput extends inferMutationInput<TPath> = inferMutationInput<TPath>,
-  TMutationOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>,
-  TFormShape = TMutationInput
+  TMutationOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>
 > {
-  form: UseFormReturn<TFormShape>;
+  form: UseFormReturn<TMutationInput>;
   mutation: UseMutationResult<
     TMutationOutput,
     ReturnType<typeof trpc.useMutation>["error"],
     TMutationInput
   >;
   onSuccess?: OnSuccessFn<TPath, TMutationInput, TMutationOutput>;
-  preSubmitTransform?: (formValues: TFormShape) => TMutationInput;
+  preSubmitTransform?: (formValues: TMutationInput) => TMutationInput;
   children?: ReactNode;
 }
 

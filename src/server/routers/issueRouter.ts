@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { createRouter } from "../createRouter";
 
+const zIssueStatusEnum = z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
+
 export const issueRouter = createRouter()
   .query("list", {
     input: z.object({
@@ -26,6 +28,27 @@ export const issueRouter = createRouter()
       });
     },
   })
+  .mutation("save", {
+    input: z.object({
+      id: z.number().int().optional(),
+
+      title: z.string(),
+      description: z.string().optional(),
+      status: zIssueStatusEnum.optional(),
+    }),
+    async resolve({ ctx, input: { id, ...data } }) {
+      if (id) {
+        return await ctx.prisma.issue.update({
+          where: { id },
+          data,
+        });
+      } else {
+        return await ctx.prisma.issue.create({
+          data,
+        });
+      }
+    },
+  })
   // Adds an event, e.g. adding a comment or updating the status:
   .mutation("addEvent", {
     input: z.object({
@@ -33,7 +56,7 @@ export const issueRouter = createRouter()
 
       comment: z.string().min(1).max(10_000).optional(),
       description: z.string().min(1).max(10_000).optional(),
-      status: z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),
+      status: zIssueStatusEnum.optional(),
     }),
     async resolve({ ctx, input: { issueId, status, comment, description } }) {
       const [issue, event] = await ctx.prisma.$transaction([
