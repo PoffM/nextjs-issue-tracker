@@ -28,25 +28,16 @@ export const issueRouter = createRouter()
       });
     },
   })
-  .mutation("save", {
+  .mutation("create", {
     input: z.object({
-      id: z.number().int().optional(),
-
-      title: z.string(),
+      title: z.string().min(1).max(200),
       description: z.string().optional(),
       status: zIssueStatusEnum.optional(),
     }),
-    async resolve({ ctx, input: { id, ...data } }) {
-      if (id) {
-        return await ctx.prisma.issue.update({
-          where: { id },
-          data,
-        });
-      } else {
-        return await ctx.prisma.issue.create({
-          data,
-        });
-      }
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.issue.create({
+        data: input,
+      });
     },
   })
   // Adds an event, e.g. adding a comment or updating the status:
@@ -55,19 +46,21 @@ export const issueRouter = createRouter()
       issueId: z.number().int(),
 
       comment: z.string().min(1).max(10_000).optional(),
+
+      title: z.string().min(1).max(200).optional(),
       description: z.string().min(1).max(10_000).optional(),
       status: zIssueStatusEnum.optional(),
     }),
-    async resolve({ ctx, input: { issueId, status, comment, description } }) {
+    async resolve({ ctx, input: { issueId, comment, ...issueChanges } }) {
       const [issue, event] = await ctx.prisma.$transaction([
         // Update the Issue:
         ctx.prisma.issue.update({
           where: { id: issueId },
-          data: { status, description },
+          data: issueChanges,
         }),
         // Create the IssueEvent:
         ctx.prisma.issueEvent.create({
-          data: { comment, status, description, issueId },
+          data: { comment, issueId, ...issueChanges },
         }),
       ]);
 

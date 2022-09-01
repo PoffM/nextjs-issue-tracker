@@ -12,6 +12,19 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
 
   return (
     <>
+      {event.title && (
+        <div className="">
+          (Username) changed the title to {`"${event.title}"`} on {timestamp}
+        </div>
+      )}
+      {event.description && (
+        <div className="rounded-md border">
+          <div className="border-b p-2">
+            (Username) changed the description on {timestamp}
+          </div>
+          <div className="whitespace-pre-line p-2">{event.description}</div>
+        </div>
+      )}
       {event.status && (
         <div className="">
           (Username) changed the status to {event.status.replaceAll("_", " ")}{" "}

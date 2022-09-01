@@ -8,17 +8,18 @@ export interface SubmitButtonProps
 }
 
 export function SubmitButton({ formCtx, ...buttonProps }: SubmitButtonProps) {
+  const isLoading = formCtx.formState.isSubmitting;
   return (
     <button
       type="submit"
       {...buttonProps}
       className={clsx(
-        "btn",
-        formCtx.formState.isSubmitting && "loading",
+        "btn btn-accent min-w-[120px]",
+        isLoading && "loading",
         buttonProps.className
       )}
     >
-      {buttonProps.children ?? "Submit"}
+      {isLoading ? "" : buttonProps.children ?? "Submit"}
     </button>
   );
 }

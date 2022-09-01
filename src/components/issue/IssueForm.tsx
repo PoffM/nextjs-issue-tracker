@@ -1,4 +1,5 @@
 import { Issue } from "@prisma/client";
+import { shallowDiff } from "../../utils/object-shallow-diff";
 import { inferMutationInput, trpc } from "../../utils/trpc";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
@@ -21,28 +22,24 @@ export function IssueForm({ id, onSuccess }: IssueFormProps) {
   return (
     <div>
       {id ? (
-        issue && <IssueFormInternal defaultValues={issue} {...formProps} />
+        issue && <IssueUpdateForm data={issue} {...formProps} />
       ) : (
-        <IssueFormInternal {...formProps} />
+        <IssueCreateForm {...formProps} />
       )}
     </div>
   );
 }
 
-interface IssueFormInternalProps {
-  defaultValues?: Issue;
-  onSuccess?: (data: Issue) => void | Promise<void>;
+interface IssueCreateFormProps {
+  onSuccess?: (data: Issue) => void | Promise<unknown>;
 }
 
-function IssueFormInternal({
-  defaultValues,
-  onSuccess,
-}: IssueFormInternalProps) {
-  const form = useTypeForm<inferMutationInput<"issue.save">>({
-    defaultValues,
+function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
+  const form = useTypeForm<inferMutationInput<"issue.create">>({
+    defaultValues: { status: "NEW" },
   });
 
-  const mutation = trpc.useMutation(["issue.save"]);
+  const mutation = trpc.useMutation(["issue.create"]);
 
   return (
     <MutationForm
@@ -50,16 +47,73 @@ function IssueFormInternal({
       mutation={mutation}
       onSuccess={({ data }) => onSuccess?.(data)}
     >
-      <div className="flex w-[600px] flex-col gap-2">
-        <div className="flex items-end gap-2">
-          <TextField field={form.field("title")} className="grow" />
-          <IssueStatusField field={form.field("status")} />
-        </div>
-        <TextField field={form.field("description")} textarea />
-        <div className="flex justify-end">
-          <SubmitButton formCtx={form} />
-        </div>
-      </div>
+      <IssueFormFields
+        form={
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          form as any
+        }
+      />
     </MutationForm>
+  );
+}
+
+interface IssueUpdateFormProps {
+  data: Issue;
+  onSuccess?: (data: Issue) => void | Promise<unknown>;
+}
+
+export function IssueUpdateForm({
+  data: issue,
+  onSuccess,
+}: IssueUpdateFormProps) {
+  const {
+    id: issueId,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    createdAt,
+    ...defaultValues
+  } = issue;
+
+  const form = useTypeForm<IssueFormShape>({
+    defaultValues,
+  });
+
+  const mutation = trpc.useMutation(["issue.addEvent"]);
+
+  return (
+    <MutationForm
+      form={form}
+      mutation={mutation}
+      onSuccess={({ data }) => onSuccess?.(data.issue)}
+      preSubmitTransform={(data) => ({
+        ...shallowDiff(defaultValues, data),
+        issueId,
+      })}
+    >
+      <IssueFormFields form={form} />
+    </MutationForm>
+  );
+}
+
+type IssueFormShape = Pick<
+  inferMutationInput<"issue.addEvent">,
+  "title" | "status" | "description" | "issueId"
+>;
+
+interface IssueFormFieldsProps {
+  form: ReturnType<typeof useTypeForm<IssueFormShape>>;
+}
+
+function IssueFormFields({ form }: IssueFormFieldsProps) {
+  return (
+    <div className="flex w-[600px] flex-col gap-2">
+      <div className="flex items-end gap-2">
+        <TextField field={form.field("title")} className="grow" />
+        <IssueStatusField field={form.field("status")} />
+      </div>
+      <TextField field={form.field("description")} textarea />
+      <div className="flex justify-end">
+        <SubmitButton formCtx={form} />
+      </div>
+    </div>
   );
 }

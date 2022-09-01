@@ -18,12 +18,14 @@ enum IssueStatus {
 }
 
 model Issue {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
   title       String
-  description String       @default("")
-  status      IssueStatus  @default(NEW)
-  events      IssueEvent[]
+  description String      @default("")
+  status      IssueStatus @default(NEW)
+
+  events IssueEvent[]
 }
 
 model IssueEvent {
@@ -31,8 +33,10 @@ model IssueEvent {
   createdAt DateTime @default(now())
   comment   String?
 
+  // Changes to the Issue:
   description String?
   status      IssueStatus?
+  title       String?
 
   issueId Int
   issue   Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
