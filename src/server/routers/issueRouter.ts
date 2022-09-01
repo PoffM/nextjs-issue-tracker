@@ -45,6 +45,9 @@ export const issueRouter = createRouter()
       const limit = 20;
 
       const items = await ctx.prisma.issueEvent.findMany({
+        include: {
+          createdBy: { select: { id: true, name: true } },
+        },
         where: { issueId },
         take: limit + 1, // Get an extra item at the end which we'll use as next cursor
         orderBy: [{ createdAt: "asc" }, { id: "asc" }],
@@ -67,7 +70,18 @@ export const issueRouter = createRouter()
     async resolve({ ctx, input }) {
       const user = await ctx.requireUser();
       return await ctx.prisma.issue.create({
-        data: { ...input, createdByUserId: user.id },
+        data: {
+          ...input,
+          createdByUserId: user.id,
+          events: {
+            // Create the INITIAL event for history purposes:
+            create: {
+              type: "INITIAL",
+              createdByUserId: user.id,
+              ...input,
+            },
+          },
+        },
       });
     },
   })
@@ -88,7 +102,13 @@ export const issueRouter = createRouter()
         }),
         // Create the IssueEvent:
         ctx.prisma.issueEvent.create({
-          data: { ...issueChanges, comment, issueId, createdByUserId: user.id },
+          data: {
+            ...issueChanges,
+            comment,
+            issueId,
+            createdByUserId: user.id,
+            type: "UPDATE",
+          },
         }),
       ]);
 

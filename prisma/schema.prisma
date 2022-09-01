@@ -30,11 +30,17 @@ model Issue {
   createdBy User         @relation(fields: [createdByUserId], references: [id])
 }
 
+enum IssueEventType {
+  INITIAL
+  UPDATE
+}
+
 model IssueEvent {
-  id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now())
+  id              Int            @id @default(autoincrement())
+  createdAt       DateTime       @default(now())
   comment         String?
   createdByUserId String
+  type            IssueEventType
 
   // Changes to the Issue:
   description String?

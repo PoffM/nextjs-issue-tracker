@@ -1,8 +1,9 @@
-import { IssueEvent } from "@prisma/client";
+import { inferQueryOutput } from "../../utils/trpc";
 
 interface IssueEventListItemProps {
-  event: IssueEvent;
+  event: inferQueryOutput<"issue.listEvents">["events"][number];
 }
+
 export function IssueEventListItem({ event }: IssueEventListItemProps) {
   const timestamp = (
     <span title={event.createdAt.toTimeString()}>
@@ -10,31 +11,37 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
     </span>
   );
 
-  return (
+  const username = event.createdBy.name;
+
+  return event.type === "INITIAL" ? (
+    <div>
+      {username} created this issue on {timestamp}
+    </div>
+  ) : (
     <>
       {event.title && (
-        <div className="">
-          (Username) changed the title to {`"${event.title}"`} on {timestamp}
+        <div>
+          {username} changed the title to {`"${event.title}"`} on {timestamp}
         </div>
       )}
       {event.description && (
         <div className="rounded-md border">
           <div className="border-b p-2">
-            (Username) changed the description on {timestamp}
+            {username} changed the description on {timestamp}
           </div>
           <div className="whitespace-pre-line p-2">{event.description}</div>
         </div>
       )}
       {event.status && (
-        <div className="">
-          (Username) changed the status to {event.status.replaceAll("_", " ")}{" "}
+        <div>
+          {username} changed the status to {event.status.replaceAll("_", " ")}{" "}
           on {timestamp}
         </div>
       )}
       {event.comment && (
         <div className="rounded-md border">
           <div className="border-b p-2">
-            (Username) commented on {timestamp}
+            {username} commented on {timestamp}
           </div>
           <div className="whitespace-pre-line p-2">{event.comment}</div>
         </div>

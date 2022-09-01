@@ -35,28 +35,49 @@ async function main() {
           id: "example-user-id",
           name: "Example User",
           email: "example-user@example.com",
-          // Insert test issues:
-          issues: {
-            createMany: {
-              data: testIssueNums.map((issueNum) => ({
-                title: `Example Issue ${issueNum}`,
-              })),
-            },
-          },
         },
       }),
+      // Insert test issues each with an initial event:
+      ...testIssueNums.map((issueNum) => {
+        // The common properties between Issue and IssueEvent:
+        const issueData = {
+          title: `Example Issue ${issueNum}`,
+          createdByUserId: "example-user-id",
+          description: "Example description",
+          status: "NEW" as const,
+        };
+
+        return prisma.issue.create({
+          data: {
+            ...issueData,
+            events: {
+              create: {
+                ...issueData,
+                type: "INITIAL",
+              },
+            },
+          },
+        });
+      }),
       // The newest issue should have 100 test comments:
-      // Prisma doesn't allow nested linked "createMany"s so do this in a separate insert:
       prisma.issue.create({
         data: {
           title: "Example issue with comments",
           createdByUserId: "example-user-id",
           events: {
             createMany: {
-              data: range(1, 100 + 1).map((commentNum) => ({
-                comment: `Example Comment ${commentNum}`,
-                createdByUserId: "example-user-id",
-              })),
+              data: [
+                {
+                  type: "INITIAL",
+                  title: "Example issue with comments",
+                  createdByUserId: "example-user-id",
+                },
+                ...range(1, 100 + 1).map((commentNum) => ({
+                  comment: `Example Comment ${commentNum}`,
+                  createdByUserId: "example-user-id",
+                  type: "UPDATE" as const,
+                })),
+              ],
             },
           },
         },
