@@ -13,7 +13,7 @@ export interface IssueFormProps {
 }
 
 export function IssueForm({ id, onSuccess }: IssueFormProps) {
-  const { data: issue } = trpc.useQuery(["issue.get", { id: id ?? NaN }], {
+  const { data: issue } = trpc.useQuery(["issue.findOne", { id: id ?? NaN }], {
     enabled: id !== undefined,
   });
 

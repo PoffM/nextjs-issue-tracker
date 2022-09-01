@@ -16,7 +16,7 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   const ctx = trpc.useContext();
   const mutation = trpc.useMutation(["issue.addEvent"], {
     onSuccess: () => {
-      void ctx.invalidateQueries(["issue.get", { id: issue.id }]);
+      void ctx.invalidateQueries(["issue.findOne", { id: issue.id }]);
       onSuccess?.();
     },
   });

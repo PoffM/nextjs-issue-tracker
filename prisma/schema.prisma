@@ -18,28 +18,32 @@ enum IssueStatus {
 }
 
 model Issue {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  createdByUserId String
 
   title       String
   description String      @default("")
   status      IssueStatus @default(NEW)
 
-  events IssueEvent[]
+  events    IssueEvent[]
+  createdBy User         @relation(fields: [createdByUserId], references: [id])
 }
 
 model IssueEvent {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  comment   String?
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  comment         String?
+  createdByUserId String
 
   // Changes to the Issue:
   description String?
   status      IssueStatus?
   title       String?
 
-  issueId Int
-  issue   Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId   Int
+  issue     Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
 }
 
 // next-auth Account
@@ -73,6 +77,7 @@ model Session {
 
 // next-auth User
 model User {
+  // next-auth fields:
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
@@ -80,6 +85,10 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  // Custom fields:
+  issues      Issue[]
+  issueEvents IssueEvent[]
 }
 
 // next-auth VerificationToken

@@ -3,7 +3,23 @@ import { createRouter } from "../createRouter";
 
 const zIssueStatusEnum = z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
 
+const zIssueCreateArgs = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(10_000).optional(),
+  status: zIssueStatusEnum.optional(),
+});
+
 export const issueRouter = createRouter()
+  .query("findOne", {
+    input: z.object({
+      id: z.number().int(),
+    }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.issue.findUnique({
+        where: { id: input.id },
+      });
+    },
+  })
   .query("list", {
     input: z.object({
       take: z.number().min(0).max(50),
@@ -17,55 +33,7 @@ export const issueRouter = createRouter()
         skip,
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       });
-
       return { issues, count };
-    },
-  })
-  .query("get", {
-    input: z.object({ id: z.number().int() }),
-    async resolve({ ctx, input }) {
-      return await ctx.prisma.issue.findUnique({
-        where: { id: input.id },
-      });
-    },
-  })
-  .mutation("create", {
-    input: z.object({
-      title: z.string().min(1).max(200),
-      description: z.string().optional(),
-      status: zIssueStatusEnum.optional(),
-    }),
-    async resolve({ ctx, input }) {
-      return await ctx.prisma.issue.create({
-        data: input,
-      });
-    },
-  })
-  // Adds an event, e.g. adding a comment or updating the status:
-  .mutation("addEvent", {
-    input: z.object({
-      issueId: z.number().int(),
-
-      comment: z.string().min(1).max(10_000).optional(),
-
-      title: z.string().min(1).max(200).optional(),
-      description: z.string().min(1).max(10_000).optional(),
-      status: zIssueStatusEnum.optional(),
-    }),
-    async resolve({ ctx, input: { issueId, comment, ...issueChanges } }) {
-      const [issue, event] = await ctx.prisma.$transaction([
-        // Update the Issue:
-        ctx.prisma.issue.update({
-          where: { id: issueId },
-          data: issueChanges,
-        }),
-        // Create the IssueEvent:
-        ctx.prisma.issueEvent.create({
-          data: { comment, issueId, ...issueChanges },
-        }),
-      ]);
-
-      return { issue, event };
     },
   })
   .query("listEvents", {
@@ -92,5 +60,38 @@ export const issueRouter = createRouter()
         events: items,
         nextCursor: nextItem?.id,
       };
+    },
+  })
+  .mutation("create", {
+    input: zIssueCreateArgs,
+    async resolve({ ctx, input }) {
+      const user = await ctx.requireUser();
+      return await ctx.prisma.issue.create({
+        data: { ...input, createdByUserId: user.id },
+      });
+    },
+  })
+  // Adds an event, e.g. adding a comment or updating the status:
+  .mutation("addEvent", {
+    input: zIssueCreateArgs.partial().extend({
+      issueId: z.number().int(),
+
+      comment: z.string().min(1).max(10_000).optional(),
+    }),
+    async resolve({ ctx, input: { issueId, comment, ...issueChanges } }) {
+      const user = await ctx.requireUser();
+      const [issue, event] = await ctx.prisma.$transaction([
+        // Update the Issue:
+        ctx.prisma.issue.update({
+          where: { id: issueId },
+          data: issueChanges,
+        }),
+        // Create the IssueEvent:
+        ctx.prisma.issueEvent.create({
+          data: { ...issueChanges, comment, issueId, createdByUserId: user.id },
+        }),
+      ]);
+
+      return { issue, event };
     },
   });
