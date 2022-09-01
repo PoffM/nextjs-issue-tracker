@@ -15,6 +15,7 @@ export const issueRouter = createRouter()
         select: { id: true, title: true, createdAt: true, status: true },
         take,
         skip,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       });
 
       return { issues, count };

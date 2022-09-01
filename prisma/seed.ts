@@ -14,7 +14,13 @@ async function main() {
     const testIssueNums = range(1, 100 + 1);
 
     await prisma.$transaction([
-      // The first issue should have 100 test comments:
+      // Insert test issues:
+      prisma.issue.createMany({
+        data: testIssueNums.map((issueNum) => ({
+          title: `Test Issue ${issueNum}`,
+        })),
+      }),
+      // The newest issue should have 100 test comments:
       prisma.issue.create({
         data: {
           title: "Test issue with comments",
@@ -26,12 +32,6 @@ async function main() {
             },
           },
         },
-      }),
-      // Insert test posts:
-      prisma.issue.createMany({
-        data: testIssueNums.map((issueNum) => ({
-          title: `Test Issue ${issueNum}`,
-        })),
       }),
     ]);
   }
