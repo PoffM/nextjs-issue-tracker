@@ -1,10 +1,12 @@
 import { Issue, IssueStatus } from "@prisma/client";
+import { useSession } from "next-auth/react";
 import { inferMutationInput, trpc } from "../../utils/trpc";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
 import { MutationForm } from "../form/MutationForm";
 import { SubmitButton } from "../form/SubmitButton";
 import { useTypeForm } from "../form/useTypeForm";
+import { LoginButton } from "../LoginButton";
 
 interface IssueCommentFormProps {
   issue: Issue;
@@ -28,7 +30,9 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   };
   const form = useTypeForm({ defaultValues });
 
-  return (
+  const session = useSession();
+
+  return session.status === "authenticated" ? (
     <MutationForm<"issue.addEvent">
       form={form}
       mutation={mutation}
@@ -56,5 +60,9 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         <SubmitButton formCtx={form} />
       </div>
     </MutationForm>
+  ) : (
+    <div>
+      <LoginButton>Login to add a comment</LoginButton>
+    </div>
   );
 }

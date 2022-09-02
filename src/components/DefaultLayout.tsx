@@ -1,8 +1,9 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { LoginButton } from "./LoginButton";
 
 type DefaultLayoutProps = { children: ReactNode };
 
@@ -25,14 +26,7 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
             </Link>
           </div>
           <div className="flex flex-1 items-center justify-end gap-2">
-            {session.status === "unauthenticated" && (
-              <button
-                className="btn btn-primary"
-                onClick={() => void signIn("google")}
-              >
-                Login
-              </button>
-            )}
+            {session.status === "unauthenticated" && <LoginButton />}
             {session.status === "authenticated" && (
               <>
                 <span>Logged in as {session.data.user?.name}</span>
