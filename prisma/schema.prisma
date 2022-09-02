@@ -20,6 +20,7 @@ enum IssueStatus {
 model Issue {
   id              Int      @id @default(autoincrement())
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   createdByUserId String
 
   title       String
@@ -28,6 +29,9 @@ model Issue {
 
   events    IssueEvent[]
   createdBy User         @relation(fields: [createdByUserId], references: [id])
+
+  @@index([createdAt])
+  @@index([updatedAt])
 }
 
 enum IssueEventType {

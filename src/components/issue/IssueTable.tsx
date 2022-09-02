@@ -2,6 +2,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  IdentifiedColumnDef,
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -9,8 +10,24 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
 
-const columnHelper =
-  createColumnHelper<inferQueryOutput<"issue.list">["issues"][number]>();
+type IssueListItem = inferQueryOutput<"issue.list">["issues"][number];
+
+const columnHelper = createColumnHelper<IssueListItem>();
+
+/** Helper function for creating Date columns. */
+function dateColumnDef(
+  header: string
+): IdentifiedColumnDef<IssueListItem, Date> {
+  return {
+    header,
+    cell: (ctx) => (
+      <span title={ctx.getValue().toTimeString()}>
+        {ctx.getValue().toISOString().slice(0, 10)}
+      </span>
+    ),
+    size: 100,
+  };
+}
 
 const columns = [
   columnHelper.accessor("title", {
@@ -20,19 +37,16 @@ const columns = [
         <a className="link link-accent">{ctx.getValue()}</a>
       </Link>
     ),
+    size: 400,
+    maxSize: 400,
   }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: (ctx) => ctx.getValue().replace("_", " "),
+    size: 100,
   }),
-  columnHelper.accessor("createdAt", {
-    header: "Created At",
-    cell: (ctx) => (
-      <span title={ctx.getValue().toTimeString()}>
-        {ctx.getValue().toISOString().slice(0, 10)}
-      </span>
-    ),
-  }),
+  columnHelper.accessor("createdAt", dateColumnDef("Created At")),
+  columnHelper.accessor("updatedAt", dateColumnDef("Last Updated")),
 ];
 
 /** Lists the issues from the database. */
@@ -86,40 +100,52 @@ export function IssueTable() {
   });
 
   return (
-    <div className="flex flex-col gap-4">
-      <table
-        className="table-zebra table-compact table w-full scroll-my-2"
-        ref={tableRef}
-      >
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="flex justify-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-end">
+        <Link href="/issue/new">
+          <a className="btn btn-primary">Create Issue</a>
+        </Link>
+      </div>
+      <div className="flex flex-col items-center gap-4">
+        <table
+          className="table-zebra table-compact table w-full scroll-my-2"
+          ref={tableRef}
+        >
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} style={{ width: header.getSize() }}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    className="overflow-hidden text-ellipsis whitespace-nowrap"
+                    key={cell.id}
+                    style={{
+                      width: cell.column.columnDef.size,
+                      maxWidth: cell.column.columnDef.maxSize,
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <div className="btn-group">
           <button
             className="btn"

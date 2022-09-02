@@ -1,5 +1,11 @@
+import { Issue } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
+
+export const zIssueListSortOrder = z.object({
+  field: z.enum(["createdAt", "updatedAt", "title", "status"]),
+  direction: z.enum(["asc", "desc"]),
+});
 
 const zIssueStatusEnum = z.enum(["NEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
 
@@ -24,15 +30,30 @@ export const issueRouter = createRouter()
     input: z.object({
       take: z.number().min(0).max(50),
       skip: z.number(),
+      order: zIssueListSortOrder.default({
+        field: "createdAt",
+        direction: "desc",
+      }),
     }),
-    async resolve({ ctx, input: { take, skip } }) {
-      const count = await ctx.prisma.issue.count();
-      const issues = await ctx.prisma.issue.findMany({
-        select: { id: true, title: true, createdAt: true, status: true },
-        take,
-        skip,
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      });
+    async resolve({ ctx, input: { take, skip, order } }) {
+      // Ensure keyof Issue here for better type safety:
+      const orderField: keyof Issue = order.field;
+      const [count, issues] = await ctx.prisma.$transaction([
+        ctx.prisma.issue.count(),
+        ctx.prisma.issue.findMany({
+          select: {
+            id: true,
+            title: true,
+            createdAt: true,
+            updatedAt: true,
+            status: true,
+          },
+          take,
+          skip,
+          orderBy: [{ [orderField]: order.direction }, { id: "desc" }],
+        }),
+      ]);
+
       return { issues, count };
     },
   })
@@ -95,7 +116,7 @@ export const issueRouter = createRouter()
     async resolve({ ctx, input: { issueId, comment, ...issueChanges } }) {
       const user = await ctx.requireUser();
       const [issue, event] = await ctx.prisma.$transaction([
-        // Update the Issue:
+        // Update the Issue (including the updatedAt timestamp):
         ctx.prisma.issue.update({
           where: { id: issueId },
           data: issueChanges,

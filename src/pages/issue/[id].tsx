@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { IssueEventList } from "../../components/issue/IssueEventList";
@@ -13,6 +14,9 @@ export default function IssuePage() {
     <main className="flex justify-center">
       {issue && (
         <div className="flex w-[600px] flex-col gap-4">
+          <Head>
+            <title>{issue.title}</title>
+          </Head>
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold">{issue.title}</h1>
             <span className="badge badge-lg">
