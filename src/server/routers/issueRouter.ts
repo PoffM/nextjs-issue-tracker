@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createRouter } from "../createRouter";
 
 export const zIssueListSortOrder = z.object({
-  field: z.enum(["createdAt", "updatedAt", "title", "status"]),
+  field: z.enum(["createdAt", "updatedAt", "id"]),
   direction: z.enum(["asc", "desc"]),
 });
 
@@ -31,7 +31,7 @@ export const issueRouter = createRouter()
       take: z.number().min(0).max(50),
       skip: z.number(),
       order: zIssueListSortOrder.default({
-        field: "createdAt",
+        field: "id",
         direction: "desc",
       }),
     }),
@@ -119,7 +119,11 @@ export const issueRouter = createRouter()
         // Update the Issue (including the updatedAt timestamp):
         ctx.prisma.issue.update({
           where: { id: issueId },
-          data: issueChanges,
+          data: {
+            ...issueChanges,
+            // For some reason Prisma doesn't set updatedAt automatically. TODO figure out why.
+            updatedAt: new Date().toISOString(),
+          },
         }),
         // Create the IssueEvent:
         ctx.prisma.issueEvent.create({

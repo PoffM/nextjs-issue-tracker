@@ -19,10 +19,8 @@ export default function IssuePage() {
           </Head>
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold">{issue.title}</h1>
-            <span className="badge badge-lg">
-              {issue.status.replace("_", " ")}
-            </span>
           </div>
+          <div className="badge badge-lg">{issue.status.replace("_", " ")}</div>
           <div>
             <div className="flex items-center gap-2">
               <label className="font-bold">Description</label>

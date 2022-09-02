@@ -11,7 +11,7 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
     </span>
   );
 
-  const username = event.createdBy.name;
+  const username = <span className="link-accent">{event.createdBy.name}</span>;
 
   return event.type === "INITIAL" ? (
     <div>
