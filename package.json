@@ -11,7 +11,7 @@
     "db-migrate-dev": "npx prisma migrate dev",
     "db-nuke": "docker-compose down --volumes --remove-orphans",
     "dev": "next dev",
-    "dx": "run-s db-up db-migrate-dev db-seed dev",
+    "dx": "run-s db-up wait-for-dev-db db-migrate-dev db-seed dev",
     "start": "next start",
     "lint": "eslint src",
     "lint-fix": "npx lint --fix",
@@ -21,6 +21,7 @@
     "test:e2e": "playwright test",
     "postinstall": "prisma generate",
     "prepare": "husky install",
+    "wait-for-dev-db": "wait-on tcp:5832",
     "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
   },
   "prisma": {
@@ -74,6 +75,7 @@
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^3.1.8",
     "ts-node": "^10.9.1",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "wait-on": "^6.0.1"
   }
 }

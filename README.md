@@ -25,7 +25,6 @@ Full-stack TypeScript Issue Tracker web application.
 
 ```bash
 npm i
-npm run db-up
 npm run dx
 ```
 
