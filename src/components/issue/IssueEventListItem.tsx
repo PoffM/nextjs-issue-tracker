@@ -9,7 +9,11 @@ interface IssueEventListItemProps {
 export function IssueEventListItem({ event }: IssueEventListItemProps) {
   const timestamp = datetimeString(event.createdAt);
 
-  const username = <span className="link-accent">{event.createdBy.name}</span>;
+  const username = (
+    <span className="text-blue-600 hover:text-blue-800 dark:link-accent">
+      {event.createdBy.name}
+    </span>
+  );
 
   return event.type === "INITIAL" ? (
     <div>

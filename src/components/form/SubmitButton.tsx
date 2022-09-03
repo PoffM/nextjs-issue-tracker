@@ -14,7 +14,7 @@ export function SubmitButton({ formCtx, ...buttonProps }: SubmitButtonProps) {
       type="submit"
       {...buttonProps}
       className={clsx(
-        "btn btn-accent min-w-[120px]",
+        "btn btn-success min-w-[120px]",
         isLoading && "loading",
         buttonProps.className
       )}

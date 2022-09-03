@@ -58,7 +58,10 @@ const columns = [
     header: "Title",
     cell: (ctx) => (
       <Link href={`/issue/${ctx.row.original.id}`}>
-        <a className="link link-accent" title={ctx.getValue()}>
+        <a
+          className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+          title={ctx.getValue()}
+        >
           {ctx.getValue()}
         </a>
       </Link>
@@ -157,6 +160,9 @@ export function IssueTable() {
     debugTable: true,
   });
 
+  const prevButtonDisabled = pageNumber <= 1;
+  const nextButtonDisabled = !pageCount || pageNumber >= pageCount;
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between">
@@ -228,14 +234,14 @@ export function IssueTable() {
         <div className="btn-group">
           <button
             className="btn"
-            disabled={pageNumber <= 1}
+            disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex(0)}
           >
             «
           </button>
           <button
             className="btn"
-            disabled={pageNumber <= 1}
+            disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex((it) => it - 1)}
           >
             {"<"}
@@ -245,14 +251,14 @@ export function IssueTable() {
           </button>
           <button
             className="btn"
-            disabled={!pageCount || pageNumber >= pageCount}
+            disabled={nextButtonDisabled}
             onClick={() => table.setPageIndex((it) => it + 1)}
           >
             {">"}
           </button>
           <button
             className="btn"
-            disabled={!pageCount || pageNumber >= pageCount}
+            disabled={nextButtonDisabled}
             onClick={
               pageCount ? () => table.setPageIndex(pageCount - 1) : undefined
             }

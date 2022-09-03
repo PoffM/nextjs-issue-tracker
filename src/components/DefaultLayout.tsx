@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { ColorModeToggleButton } from "./color-mode/ColorModeToggleButton";
 import { LoginButton } from "./LoginButton";
 
 type DefaultLayoutProps = { children: ReactNode };
@@ -17,9 +18,11 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex justify-center bg-gray-900 py-2">
+      <div className="flex justify-center bg-base-300 py-2">
         <div className="mx-2 flex w-full max-w-[1280px] items-center">
-          <div className="flex-1"></div>
+          <div className="flex-1">
+            <ColorModeToggleButton />
+          </div>
           <div className="flex flex-1 justify-center">
             <Link href="/">
               <a className="text-3xl font-bold">Issue Tracker</a>
