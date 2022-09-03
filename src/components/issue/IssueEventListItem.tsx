@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryOutput } from "../../utils/trpc";
 
 interface IssueEventListItemProps {
@@ -5,11 +7,7 @@ interface IssueEventListItemProps {
 }
 
 export function IssueEventListItem({ event }: IssueEventListItemProps) {
-  const timestamp = (
-    <span title={event.createdAt.toTimeString()}>
-      {event.createdAt.toDateString()}
-    </span>
-  );
+  const timestamp = datetimeString(event.createdAt);
 
   const username = <span className="link-accent">{event.createdBy.name}</span>;
 
@@ -25,12 +23,14 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
         </div>
       )}
       {event.description && (
-        <div className="rounded-md border">
-          <div className="border-b p-2">
-            {username} changed the description on {timestamp}
-          </div>
-          <div className="whitespace-pre-line p-2">{event.description}</div>
-        </div>
+        <IssueEventCard
+          header={
+            <>
+              {username} changed the description on {timestamp}
+            </>
+          }
+          content={event.description}
+        />
       )}
       {event.status && (
         <div>
@@ -39,13 +39,31 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
         </div>
       )}
       {event.comment && (
-        <div className="rounded-md border">
-          <div className="border-b p-2">
-            {username} commented on {timestamp}
-          </div>
-          <div className="whitespace-pre-line p-2">{event.comment}</div>
-        </div>
+        <IssueEventCard
+          header={
+            <>
+              {username} commented on {timestamp}
+            </>
+          }
+          content={event.comment}
+        />
       )}
     </>
+  );
+}
+
+interface IssueEventCardProps {
+  header: ReactNode;
+  content: ReactNode;
+}
+
+function IssueEventCard({ header, content }: IssueEventCardProps) {
+  return (
+    <div className="rounded-md border border-base-content border-opacity-20">
+      <div className="border-b border-base-content border-opacity-20 p-2">
+        {header}
+      </div>
+      <div className="whitespace-pre-line p-2">{content}</div>
+    </div>
   );
 }

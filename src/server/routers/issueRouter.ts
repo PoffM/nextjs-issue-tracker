@@ -15,6 +15,8 @@ const zIssueCreateArgs = z.object({
   status: zIssueStatusEnum.optional(),
 });
 
+const userShallowInclude = { select: { id: true, name: true } } as const;
+
 export const issueRouter = createRouter()
   .query("findOne", {
     input: z.object({
@@ -22,6 +24,7 @@ export const issueRouter = createRouter()
     }),
     async resolve({ ctx, input }) {
       return await ctx.prisma.issue.findUnique({
+        include: { createdBy: userShallowInclude },
         where: { id: input.id },
       });
     },
@@ -67,7 +70,7 @@ export const issueRouter = createRouter()
 
       const items = await ctx.prisma.issueEvent.findMany({
         include: {
-          createdBy: { select: { id: true, name: true } },
+          createdBy: userShallowInclude,
         },
         where: { issueId },
         take: limit + 1, // Get an extra item at the end which we'll use as next cursor

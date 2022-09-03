@@ -11,6 +11,7 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
 import { IssueStatusBadge } from "./IssueStatusBadge";
@@ -32,11 +33,7 @@ function dateTimeColumnDef(
 ): IdentifiedColumnDef<IssueListItem, Date> {
   return {
     header,
-    cell: (ctx) => (
-      <span title={ctx.getValue().toTimeString()}>
-        {ctx.getValue().toISOString().slice(0, 10)}
-      </span>
-    ),
+    cell: (ctx) => datetimeString(ctx.getValue()),
     size: 50,
   };
 }

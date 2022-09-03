@@ -33,7 +33,6 @@ export default function IssuePage() {
               <a className="btn">Edit</a>
             </Link>
           </div>
-
           <div className="divider"></div>
           <IssueEventList issue={issue} />
         </div>

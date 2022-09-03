@@ -1,4 +1,4 @@
-import { Issue, IssueStatus } from "@prisma/client";
+import { Issue } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { inferMutationInput, trpc } from "../../utils/trpc";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
@@ -39,10 +39,7 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
       preSubmitTransform={(input) => ({
         ...input,
         // Omit the status if it's unchanged:
-        status:
-          issue.status === input.status
-            ? undefined
-            : (input.status as IssueStatus),
+        status: issue.status === input.status ? undefined : input.status,
         // Omit the comment if it's blank:
         comment: input.comment?.trim() || undefined,
       })}
