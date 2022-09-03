@@ -27,6 +27,8 @@ export function useReactSelectStyle<
     };
 
     return {
+      // input-bordered gives the input the same border
+      // opacity/color as the other daisyUI inputs
       className: clsx("input-bordered", className),
       styles: {
         control: (base) => ({

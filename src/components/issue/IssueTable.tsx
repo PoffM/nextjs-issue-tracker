@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
+import { IssueStatusBadge } from "./IssueStatusBadge";
 
 type IssueListItem = inferQueryOutput<"issue.list">["issues"][number];
 
@@ -53,8 +54,8 @@ const columns = [
   }),
   accessor("status", {
     header: "Status",
-    cell: (ctx) => ctx.getValue().replace("_", " "),
-    size: 50,
+    cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
+    size: 90,
   }),
   accessor("title", {
     header: "Title",

@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { IssueEventList } from "../../components/issue/IssueEventList";
+import { IssueStatusBadge } from "../../components/issue/IssueStatusBadge";
 import { trpc } from "../../utils/trpc";
 
 export default function IssuePage() {
@@ -20,7 +21,7 @@ export default function IssuePage() {
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold">{issue.title}</h1>
           </div>
-          <div className="badge badge-lg">{issue.status.replace("_", " ")}</div>
+          <IssueStatusBadge status={issue.status} />
           <div>
             <div className="flex items-center gap-2">
               <label className="font-bold">Description</label>
