@@ -26,6 +26,12 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
           {username} changed the title to {`"${event.title}"`} on {timestamp}
         </div>
       )}
+      {event.status && (
+        <div>
+          {username} changed the status to {event.status.replaceAll("_", " ")}{" "}
+          on {timestamp}
+        </div>
+      )}
       {event.description && (
         <IssueEventCard
           header={
@@ -35,12 +41,6 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
           }
           content={event.description}
         />
-      )}
-      {event.status && (
-        <div>
-          {username} changed the status to {event.status.replaceAll("_", " ")}{" "}
-          on {timestamp}
-        </div>
       )}
       {event.comment && (
         <IssueEventCard
