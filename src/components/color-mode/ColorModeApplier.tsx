@@ -9,7 +9,7 @@ const useBrowserLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : () => undefined;
 
 /**
- * Appllies the color mode from localstorage to the document element.
+ * Applies the color mode from localstorage to the document element.
  * Needed for Tailwind and DaisyUI.
  */
 export function ColorModeApplier() {

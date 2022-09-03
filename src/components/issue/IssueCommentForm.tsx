@@ -50,11 +50,7 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         form.reset({ ...defaultValues, status: data.issue.status })
       }
     >
-      <TextField
-        field={form.field("comment")}
-        label="Add a Comment"
-        textarea={true}
-      />
+      <TextField field={form.field("comment")} label="Add a Comment" textarea />
       <div className="flex items-end justify-end gap-2">
         <IssueStatusField field={form.field("status")} label="New Status" />
         <SubmitButton formCtx={form} />
