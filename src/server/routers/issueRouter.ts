@@ -1,4 +1,5 @@
 import { Issue } from "@prisma/client";
+import { compact } from "lodash";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
 
@@ -109,15 +110,22 @@ export const issueRouter = createRouter()
       });
     },
   })
-  // Adds an event, e.g. adding a comment or updating the status:
+  // Adds an event, e.g. a comment or a Status update:
   .mutation("addEvent", {
     input: zIssueCreateArgs.partial().extend({
       issueId: z.number().int(),
 
       comment: z.string().min(1).max(10_000).optional(),
     }),
-    async resolve({ ctx, input: { issueId, comment, ...issueChanges } }) {
+    async resolve({ ctx, input: { issueId, ...eventAttributes } }) {
       const user = await ctx.requireUser();
+
+      if (!compact(Object.values(eventAttributes)).length) {
+        throw new Error("Submission can't be empty.");
+      }
+
+      const { comment, ...issueChanges } = eventAttributes;
+
       const [issue, event] = await ctx.prisma.$transaction([
         // Update the Issue (including the updatedAt timestamp):
         ctx.prisma.issue.update({
