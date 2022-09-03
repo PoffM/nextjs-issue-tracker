@@ -55,8 +55,8 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         label="Add a Comment"
         textarea={true}
       />
-      <div className="flex justify-end gap-2">
-        <IssueStatusField field={form.field("status")} />
+      <div className="flex items-end justify-end gap-2">
+        <IssueStatusField field={form.field("status")} label="New Status" />
         <SubmitButton formCtx={form} />
       </div>
     </MutationForm>

@@ -16,21 +16,19 @@ import { Defined } from "../../utils/types";
  */
 export interface FieldHandle<T> {
   name: string;
-  useController: () => {
-    fieldProps: {
-      onChange: (newVal: T) => void;
-      onBlur: () => void;
-      value?: T;
-      name: string;
-      ref: RefCallBack;
-    };
-    fieldState: ControllerFieldState;
-  };
+  useController: () => FieldController<T>;
 }
 
-/** Generic prop interface for form Field components. */
-export interface FieldProps<T> {
-  field: FieldHandle<T>;
+export interface FieldController<T> {
+  fieldProps: {
+    /** Improved type safety over react-hook-form's onChange type: "(...event: any[]) => void" */
+    onChange: (newVal: T) => void;
+    onBlur: () => void;
+    value?: T;
+    name: string;
+    ref: RefCallBack;
+  };
+  fieldState: ControllerFieldState;
 }
 
 /**
@@ -58,20 +56,12 @@ export function useTypeForm<TFieldValues extends FieldValues = FieldValues>(
     return {
       name,
       useController: () => {
-        const {
-          fieldState,
-          field: { onBlur, value, ref, onChange },
-        } = useController({ name, control: form.control });
-        return {
-          fieldProps: {
-            name,
-            onBlur,
-            value,
-            ref,
-            onChange: (newVal) => onChange(newVal),
-          },
-          fieldState,
-        };
+        const { fieldState, field: fieldProps } = useController({
+          name,
+          control: form.control,
+        });
+
+        return { fieldProps, fieldState };
       },
     };
   }
