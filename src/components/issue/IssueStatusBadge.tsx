@@ -15,7 +15,7 @@ export function IssueStatusBadge({
     <div
       className={clsx(
         "inline-flex w-fit items-center justify-center rounded-2xl px-2 text-white",
-        size === "md" && "p-2",
+        size === "md" && "p-2 px-4",
         status === "NEW" && "bg-green-800",
         status === "IN_PROGRESS" && "bg-blue-600",
         status === "CLOSED" && "bg-gray-600",

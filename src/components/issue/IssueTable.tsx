@@ -52,7 +52,7 @@ const columns = [
   accessor("status", {
     header: "Status",
     cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
-    size: 90,
+    size: 120,
   }),
   accessor("title", {
     header: "Title",
