@@ -52,6 +52,10 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         <IssueStatusField field={form.field("status")} label="New Status" />
         <SubmitButton formCtx={form} />
       </div>
+      {/* Invisible spacer div to make room for the status dropdown if it's at the bottom of the page */}
+      <div className="relative">
+        <div className="absolute h-[250px] w-[1px]"></div>
+      </div>
     </MutationForm>
   ) : (
     <div>
