@@ -16,9 +16,29 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
   );
 
   return event.type === "INITIAL" ? (
-    <div>
-      {username} created this issue on {timestamp}
-    </div>
+    <IssueEventCard
+      header={
+        <>
+          {username} created this issue on {timestamp}
+        </>
+      }
+      content={
+        <div className="space-y-2">
+          {event.title && (
+            <div>
+              <label className="font-bold">Title: </label>
+              {event.title}
+            </div>
+          )}
+          {event.description && (
+            <div>
+              <label className="font-bold">Description:</label>
+              <div>{event.description}</div>
+            </div>
+          )}
+        </div>
+      }
+    />
   ) : (
     <>
       {event.title && (
