@@ -1,4 +1,4 @@
-import { Issue } from "@prisma/client";
+import { Issue, Prisma } from "@prisma/client";
 import { compact } from "lodash";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
@@ -38,12 +38,26 @@ export const issueRouter = createRouter()
         field: "id",
         direction: "desc",
       }),
+      filter: z
+        .object({
+          status: z.enum(["OPEN", "CLOSED"]),
+        })
+        .optional(),
     }),
-    async resolve({ ctx, input: { take, skip, order } }) {
+    async resolve({ ctx, input: { take, skip, order, filter } }) {
       // Ensure keyof Issue here for better type safety:
       const orderField: keyof Issue = order.field;
+      const where: Prisma.IssueWhereInput | undefined = filter && {
+        status: {
+          in:
+            filter.status === "CLOSED"
+              ? ["CLOSED", "RESOLVED"]
+              : ["NEW", "IN_PROGRESS"],
+        },
+      };
+
       const [count, records] = await ctx.prisma.$transaction([
-        ctx.prisma.issue.count(),
+        ctx.prisma.issue.count({ where }),
         ctx.prisma.issue.findMany({
           select: {
             id: true,
@@ -52,6 +66,7 @@ export const issueRouter = createRouter()
             updatedAt: true,
             status: true,
           },
+          where,
           take,
           skip,
           orderBy: [{ [orderField]: order.direction }, { id: "desc" }],

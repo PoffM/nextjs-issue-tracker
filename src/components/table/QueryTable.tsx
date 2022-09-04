@@ -3,14 +3,27 @@ import {
   flexRender,
   getCoreRowModel,
   PaginationState,
+  RowData,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import Link from "next/link";
 import { useRef, useState } from "react";
+import {
+  FaAngleDoubleLeft,
+  FaAngleDoubleRight,
+  FaAngleLeft,
+  FaAngleRight,
+} from "react-icons/fa";
 import { UseQueryResult } from "react-query";
 import { trpc } from "../../utils/trpc";
+
+declare module "@tanstack/table-core" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    className?: string;
+  }
+}
 
 interface ListQueryOutput<TData> {
   records: TData[];
@@ -144,9 +157,6 @@ export function QueryTable<TData>({
         <div>
           {error && <div className="alert alert-error">{error.message}</div>}
         </div>
-        <Link href="/issue/new">
-          <a className="btn btn-primary">Create Issue</a>
-        </Link>
       </div>
       <div className="relative flex flex-col items-center gap-4">
         {/* Show a loading dimmer while loading. */}
@@ -161,7 +171,15 @@ export function QueryTable<TData>({
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} style={{ width: header.getSize() }}>
+                  <th
+                    key={header.id}
+                    // Undo daisyUI's "position: sticky" for the first header:
+                    className={clsx(
+                      "[position:static!important]",
+                      header.column.columnDef.meta?.className
+                    )}
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder ? null : (
                       <div
                         className={clsx(
@@ -192,7 +210,10 @@ export function QueryTable<TData>({
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="overflow-hidden text-ellipsis whitespace-nowrap"
+                    className={clsx(
+                      "overflow-hidden text-ellipsis whitespace-nowrap",
+                      cell.column.columnDef.meta?.className
+                    )}
                     key={cell.id}
                     style={{
                       width: cell.column.columnDef.size,
@@ -212,14 +233,14 @@ export function QueryTable<TData>({
             disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex(0)}
           >
-            «
+            <FaAngleDoubleLeft size="20px" />
           </button>
           <button
             className="btn"
             disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex((it) => it - 1)}
           >
-            {"<"}
+            <FaAngleLeft size="20px" />
           </button>
           <button className="btn">
             Page {pageNumber} of {pageCount}
@@ -229,7 +250,7 @@ export function QueryTable<TData>({
             disabled={nextButtonDisabled}
             onClick={() => table.setPageIndex((it) => it + 1)}
           >
-            {">"}
+            <FaAngleRight size="20px" />
           </button>
           <button
             className="btn"
@@ -238,7 +259,7 @@ export function QueryTable<TData>({
               pageCount ? () => table.setPageIndex(pageCount - 1) : undefined
             }
           >
-            »
+            <FaAngleDoubleRight size="20px" />
           </button>
         </div>
       </div>

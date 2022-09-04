@@ -1,8 +1,11 @@
 // import { Prisma } from "@prisma/client";
 import { createColumnHelper, IdentifiedColumnDef } from "@tanstack/react-table";
+import { startCase } from "lodash";
 import Link from "next/link";
+import { useState } from "react";
 import { datetimeString } from "../../utils/datetimeString";
-import { inferQueryOutput, trpc } from "../../utils/trpc";
+import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
+import { Defined } from "../../utils/types";
 import { QueryTable } from "../table/QueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
@@ -29,20 +32,49 @@ function dateTimeColumnDef(
 }
 
 const columns = [
+  // Condensed column for mobile screens only:
+  accessor("id", {
+    header: "Issue",
+    cell: (ctx) => {
+      const issue = ctx.row.original;
+      return (
+        <>
+          <div className="mb-1 flex items-center gap-1">
+            #{issue.id} <IssueStatusBadge status={issue.status} size="sm" />
+          </div>
+          <Link href={`/issue/${ctx.row.original.id}`}>
+            <a
+              className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+              title={issue.title}
+            >
+              {issue.title}
+            </a>
+          </Link>
+        </>
+      );
+    },
+    size: 100,
+    maxSize: 100,
+    enableSorting: true,
+    meta: { className: "sm:hidden" },
+  }),
   accessor("id", {
     header: "Number",
     size: 50,
     enableSorting: true,
+    meta: { className: "hidden sm:table-cell" },
   }),
   accessor("createdAt", {
     ...dateTimeColumnDef("Created On"),
     enableSorting: true,
     size: 50,
+    meta: { className: "hidden lg:table-cell" },
   }),
   accessor("status", {
     header: "Status",
     cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
     size: 120,
+    meta: { className: "hidden sm:table-cell" },
   }),
   accessor("title", {
     header: "Title",
@@ -58,25 +90,64 @@ const columns = [
     ),
     size: 400,
     maxSize: 400,
+    meta: { className: "hidden sm:table-cell" },
   }),
   accessor("updatedAt", {
     ...dateTimeColumnDef("Last Updated"),
     enableSorting: true,
     size: 50,
+    meta: { className: "hidden lg:table-cell" },
   }),
 ];
 
+/** Lists the issues from the database. */
 export function IssueTable() {
+  const [statusFilter, setStatusFilter] =
+    useState<Defined<inferQueryInput<"issue.list">["filter"]>["status"]>(
+      "OPEN"
+    );
+
   return (
-    <QueryTable
-      columns={columns}
-      useQuery={({ listParams, queryOptions }) =>
-        trpc.useQuery(["issue.list", listParams], queryOptions)
-      }
-      prefetchNextPage={(utils, params) =>
-        void utils.prefetchQuery(["issue.list", params])
-      }
-      defaultSortField="id"
-    />
+    <div>
+      <div className="flex items-end justify-between">
+        <div>
+          <label className="font-bold">Filter Issues</label>
+          <div className="flex items-center gap-4">
+            {(["OPEN", "CLOSED"] as const).map((statusOption) => (
+              <label
+                key={statusOption}
+                className="flex cursor-pointer items-center gap-1"
+              >
+                <input
+                  type="radio"
+                  className="radio radio-accent"
+                  checked={statusFilter === statusOption}
+                  onClick={() => setStatusFilter(statusOption)}
+                />
+                {startCase(statusOption)}
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-between">
+          <Link href="/issue/new">
+            <a className="btn btn-primary">Create Issue</a>
+          </Link>
+        </div>
+      </div>
+      <QueryTable
+        columns={columns}
+        useQuery={({ listParams, queryOptions }) =>
+          trpc.useQuery(
+            ["issue.list", { ...listParams, filter: { status: statusFilter } }],
+            queryOptions
+          )
+        }
+        prefetchNextPage={(utils, params) =>
+          void utils.prefetchQuery(["issue.list", params])
+        }
+        defaultSortField="id"
+      />
+    </div>
   );
 }
