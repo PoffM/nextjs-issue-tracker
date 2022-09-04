@@ -95,22 +95,21 @@ export function IssueTable() {
     { id: defaultSortField, desc: true },
   ]);
 
+  const queryInput: inferQueryInput<"issue.list"> = {
+    take: pageSize,
+    skip: pageIndex * pageSize,
+    order: sorting[0] && {
+      direction: sorting[0].desc ? "desc" : "asc",
+
+      // Do a cast here, the back-end will runtime validate it anyway:
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      field: sorting[0].id as any,
+    },
+  };
+
   const utils = trpc.useContext();
   const { data, error, isPreviousData } = trpc.useQuery(
-    [
-      "issue.list",
-      {
-        take: pageSize,
-        skip: pageIndex * pageSize,
-        order: sorting[0] && {
-          direction: sorting[0].desc ? "desc" : "asc",
-
-          // Do a cast here, the back-end will runtime validate it anyway:
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-          field: sorting[0].id as any,
-        },
-      },
-    ],
+    ["issue.list", queryInput],
     {
       // Keep the previous page's data in the table while the next page is loading:
       keepPreviousData: true,
@@ -118,7 +117,7 @@ export function IssueTable() {
         // Prefetch the next page to avoid the loading time:
         await utils.prefetchQuery([
           "issue.list",
-          { take: pageSize, skip: (pageIndex + 1) * pageSize },
+          { ...queryInput, skip: (pageIndex + 1) * pageSize },
         ]);
       },
       onSettled() {
