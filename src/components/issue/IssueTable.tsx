@@ -9,15 +9,16 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { startCase } from "lodash";
+import { compact, startCase } from "lodash";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
+import { useMediaQuery } from "react-responsive";
 import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
@@ -45,47 +46,56 @@ function dateTimeColumnDef(
   };
 }
 
-const columns = [
-  accessor("id", {
-    header: "Number",
-    size: 50,
-    enableSorting: true,
-  }),
-  accessor("createdAt", {
-    ...dateTimeColumnDef("Created On"),
-    enableSorting: true,
-    size: 50,
-  }),
-  accessor("status", {
-    header: "Status",
-    cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
-    size: 120,
-  }),
-  accessor("title", {
-    header: "Title",
-    cell: (ctx) => (
-      <Link href={`/issue/${ctx.row.original.id}`}>
-        <a
-          className="link text-blue-600 hover:text-blue-800 dark:link-accent"
-          title={ctx.getValue()}
-        >
-          {ctx.getValue()}
-        </a>
-      </Link>
-    ),
-    size: 400,
-    maxSize: 400,
-  }),
-  accessor("updatedAt", {
-    ...dateTimeColumnDef("Last Updated"),
-    enableSorting: true,
-    size: 50,
-  }),
-];
-
 /** Lists the issues from the database. */
 export function IssueTable() {
   const tableRef = useRef<HTMLTableElement>(null);
+
+  // Only show the date columns if the screen is wide enough:
+  const showDateColumns = useMediaQuery({ minWidth: 1024 });
+
+  const columns = useMemo(
+    () =>
+      compact([
+        accessor("id", {
+          header: "Number",
+          size: 50,
+          enableSorting: true,
+        }),
+        showDateColumns &&
+          accessor("createdAt", {
+            ...dateTimeColumnDef("Created On"),
+            enableSorting: true,
+            size: 50,
+          }),
+        accessor("status", {
+          header: "Status",
+          cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
+          size: 120,
+        }),
+        accessor("title", {
+          header: "Title",
+          cell: (ctx) => (
+            <Link href={`/issue/${ctx.row.original.id}`}>
+              <a
+                className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+                title={ctx.getValue()}
+              >
+                {ctx.getValue()}
+              </a>
+            </Link>
+          ),
+          size: 400,
+          maxSize: 400,
+        }),
+        showDateColumns &&
+          accessor("updatedAt", {
+            ...dateTimeColumnDef("Last Updated"),
+            enableSorting: true,
+            size: 50,
+          }),
+      ]),
+    [showDateColumns]
+  );
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -217,7 +227,12 @@ export function IssueTable() {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} style={{ width: header.getSize() }}>
+                  <th
+                    key={header.id}
+                    // Undo daisyUI's "position: sticky" for the first header:
+                    className="[position:static!important]"
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder ? null : (
                       <div
                         className={clsx(
