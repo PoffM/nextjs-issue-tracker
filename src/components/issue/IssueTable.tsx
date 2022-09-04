@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
+import { startCase } from "lodash";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { datetimeString } from "../../utils/datetimeString";
@@ -95,6 +96,11 @@ export function IssueTable() {
     { id: defaultSortField, desc: true },
   ]);
 
+  const [statusFilter, setStatusFilter] =
+    useState<Defined<inferQueryInput<"issue.list">["filter"]>["status"]>(
+      "OPEN"
+    );
+
   const queryInput: inferQueryInput<"issue.list"> = {
     take: pageSize,
     skip: pageIndex * pageSize,
@@ -105,6 +111,7 @@ export function IssueTable() {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       field: sorting[0].id as any,
     },
+    filter: { status: statusFilter },
   };
 
   const utils = trpc.useContext();
@@ -165,6 +172,25 @@ export function IssueTable() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between">
+        <div>
+          <label className="font-bold">Filter Issues</label>
+          <div className="flex items-center gap-4">
+            {(["OPEN", "CLOSED"] as const).map((statusOption) => (
+              <label
+                key={statusOption}
+                className="flex cursor-pointer items-center gap-1"
+              >
+                <input
+                  type="radio"
+                  className="radio radio-accent"
+                  checked={statusFilter === statusOption}
+                  onClick={() => setStatusFilter(statusOption)}
+                />
+                {startCase(statusOption)}
+              </label>
+            ))}
+          </div>
+        </div>
         <div>
           {error && <div className="alert alert-error">{error.message}</div>}
         </div>
