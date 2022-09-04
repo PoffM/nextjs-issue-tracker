@@ -28,11 +28,13 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
               <a className="text-3xl font-bold">Issue Tracker</a>
             </Link>
           </div>
-          <div className="flex flex-1 items-center justify-end gap-2">
+          <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row">
             {session.status === "unauthenticated" && <LoginButton />}
             {session.status === "authenticated" && (
               <>
-                <span>Logged in as {session.data.user?.name}</span>
+                <div className="text-center">
+                  Logged in as {session.data.user?.name}
+                </div>
                 <button
                   className="btn btn-outline btn-secondary"
                   onClick={() => void signOut()}

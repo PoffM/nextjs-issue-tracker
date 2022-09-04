@@ -5,20 +5,20 @@ import {
   getCoreRowModel,
   IdentifiedColumnDef,
   PaginationState,
+  RowData,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { compact, startCase } from "lodash";
+import { startCase } from "lodash";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
-import { useMediaQuery } from "react-responsive";
 import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
@@ -46,56 +46,85 @@ function dateTimeColumnDef(
   };
 }
 
+const columns = [
+  // Condensed column for mobile screens only:
+  accessor("id", {
+    header: "Issue",
+    cell: (ctx) => {
+      const issue = ctx.row.original;
+      return (
+        <>
+          <div className="mb-1 flex items-center gap-1">
+            #{issue.id} <IssueStatusBadge status={issue.status} size="sm" />
+          </div>
+          <Link href={`/issue/${ctx.row.original.id}`}>
+            <a
+              className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+              title={issue.title}
+            >
+              {issue.title}
+            </a>
+          </Link>
+        </>
+      );
+    },
+    size: 100,
+    maxSize: 100,
+    enableSorting: true,
+    meta: { className: "sm:hidden" },
+  }),
+  accessor("id", {
+    header: "Number",
+    size: 50,
+    enableSorting: true,
+    meta: { className: "hidden sm:table-cell" },
+  }),
+  accessor("createdAt", {
+    ...dateTimeColumnDef("Created On"),
+    enableSorting: true,
+    size: 50,
+    meta: { className: "hidden lg:table-cell" },
+  }),
+  accessor("status", {
+    header: "Status",
+    cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
+    size: 120,
+    meta: { className: "hidden sm:table-cell" },
+  }),
+  accessor("title", {
+    header: "Title",
+    cell: (ctx) => (
+      <Link href={`/issue/${ctx.row.original.id}`}>
+        <a
+          className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+          title={ctx.getValue()}
+        >
+          {ctx.getValue()}
+        </a>
+      </Link>
+    ),
+    size: 400,
+    maxSize: 400,
+    meta: { className: "hidden sm:table-cell" },
+  }),
+  accessor("updatedAt", {
+    ...dateTimeColumnDef("Last Updated"),
+    enableSorting: true,
+    size: 50,
+    meta: { className: "hidden lg:table-cell" },
+  }),
+];
+
+declare module "@tanstack/table-core" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    className?: string;
+  }
+}
+
 /** Lists the issues from the database. */
 export function IssueTable() {
   const tableRef = useRef<HTMLTableElement>(null);
-
-  // Only show the date columns if the screen is wide enough:
-  const showDateColumns = useMediaQuery({ minWidth: 1024 });
-
-  const columns = useMemo(
-    () =>
-      compact([
-        accessor("id", {
-          header: "Number",
-          size: 50,
-          enableSorting: true,
-        }),
-        showDateColumns &&
-          accessor("createdAt", {
-            ...dateTimeColumnDef("Created On"),
-            enableSorting: true,
-            size: 50,
-          }),
-        accessor("status", {
-          header: "Status",
-          cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
-          size: 120,
-        }),
-        accessor("title", {
-          header: "Title",
-          cell: (ctx) => (
-            <Link href={`/issue/${ctx.row.original.id}`}>
-              <a
-                className="link text-blue-600 hover:text-blue-800 dark:link-accent"
-                title={ctx.getValue()}
-              >
-                {ctx.getValue()}
-              </a>
-            </Link>
-          ),
-          size: 400,
-          maxSize: 400,
-        }),
-        showDateColumns &&
-          accessor("updatedAt", {
-            ...dateTimeColumnDef("Last Updated"),
-            enableSorting: true,
-            size: 50,
-          }),
-      ]),
-    [showDateColumns]
-  );
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -230,7 +259,10 @@ export function IssueTable() {
                   <th
                     key={header.id}
                     // Undo daisyUI's "position: sticky" for the first header:
-                    className="[position:static!important]"
+                    className={clsx(
+                      "[position:static!important]",
+                      header.column.columnDef.meta?.className
+                    )}
                     style={{ width: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
@@ -263,7 +295,10 @@ export function IssueTable() {
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="overflow-hidden text-ellipsis whitespace-nowrap"
+                    className={clsx(
+                      "overflow-hidden text-ellipsis whitespace-nowrap",
+                      cell.column.columnDef.meta?.className
+                    )}
                     key={cell.id}
                     style={{
                       width: cell.column.columnDef.size,
