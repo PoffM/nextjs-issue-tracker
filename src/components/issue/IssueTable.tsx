@@ -12,6 +12,12 @@ import clsx from "clsx";
 import { startCase } from "lodash";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import {
+  FaAngleDoubleLeft,
+  FaAngleDoubleRight,
+  FaAngleLeft,
+  FaAngleRight,
+} from "react-icons/fa";
 import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
@@ -262,14 +268,14 @@ export function IssueTable() {
             disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex(0)}
           >
-            «
+            <FaAngleDoubleLeft size="20px" />
           </button>
           <button
             className="btn"
             disabled={prevButtonDisabled}
             onClick={() => table.setPageIndex((it) => it - 1)}
           >
-            {"<"}
+            <FaAngleLeft size="20px" />
           </button>
           <button className="btn">
             Page {pageNumber} of {pageCount}
@@ -279,7 +285,7 @@ export function IssueTable() {
             disabled={nextButtonDisabled}
             onClick={() => table.setPageIndex((it) => it + 1)}
           >
-            {">"}
+            <FaAngleRight size="20px" />
           </button>
           <button
             className="btn"
@@ -288,7 +294,7 @@ export function IssueTable() {
               pageCount ? () => table.setPageIndex(pageCount - 1) : undefined
             }
           >
-            »
+            <FaAngleDoubleRight size="20px" />
           </button>
         </div>
       </div>
