@@ -42,7 +42,7 @@ export const issueRouter = createRouter()
     async resolve({ ctx, input: { take, skip, order } }) {
       // Ensure keyof Issue here for better type safety:
       const orderField: keyof Issue = order.field;
-      const [count, issues] = await ctx.prisma.$transaction([
+      const [count, records] = await ctx.prisma.$transaction([
         ctx.prisma.issue.count(),
         ctx.prisma.issue.findMany({
           select: {
@@ -58,7 +58,7 @@ export const issueRouter = createRouter()
         }),
       ]);
 
-      return { issues, count };
+      return { records, count };
     },
   })
   .query("listEvents", {
