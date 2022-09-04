@@ -108,7 +108,7 @@ export function IssueTable() {
     );
 
   return (
-    <div>
+    <div className="space-y-2">
       <div className="flex items-end justify-between">
         <div>
           <label className="font-bold">Filter Issues</label>
@@ -137,9 +137,9 @@ export function IssueTable() {
       </div>
       <QueryTable
         columns={columns}
-        useQuery={({ listParams, queryOptions }) =>
+        useQuery={({ queryInput, queryOptions }) =>
           trpc.useQuery(
-            ["issue.list", { ...listParams, filter: { status: statusFilter } }],
+            ["issue.list", { ...queryInput, filter: { status: statusFilter } }],
             queryOptions
           )
         }

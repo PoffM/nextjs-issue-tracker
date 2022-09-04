@@ -41,12 +41,11 @@ interface ListQueryInput {
 }
 
 interface QueryPropParams {
-  listParams: ListQueryInput;
+  queryInput: ListQueryInput;
   queryOptions: {
     keepPreviousData: boolean;
     onSuccess: () => void;
     onSettled: () => void;
-    retry: boolean;
   };
 }
 
@@ -85,7 +84,7 @@ export function QueryTable<TData>({
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
 
-  const listParams: ListQueryInput = {
+  const queryInput: ListQueryInput = {
     take: pageSize,
     skip: pageIndex * pageSize,
     order: sorting?.[0] && {
@@ -95,14 +94,14 @@ export function QueryTable<TData>({
   };
   const utils = trpc.useContext();
   const { data, error, isPreviousData } = useQuery({
-    listParams,
+    queryInput,
     queryOptions: {
       // Keep the previous page's data in the table while the next page is loading:
       keepPreviousData: true,
       onSuccess: () => {
         // Prefetch the next page to avoid the loading time:
         const prefetchParams = {
-          ...listParams,
+          ...queryInput,
           skip: (pageIndex + 1) * pageSize,
         };
         prefetchNextPage?.(utils, prefetchParams);
@@ -111,7 +110,6 @@ export function QueryTable<TData>({
         // Scroll to the top of the table:
         tableRef.current?.scrollIntoView();
       },
-      retry: false,
     },
   });
 
@@ -152,12 +150,8 @@ export function QueryTable<TData>({
   const nextButtonDisabled = !pageCount || pageNumber >= pageCount;
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-between">
-        <div>
-          {error && <div className="alert alert-error">{error.message}</div>}
-        </div>
-      </div>
+    <div className="space-y-2">
+      {error && <div className="alert alert-error">{error.message}</div>}
       <div className="relative flex flex-col items-center gap-4">
         {/* Show a loading dimmer while loading. */}
         {isPreviousData && (
