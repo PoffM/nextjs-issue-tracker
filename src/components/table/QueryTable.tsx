@@ -25,6 +25,7 @@ declare module "@tanstack/table-core" {
   }
 }
 
+/** The back-end query should output this data to be renderable in the table. */
 interface ListQueryOutput<TData> {
   records: TData[];
   count: number;
@@ -40,7 +41,7 @@ interface ListQueryInput {
   };
 }
 
-interface QueryPropParams {
+interface TableProvidedQueryParams {
   queryInput: ListQueryInput;
   queryOptions: {
     keepPreviousData: boolean;
@@ -54,7 +55,7 @@ interface QueryTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   defaultSortField?: string;
   useQuery: (
-    params: QueryPropParams
+    params: TableProvidedQueryParams
   ) => UseQueryResult<
     ListQueryOutput<TData>,
     ReturnType<typeof trpc.useQuery>["error"]
