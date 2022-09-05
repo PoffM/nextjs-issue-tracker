@@ -32,37 +32,40 @@ function dateTimeColumnDef(
 }
 
 const columns = [
+  // On mobile screens: The first column shows the "Issue" header
+  // with
   // Condensed column for mobile screens only:
   accessor("id", {
-    header: "Issue",
+    header: () => (
+      <span>
+        <span className="hidden sm:table-cell">Number</span>
+        <span className="sm:hidden">Issue</span>
+      </span>
+    ),
     cell: (ctx) => {
       const issue = ctx.row.original;
       return (
         <>
-          <div className="mb-1 flex items-center gap-1">
-            #{issue.id} <IssueStatusBadge status={issue.status} size="sm" />
-          </div>
-          <Link href={`/issue/${ctx.row.original.id}`}>
-            <a
-              className="link text-blue-600 hover:text-blue-800 dark:link-accent"
-              title={issue.title}
-            >
-              {issue.title}
-            </a>
-          </Link>
+          <span className="inline sm:hidden">
+            <div className="mb-1 flex items-center gap-1">
+              #{issue.id} <IssueStatusBadge status={issue.status} size="sm" />
+            </div>
+            <Link href={`/issue/${ctx.row.original.id}`}>
+              <a
+                className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+                title={issue.title}
+              >
+                {issue.title}
+              </a>
+            </Link>
+          </span>
+          <span className="hidden sm:inline">{issue.id}</span>
         </>
       );
     },
-    size: 100,
-    maxSize: 100,
-    enableSorting: true,
-    meta: { className: "sm:hidden" },
-  }),
-  accessor("id", {
-    header: "Number",
     size: 50,
+    maxSize: 50,
     enableSorting: true,
-    meta: { className: "hidden sm:table-cell" },
   }),
   accessor("createdAt", {
     ...dateTimeColumnDef("Created On"),
@@ -122,7 +125,7 @@ export function IssueTable() {
                   type="radio"
                   className="radio radio-accent"
                   checked={statusFilter === statusOption}
-                  onClick={() => setStatusFilter(statusOption)}
+                  onChange={() => setStatusFilter(statusOption)}
                 />
                 {startCase(statusOption)}
               </label>
