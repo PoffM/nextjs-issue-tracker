@@ -1,5 +1,4 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { compact } from "lodash";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -13,10 +12,6 @@ const GOOGLE_PROVIDER =
     clientId: env.GOOGLE_ID,
     clientSecret: env.GOOGLE_SECRET,
   });
-
-const useLocalDevUsers =
-  !GOOGLE_PROVIDER &&
-  (env.NODE_ENV === "development" || env.NODE_ENV === "test");
 
 const DEV_ONLY_LOCAL_PROVIDER = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
@@ -49,22 +44,33 @@ const DEV_ONLY_LOCAL_PROVIDER = CredentialsProvider({
   },
 });
 
-export const nextAuthOptions: NextAuthOptions = useLocalDevUsers
-  ? {
-      callbacks: {
-        session({ session, token }) {
-          // Put the user ID on the session object:
-          return {
-            ...session,
-            user: session.user && { ...session.user, id: token.sub },
-          };
+export const nextAuthOptions: NextAuthOptions = {
+  ...(GOOGLE_PROVIDER
+    ? {
+        adapter: PrismaAdapter(globalContext.prisma),
+        providers: [GOOGLE_PROVIDER],
+        callbacks: {
+          session({ session, user }) {
+            // Put the user ID on the session object:
+            return {
+              ...session,
+              user: session.user && { ...session.user, id: user.id },
+            };
+          },
         },
-      },
-      providers: compact([DEV_ONLY_LOCAL_PROVIDER]),
-    }
-  : {
-      adapter: PrismaAdapter(globalContext.prisma),
-      providers: compact([GOOGLE_PROVIDER]),
-    };
+      }
+    : {
+        providers: [DEV_ONLY_LOCAL_PROVIDER],
+        callbacks: {
+          session({ session, token }) {
+            // Put the user ID on the session object:
+            return {
+              ...session,
+              user: session.user && { ...session.user, id: token.sub },
+            };
+          },
+        },
+      }),
+};
 
 export default NextAuth(nextAuthOptions);

@@ -56,6 +56,22 @@ model IssueEvent {
   createdBy User  @relation(fields: [createdByUserId], references: [id])
 }
 
+// next-auth User
+model User {
+  // next-auth fields:
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  // Custom fields:
+  issues      Issue[]
+  issueEvents IssueEvent[]
+}
+
 // next-auth Account
 model Account {
   id                String  @id @default(cuid())
@@ -83,22 +99,6 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-// next-auth User
-model User {
-  // next-auth fields:
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-
-  // Custom fields:
-  issues      Issue[]
-  issueEvents IssueEvent[]
 }
 
 // next-auth VerificationToken
