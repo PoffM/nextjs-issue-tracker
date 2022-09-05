@@ -2,8 +2,6 @@ import { test } from "@playwright/test";
 import { randomUUID } from "crypto";
 import { reactSelectChange } from "./utils/reactSelectChange";
 
-test.setTimeout(15_000);
-
 test("Add an issue and a comment", async ({ page }) => {
   // Go to the home page and click the Create button:
   await page.goto("/");
