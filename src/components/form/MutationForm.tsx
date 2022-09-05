@@ -31,11 +31,10 @@ export interface MutationFormProps<
 
 export type OnSuccessFn<
   TPath extends MutationKey,
-  TMutationInput = inferMutationInput<TPath>,
-  TMutationOutput = inferMutationOutput<TPath>,
-  TFormShape = TMutationInput
+  TMutationInput extends inferMutationInput<TPath>,
+  TMutationOutput = inferMutationOutput<TPath>
 > = (args: {
-  form: UseFormReturn<TFormShape>;
+  form: UseFormReturn<TMutationInput>;
   data: TMutationOutput;
 }) => Promise<unknown> | void;
 
