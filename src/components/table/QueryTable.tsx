@@ -139,9 +139,6 @@ export function QueryTable<TData>({
     debugTable: true,
   });
 
-  const prevButtonDisabled = pageNumber <= 1;
-  const nextButtonDisabled = !pageCount || pageNumber >= pageCount;
-
   return (
     <div className="space-y-2">
       {error && <div className="alert alert-error">{error.message}</div>}
@@ -217,14 +214,14 @@ export function QueryTable<TData>({
         <div className="btn-group">
           <button
             className="btn"
-            disabled={prevButtonDisabled}
+            disabled={!table.getCanPreviousPage()}
             onClick={() => table.setPageIndex(0)}
           >
             <FaAngleDoubleLeft size="20px" />
           </button>
           <button
             className="btn"
-            disabled={prevButtonDisabled}
+            disabled={!table.getCanPreviousPage()}
             onClick={() => table.setPageIndex((it) => it - 1)}
           >
             <FaAngleLeft size="20px" />
@@ -234,14 +231,14 @@ export function QueryTable<TData>({
           </button>
           <button
             className="btn"
-            disabled={nextButtonDisabled}
+            disabled={!table.getCanNextPage()}
             onClick={() => table.setPageIndex((it) => it + 1)}
           >
             <FaAngleRight size="20px" />
           </button>
           <button
             className="btn"
-            disabled={nextButtonDisabled}
+            disabled={!table.getCanNextPage()}
             onClick={
               pageCount ? () => table.setPageIndex(pageCount - 1) : undefined
             }
