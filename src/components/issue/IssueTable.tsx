@@ -110,6 +110,10 @@ export function IssueTable() {
       "OPEN"
     );
 
+  const issueQueryParams: Partial<inferQueryInput<"issue.list">> = {
+    filter: { status: statusFilter },
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-end justify-between">
@@ -142,12 +146,15 @@ export function IssueTable() {
         columns={columns}
         useQuery={({ queryInput, queryOptions }) =>
           trpc.useQuery(
-            ["issue.list", { ...queryInput, filter: { status: statusFilter } }],
+            ["issue.list", { ...queryInput, ...issueQueryParams }],
             queryOptions
           )
         }
         prefetchNextPage={(utils, params) =>
-          void utils.prefetchQuery(["issue.list", params])
+          void utils.prefetchQuery([
+            "issue.list",
+            { ...params, ...issueQueryParams },
+          ])
         }
         defaultSortField="id"
       />
