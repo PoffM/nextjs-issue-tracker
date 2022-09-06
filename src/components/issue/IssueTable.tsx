@@ -4,9 +4,9 @@ import { startCase } from "lodash";
 import Link from "next/link";
 import { useState } from "react";
 import { datetimeString } from "../../utils/datetimeString";
-import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
+import { inferQueryInput, inferQueryOutput } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
-import { QueryTable } from "../table/QueryTable";
+import { TrpcQueryTable } from "../table/TrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
 type IssueListItem = inferQueryOutput<"issue.list">["records"][number];
@@ -110,10 +110,6 @@ export function IssueTable() {
       "OPEN"
     );
 
-  const issueQueryParams: Partial<inferQueryInput<"issue.list">> = {
-    filter: { status: statusFilter },
-  };
-
   return (
     <div className="space-y-2">
       <div className="flex items-end justify-between">
@@ -142,20 +138,13 @@ export function IssueTable() {
           </Link>
         </div>
       </div>
-      <QueryTable
+      <TrpcQueryTable
         columns={columns}
-        useQuery={({ queryInput, queryOptions }) =>
-          trpc.useQuery(
-            ["issue.list", { ...queryInput, ...issueQueryParams }],
-            queryOptions
-          )
-        }
-        prefetchNextPage={(utils, params) =>
-          void utils.prefetchQuery([
-            "issue.list",
-            { ...params, ...issueQueryParams },
-          ])
-        }
+        path="issue.list"
+        getQueryInput={(listInput) => ({
+          ...listInput,
+          filter: { status: statusFilter },
+        })}
         defaultSortField="id"
       />
     </div>

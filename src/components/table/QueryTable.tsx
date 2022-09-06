@@ -16,7 +16,6 @@ import {
   FaAngleRight,
 } from "react-icons/fa";
 import { UseQueryResult } from "react-query";
-import { trpc } from "../../utils/trpc";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,13 +24,13 @@ declare module "@tanstack/table-core" {
   }
 }
 
-/** The back-end query should output this data to be renderable in the table. */
-interface ListQueryOutput<TData> {
+/** The query should output this data to be renderable in the table. */
+export interface ListQueryOutput<TData> {
   records: TData[];
   count: number;
 }
 
-interface ListQueryInput {
+export interface ListQueryInput {
   take: number;
   skip: number;
   order?: {
@@ -41,36 +40,38 @@ interface ListQueryInput {
   };
 }
 
-interface TableProvidedQueryParams {
-  queryInput: ListQueryInput;
+export interface TableProvidedQueryParams {
+  listQueryInput: ListQueryInput;
   queryOptions: {
     keepPreviousData: boolean;
-    onSuccess: () => void;
     onSettled: () => void;
   };
 }
 
-interface QueryTableProps<TData> {
+/** An error renderable in the table. */
+export interface TableError {
+  message: string;
+}
+
+export interface QueryTableProps<TData> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   defaultSortField?: string;
   useQuery: (
     params: TableProvidedQueryParams
-  ) => UseQueryResult<
-    ListQueryOutput<TData>,
-    ReturnType<typeof trpc.useQuery>["error"]
-  >;
-  prefetchNextPage?: (
-    utils: ReturnType<typeof trpc.useContext>,
-    params: ListQueryInput
-  ) => void;
+  ) => UseQueryResult<ListQueryOutput<TData>, TableError>;
 }
 
+/**
+ * Renders a table based on a useQuery hook call.
+ *
+ * The query must accept take/skip pagination input, and must return the current
+ * page's data and a total record count.
+ */
 export function QueryTable<TData>({
   columns,
   useQuery,
   defaultSortField,
-  prefetchNextPage,
 }: QueryTableProps<TData>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -85,7 +86,7 @@ export function QueryTable<TData>({
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
 
-  const queryInput: ListQueryInput = {
+  const listQueryInput: ListQueryInput = {
     take: pageSize,
     skip: pageIndex * pageSize,
     order: sorting?.[0] && {
@@ -93,20 +94,11 @@ export function QueryTable<TData>({
       field: sorting[0].id,
     },
   };
-  const utils = trpc.useContext();
   const { data, error, isPreviousData } = useQuery({
-    queryInput,
+    listQueryInput,
     queryOptions: {
       // Keep the previous page's data in the table while the next page is loading:
       keepPreviousData: true,
-      onSuccess: () => {
-        // Prefetch the next page to avoid the loading time:
-        const prefetchParams = {
-          ...queryInput,
-          skip: (pageIndex + 1) * pageSize,
-        };
-        prefetchNextPage?.(utils, prefetchParams);
-      },
       onSettled: () => {
         // Scroll to the top of the table:
         tableRef.current?.scrollIntoView();
