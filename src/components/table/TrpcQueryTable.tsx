@@ -2,7 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { AppRouter } from "../../server/routers/appRouter";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
-import { ListQueryInput, ListQueryOutput, QueryTable } from "./QueryTable";
+import { QueryTable } from "./QueryTable";
+import { ListQueryInput, ListQueryOutput } from "./useQueryTable";
 
 type AllQueries = AppRouter["_def"]["queries"];
 

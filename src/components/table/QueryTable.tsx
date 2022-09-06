@@ -1,66 +1,12 @@
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  PaginationState,
-  RowData,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef, useState } from "react";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
-import { UseQueryResult } from "react-query";
-
-declare module "@tanstack/table-core" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    className?: string;
-  }
-}
-
-/** The query should output this data to be renderable in the table. */
-export interface ListQueryOutput<TData> {
-  records: TData[];
-  count: number;
-}
-
-export interface ListQueryInput {
-  take: number;
-  skip: number;
-  order?: {
-    direction: "asc" | "desc";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    field: any;
-  };
-}
-
-export interface TableProvidedQueryParams {
-  listQueryInput: ListQueryInput;
-  queryOptions: {
-    keepPreviousData: boolean;
-    onSettled: () => void;
-  };
-}
-
-/** An error renderable in the table. */
-export interface TableError {
-  message: string;
-}
-
-export interface QueryTableProps<TData> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: ColumnDef<TData, any>[];
-  defaultSortField?: string;
-  useQuery: (
-    params: TableProvidedQueryParams
-  ) => UseQueryResult<ListQueryOutput<TData>, TableError>;
-}
+import { QueryTableProps, useQueryTable } from "./useQueryTable";
 
 /**
  * Renders a table based on a useQuery hook call.
@@ -68,76 +14,8 @@ export interface QueryTableProps<TData> {
  * The query must accept take/skip pagination input, and must return the current
  * page's data and a total record count.
  */
-export function QueryTable<TData>({
-  columns,
-  useQuery,
-  defaultSortField,
-}: QueryTableProps<TData>) {
-  const tableRef = useRef<HTMLTableElement>(null);
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 25,
-  });
-  const { pageIndex, pageSize } = pagination;
-  const pageNumber = pageIndex + 1;
-
-  const [sorting, setSorting] = useState<SortingState>(
-    defaultSortField ? [{ id: defaultSortField, desc: true }] : []
-  );
-
-  const listQueryInput: ListQueryInput = {
-    take: pageSize,
-    skip: pageIndex * pageSize,
-    order: sorting?.[0] && {
-      direction: sorting[0].desc ? "desc" : "asc",
-      field: sorting[0].id,
-    },
-  };
-  const { data, error, isPreviousData } = useQuery({
-    listQueryInput,
-    queryOptions: {
-      // Keep the previous page's data in the table while the next page is loading:
-      keepPreviousData: true,
-      onSettled: () => {
-        // Scroll to the top of the table:
-        tableRef.current?.scrollIntoView();
-      },
-    },
-  });
-
-  const { records, count } = data ?? {};
-
-  const pageCount = count && Math.ceil(count / pageSize);
-
-  const table = useReactTable<TData>({
-    // Required props:
-    data: records ?? [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-
-    state: {
-      pagination,
-      sorting,
-    },
-
-    // Pagination props:
-    pageCount,
-    onPaginationChange: setPagination,
-    manualPagination: true,
-
-    // Sorting props:
-    manualSorting: true,
-    enableMultiSort: false,
-    enableSortingRemoval: false,
-    onSortingChange: (newSort) => {
-      setSorting(newSort);
-      // On sort change, also reset to page 1:
-      setPagination((it) => ({ ...it, pageIndex: 0 }));
-    },
-
-    debugTable: true,
-  });
+export function QueryTable<TData>(props: QueryTableProps<TData>) {
+  const { error, tableRef, isPreviousData, ...table } = useQueryTable(props);
 
   return (
     <div className="space-y-2">
@@ -222,17 +100,18 @@ export function QueryTable<TData>({
           <button
             className="btn"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => table.setPageIndex((it) => it - 1)}
+            onClick={table.previousPage}
           >
             <FaAngleLeft size="20px" />
           </button>
           <button className="btn">
-            Page {pageNumber} of {pageCount}
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </button>
           <button
             className="btn"
             disabled={!table.getCanNextPage()}
-            onClick={() => table.setPageIndex((it) => it + 1)}
+            onClick={table.nextPage}
           >
             <FaAngleRight size="20px" />
           </button>
@@ -240,7 +119,9 @@ export function QueryTable<TData>({
             className="btn"
             disabled={!table.getCanNextPage()}
             onClick={
-              pageCount ? () => table.setPageIndex(pageCount - 1) : undefined
+              table.getPageCount()
+                ? () => table.setPageIndex(table.getPageCount() - 1)
+                : undefined
             }
           >
             <FaAngleDoubleRight size="20px" />
