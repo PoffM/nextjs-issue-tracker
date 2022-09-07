@@ -6,7 +6,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { UseQueryResult } from "react-query";
 
 declare module "@tanstack/table-core" {
@@ -50,11 +50,15 @@ export interface TableError {
   message: string;
 }
 
-export interface QueryTableProps<TData, TOrderField = never, TFilter = never> {
+export interface UseQueryTableParams<
+  TData,
+  TOrderField = never,
+  TFilter = never
+> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   defaultSortField?: TOrderField;
-  filter?: TFilter;
+  defaultFilter?: TFilter;
   /** react-query style hook that gets called internally. */
   useQuery: (
     params: TableProvidedQueryParams<TOrderField, TFilter>
@@ -74,10 +78,10 @@ export function useQueryTable<
   TFilter = never
 >({
   defaultSortField,
-  filter,
+  defaultFilter,
   columns,
   useQuery,
-}: QueryTableProps<TData, TOrderField, TFilter>) {
+}: UseQueryTableParams<TData, TOrderField, TFilter>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -85,6 +89,14 @@ export function useQueryTable<
     pageSize: 25,
   });
   const { pageIndex, pageSize } = pagination;
+
+  const [filter, _setFilter] = useState(defaultFilter);
+
+  const setFilter: typeof _setFilter = (updater) => {
+    _setFilter(updater);
+    // When the filter changes, reset to page 1:
+    setPagination((it) => ({ ...it, pageIndex: 0 }));
+  };
 
   const [sorting, setSorting] = useState<SortingState & { id: TOrderField }[]>(
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
@@ -149,8 +161,5 @@ export function useQueryTable<
     debugTable: true,
   });
 
-  // TODO get rid of useEffect usage:
-  useEffect(() => table.setPageIndex(0), [table, filter]);
-
-  return { ...table, error, isPreviousData, tableRef };
+  return { ...table, error, isPreviousData, tableRef, filter, setFilter };
 }

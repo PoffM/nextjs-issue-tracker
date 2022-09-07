@@ -2,11 +2,9 @@
 import { createColumnHelper, IdentifiedColumnDef } from "@tanstack/react-table";
 import { startCase } from "lodash";
 import Link from "next/link";
-import { useState } from "react";
 import { datetimeString } from "../../utils/datetimeString";
-import { inferQueryInput } from "../../utils/trpc";
-import { Defined } from "../../utils/types";
-import { ListItemType, TrpcQueryTable } from "../table/TrpcQueryTable";
+import { QueryTable } from "../table/QueryTable";
+import { ListItemType, useTrpcQueryTable } from "../table/useTrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
 type IssueListItem = ListItemType<"issue.list">;
@@ -105,10 +103,13 @@ const columns = [
 
 /** Lists the issues from the database. */
 export function IssueTable() {
-  const [statusFilter, setStatusFilter] =
-    useState<Defined<inferQueryInput<"issue.list">["filter"]>["status"]>(
-      "OPEN"
-    );
+  const table = useTrpcQueryTable({
+    path: "issue.list",
+    columns,
+    defaultSortField: "id",
+    defaultFilter: { status: "OPEN" },
+    getQueryInput: (it) => it,
+  });
 
   return (
     <div className="space-y-2">
@@ -124,8 +125,10 @@ export function IssueTable() {
                 <input
                   type="radio"
                   className="radio radio-accent"
-                  checked={statusFilter === statusOption}
-                  onChange={() => setStatusFilter(statusOption)}
+                  checked={table.filter?.status === statusOption}
+                  onChange={() =>
+                    table.setFilter((it) => ({ ...it, status: statusOption }))
+                  }
                 />
                 {startCase(statusOption)}
               </label>
@@ -138,13 +141,7 @@ export function IssueTable() {
           </Link>
         </div>
       </div>
-      <TrpcQueryTable
-        columns={columns}
-        path="issue.list"
-        filter={{ status: statusFilter }}
-        getQueryInput={(listInput) => listInput}
-        defaultSortField="id"
-      />
+      <QueryTable table={table} />
     </div>
   );
 }

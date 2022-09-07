@@ -6,25 +6,23 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
-import { QueryTableProps, useQueryTable } from "./useQueryTable";
+import { useQueryTable } from "./useQueryTable";
 
-/**
- * Renders a table based on a useQuery hook call.
- *
- * The query must accept take/skip pagination input, and must return the current
- * page's data and a total record count.
- */
+export interface QueryTableProps<
+  TData,
+  TOrderField extends string = never,
+  TFilter = never
+> {
+  table: ReturnType<typeof useQueryTable<TData, TOrderField, TFilter>>;
+}
+
 export function QueryTable<
   TData,
   TOrderField extends string = never,
   TFilter = never
->(props: QueryTableProps<TData, TOrderField, TFilter>) {
-  const { error, tableRef, isPreviousData, ...table } = useQueryTable<
-    TData,
-    TOrderField,
-    TFilter
-  >(props);
-
+>({
+  table: { error, isPreviousData, tableRef, ...table },
+}: QueryTableProps<TData, TOrderField, TFilter>) {
   return (
     <div className="space-y-2">
       {error && <div className="alert alert-error">{error.message}</div>}
