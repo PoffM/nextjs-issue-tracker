@@ -14,8 +14,13 @@ import { QueryTableProps, useQueryTable } from "./useQueryTable";
  * The query must accept take/skip pagination input, and must return the current
  * page's data and a total record count.
  */
-export function QueryTable<TData>(props: QueryTableProps<TData>) {
-  const { error, tableRef, isPreviousData, ...table } = useQueryTable(props);
+export function QueryTable<TData, TOrderField extends string = never>(
+  props: QueryTableProps<TData, TOrderField>
+) {
+  const { error, tableRef, isPreviousData, ...table } = useQueryTable<
+    TData,
+    TOrderField
+  >(props);
 
   return (
     <div className="space-y-2">

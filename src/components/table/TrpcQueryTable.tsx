@@ -1,22 +1,28 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { AppRouter } from "../../server/routers/appRouter";
 import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
-import { Defined } from "../../utils/types";
 import { QueryTable } from "./QueryTable";
 import { ListQueryInput, ListQueryOutput } from "./useQueryTable";
 
-type AllQueries = AppRouter["_def"]["queries"];
+export type AllQueries = AppRouter["_def"]["queries"];
 
-type ListQueryName = {
+export type ListQueryName = {
   [TPath in keyof AllQueries]: inferQueryOutput<TPath> extends ListQueryOutput<unknown>
-    ? inferQueryInput<TPath> extends ListQueryInput
+    ? inferQueryInput<TPath> extends ListQueryInput<string>
       ? TPath
       : never
     : never;
 }[keyof AllQueries];
 
-type ListItemType<TPath extends ListQueryName> =
+export type ListItemType<TPath extends ListQueryName> =
   inferQueryOutput<TPath>["records"][number];
+
+export type OrderField<TPath extends ListQueryName> =
+  inferQueryInput<TPath> extends ListQueryInput<infer TOrderField>
+    ? TOrderField extends string
+      ? TOrderField
+      : never
+    : never;
 
 export interface TrpcQueryTableProps<TPath extends ListQueryName> {
   /** TRPC route path */
@@ -26,11 +32,13 @@ export interface TrpcQueryTableProps<TPath extends ListQueryName> {
    * Get the path's query input, given the table component's internally stored pagination and sorting state.
    * You need to provide additional query input argument for the specific route, like filters.
    */
-  getQueryInput: (listQueryInput: ListQueryInput) => inferQueryInput<TPath>;
+  getQueryInput: (
+    listQueryInput: ListQueryInput<OrderField<TPath>>
+  ) => inferQueryInput<TPath>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<ListItemType<TPath>, any>[];
-  defaultSortField?: Defined<inferQueryInput<TPath>["order"]>["field"];
+  defaultSortField?: OrderField<TPath>;
 }
 
 /** Renders a TRPC list query as a table with type safety and minimal code */
@@ -42,7 +50,7 @@ export function TrpcQueryTable<TPath extends ListQueryName>({
 }: TrpcQueryTableProps<TPath>) {
   const utils = trpc.useContext();
   return (
-    <QueryTable<ListItemType<TPath>>
+    <QueryTable<ListItemType<TPath>, OrderField<TPath>>
       columns={columns}
       useQuery={({ listQueryInput, queryOptions }) => {
         const queryInput = getQueryInput(listQueryInput);

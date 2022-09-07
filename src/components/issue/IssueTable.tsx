@@ -4,12 +4,12 @@ import { startCase } from "lodash";
 import Link from "next/link";
 import { useState } from "react";
 import { datetimeString } from "../../utils/datetimeString";
-import { inferQueryInput, inferQueryOutput } from "../../utils/trpc";
+import { inferQueryInput } from "../../utils/trpc";
 import { Defined } from "../../utils/types";
-import { TrpcQueryTable } from "../table/TrpcQueryTable";
+import { ListItemType, TrpcQueryTable } from "../table/TrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
-type IssueListItem = inferQueryOutput<"issue.list">["records"][number];
+type IssueListItem = ListItemType<"issue.list">;
 
 const columnHelper = createColumnHelper<IssueListItem>();
 

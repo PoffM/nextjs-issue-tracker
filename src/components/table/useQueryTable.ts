@@ -17,13 +17,12 @@ declare module "@tanstack/table-core" {
 }
 
 /** Input for a take/skip-based paginated query endpoint. */
-export interface ListQueryInput {
+export interface ListQueryInput<TOrderField = never> {
   take: number;
   skip: number;
   order?: {
     direction: "asc" | "desc";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    field: any;
+    field: TOrderField;
   };
 }
 
@@ -34,8 +33,8 @@ export interface ListQueryOutput<TData> {
 }
 
 /** Table state provided to the list query. */
-export interface TableProvidedQueryParams {
-  listQueryInput: ListQueryInput;
+export interface TableProvidedQueryParams<TOrderField = never> {
+  listQueryInput: ListQueryInput<TOrderField>;
   queryOptions: {
     keepPreviousData: boolean;
     onSettled: () => void;
@@ -47,13 +46,13 @@ export interface TableError {
   message: string;
 }
 
-export interface QueryTableProps<TData> {
+export interface QueryTableProps<TData, TOrderField = never> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
-  defaultSortField?: string;
+  defaultSortField?: TOrderField;
   /** react-query style hook that gets called internally. */
   useQuery: (
-    params: TableProvidedQueryParams
+    params: TableProvidedQueryParams<TOrderField>
   ) => UseQueryResult<ListQueryOutput<TData>, TableError>;
 }
 
@@ -64,11 +63,11 @@ export interface QueryTableProps<TData> {
  * The query must accept take/skip pagination input, and must return the current
  * page's data and a total record count.
  */
-export function useQueryTable<TData>({
+export function useQueryTable<TData, TOrderField extends string = never>({
   defaultSortField,
   columns,
   useQuery,
-}: QueryTableProps<TData>) {
+}: QueryTableProps<TData, TOrderField>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -77,11 +76,11 @@ export function useQueryTable<TData>({
   });
   const { pageIndex, pageSize } = pagination;
 
-  const [sorting, setSorting] = useState<SortingState>(
+  const [sorting, setSorting] = useState<SortingState & { id: TOrderField }[]>(
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
 
-  const listQueryInput: ListQueryInput = {
+  const listQueryInput: ListQueryInput<TOrderField> = {
     take: pageSize,
     skip: pageIndex * pageSize,
     order: sorting?.[0] && {
@@ -127,7 +126,11 @@ export function useQueryTable<TData>({
     enableMultiSort: false,
     enableSortingRemoval: false,
     onSortingChange: (newSort) => {
-      setSorting(newSort);
+      // Setting the sort through react-table is technically type-unsafe because
+      // the back-end doesn't recognize every string it gets as a sortable field.
+      // This should be fine as long as unsortable columns aren't given the "enableSorting" param:
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      setSorting(newSort as any);
       // On sort change, also reset to page 1:
       setPagination((it) => ({ ...it, pageIndex: 0 }));
     },
