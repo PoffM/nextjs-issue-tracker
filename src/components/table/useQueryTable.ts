@@ -6,7 +6,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UseQueryResult } from "react-query";
 
 declare module "@tanstack/table-core" {
@@ -17,13 +17,14 @@ declare module "@tanstack/table-core" {
 }
 
 /** Input for a take/skip-based paginated query endpoint. */
-export interface ListQueryInput<TOrderField = never> {
+export interface ListQueryInput<TOrderField = never, TFilter = never> {
   take: number;
   skip: number;
   order?: {
     direction: "asc" | "desc";
     field: TOrderField;
   };
+  filter?: TFilter;
 }
 
 /** The query should output this data to be renderable in the table. */
@@ -33,8 +34,11 @@ export interface ListQueryOutput<TData> {
 }
 
 /** Table state provided to the list query. */
-export interface TableProvidedQueryParams<TOrderField = never> {
-  listQueryInput: ListQueryInput<TOrderField>;
+export interface TableProvidedQueryParams<
+  TOrderField = never,
+  TFilter = never
+> {
+  listQueryInput: ListQueryInput<TOrderField, TFilter>;
   queryOptions: {
     keepPreviousData: boolean;
     onSettled: () => void;
@@ -46,13 +50,14 @@ export interface TableError {
   message: string;
 }
 
-export interface QueryTableProps<TData, TOrderField = never> {
+export interface QueryTableProps<TData, TOrderField = never, TFilter = never> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   defaultSortField?: TOrderField;
+  filter?: TFilter;
   /** react-query style hook that gets called internally. */
   useQuery: (
-    params: TableProvidedQueryParams<TOrderField>
+    params: TableProvidedQueryParams<TOrderField, TFilter>
   ) => UseQueryResult<ListQueryOutput<TData>, TableError>;
 }
 
@@ -63,11 +68,16 @@ export interface QueryTableProps<TData, TOrderField = never> {
  * The query must accept take/skip pagination input, and must return the current
  * page's data and a total record count.
  */
-export function useQueryTable<TData, TOrderField extends string = never>({
+export function useQueryTable<
+  TData,
+  TOrderField extends string = never,
+  TFilter = never
+>({
   defaultSortField,
+  filter,
   columns,
   useQuery,
-}: QueryTableProps<TData, TOrderField>) {
+}: QueryTableProps<TData, TOrderField, TFilter>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -80,13 +90,14 @@ export function useQueryTable<TData, TOrderField extends string = never>({
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
 
-  const listQueryInput: ListQueryInput<TOrderField> = {
+  const listQueryInput: ListQueryInput<TOrderField, TFilter> = {
     take: pageSize,
     skip: pageIndex * pageSize,
     order: sorting?.[0] && {
       direction: sorting[0].desc ? "desc" : "asc",
       field: sorting[0].id,
     },
+    filter,
   };
 
   const { data, error, isPreviousData } = useQuery({
@@ -137,6 +148,9 @@ export function useQueryTable<TData, TOrderField extends string = never>({
 
     debugTable: true,
   });
+
+  // TODO get rid of useEffect usage:
+  useEffect(() => table.setPageIndex(0), [table, filter]);
 
   return { ...table, error, isPreviousData, tableRef };
 }

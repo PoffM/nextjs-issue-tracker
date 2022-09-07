@@ -141,10 +141,8 @@ export function IssueTable() {
       <TrpcQueryTable
         columns={columns}
         path="issue.list"
-        getQueryInput={(listInput) => ({
-          ...listInput,
-          filter: { status: statusFilter },
-        })}
+        filter={{ status: statusFilter }}
+        getQueryInput={(listInput) => listInput}
         defaultSortField="id"
       />
     </div>

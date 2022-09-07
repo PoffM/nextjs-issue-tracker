@@ -8,7 +8,7 @@ export type AllQueries = AppRouter["_def"]["queries"];
 
 export type ListQueryName = {
   [TPath in keyof AllQueries]: inferQueryOutput<TPath> extends ListQueryOutput<unknown>
-    ? inferQueryInput<TPath> extends ListQueryInput<string>
+    ? inferQueryInput<TPath> extends ListQueryInput<string, unknown>
       ? TPath
       : never
     : never;
@@ -18,9 +18,16 @@ export type ListItemType<TPath extends ListQueryName> =
   inferQueryOutput<TPath>["records"][number];
 
 export type OrderField<TPath extends ListQueryName> =
-  inferQueryInput<TPath> extends ListQueryInput<infer TOrderField>
+  inferQueryInput<TPath> extends ListQueryInput<infer TOrderField, unknown>
     ? TOrderField extends string
       ? TOrderField
+      : never
+    : never;
+
+export type FilterType<TPath extends ListQueryName> =
+  inferQueryInput<TPath> extends ListQueryInput<unknown, infer TFilter>
+    ? TFilter extends Record<string, unknown>
+      ? TFilter
       : never
     : never;
 
@@ -39,6 +46,7 @@ export interface TrpcQueryTableProps<TPath extends ListQueryName> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<ListItemType<TPath>, any>[];
   defaultSortField?: OrderField<TPath>;
+  filter?: FilterType<TPath>;
 }
 
 /** Renders a TRPC list query as a table with type safety and minimal code */
@@ -47,6 +55,7 @@ export function TrpcQueryTable<TPath extends ListQueryName>({
   getQueryInput,
   path,
   defaultSortField,
+  filter,
 }: TrpcQueryTableProps<TPath>) {
   const utils = trpc.useContext();
   return (
@@ -73,6 +82,7 @@ export function TrpcQueryTable<TPath extends ListQueryName>({
         });
       }}
       defaultSortField={defaultSortField}
+      filter={filter}
     />
   );
 }
