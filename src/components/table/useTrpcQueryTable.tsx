@@ -39,10 +39,13 @@ export type FilterType<TPath extends ListQueryName> =
     : never;
 
 export interface UseTrpcQueryTableParams<TPath extends ListQueryName>
-  extends UseQueryTableParams<
-    ListItemType<TPath>,
-    OrderField<TPath>,
-    FilterType<TPath>
+  extends Omit<
+    UseQueryTableParams<
+      ListItemType<TPath>,
+      OrderField<TPath>,
+      FilterType<TPath>
+    >,
+    "useQuery"
   > {
   /** TRPC route path */
   path: TPath;
