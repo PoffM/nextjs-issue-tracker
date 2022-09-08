@@ -2,6 +2,18 @@
 
 Full-stack TypeScript Issue Tracker web application.
 
+## Features
+
+- Login with Google account (or local dev accounts).
+- View + Add + Edit Issues.
+- Issues table with filter and sort controls.
+- Add comments to Issues.
+- View an Issue's comments and edit history in an infinite scrolling list.
+- Light/Dark mode toggle.
+- Type-safe API using [TRPC](https://trpc.io/).
+- Type-safe database access using [Prisma](https://www.prisma.io/).
+- Type-safe form state management using [react-hook-form](https://react-hook-form.com/).
+
 ## Stack
 
 - [TypeScript](https://www.typescriptlang.org/) (Language)
@@ -40,6 +52,18 @@ npm run test-dev   # runs e2e tests on dev
 npm run test-start # runs e2e tests on `next start` - build required before
 npm run test:e2e   # runs e2e tests
 ```
+
+## Local Developer Accounts
+
+The seed data inserts example accounts for local development so you don't need to setup a Google OAuth client.
+
+### Local Dev Account Credentials
+
+| Username | Password |
+| -------- | -------- |
+| admin    | admin    |
+| user     | user     |
+|          |          |
 
 ## Environment variables for deployment
 
