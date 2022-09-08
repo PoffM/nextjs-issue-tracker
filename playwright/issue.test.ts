@@ -25,7 +25,7 @@ test("Add an issue and a comment", async ({ page }) => {
 
   // Add a comment and change the status:
   await page.fill("text=Add a Comment", "test comment");
-  await reactSelectChange(page, "Status", "IN PROGRESS");
+  await reactSelectChange(page, "New Status", "IN PROGRESS");
   await page.click("button >> text=Submit");
 
   // View the new comment:
