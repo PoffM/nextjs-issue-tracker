@@ -4,9 +4,9 @@ Full-stack TypeScript Issue Tracker web application.
 
 ## Features
 
-- Login with Google account (or local dev accounts).
-- View + Add + Edit Issues.
-- Issues table with filter and sort controls.
+- Login with a Google account (or local dev accounts).
+- View + Add + Edit + Delete Issues.
+- Issues table with filter, sort and pagination controls.
 - Add comments to Issues.
 - View an Issue's comments and edit history in an infinite scrolling list.
 - Light/Dark mode toggle.
@@ -59,11 +59,10 @@ The seed data inserts example accounts for local development so you don't need t
 
 ### Local Dev Account Credentials
 
-| Username | Password |
-| -------- | -------- |
-| admin    | admin    |
-| user     | user     |
-|          |          |
+| Username | Password | Roles                           |
+| -------- | -------- | ------------------------------- |
+| admin    | admin    | ADMIN (Which can delete Issues) |
+| user     | user     |                                 |
 
 ## Environment variables for deployment
 
