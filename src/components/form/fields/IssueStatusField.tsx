@@ -1,5 +1,5 @@
 import { IssueStatus } from "@prisma/client";
-import { startCase } from "lodash";
+import { compact, startCase } from "lodash";
 import Select from "react-select";
 import { FieldProps, FieldWrapper } from "./FieldWrapper";
 import { useReactSelectStyle } from "./useReactSelectStyle";
@@ -11,15 +11,15 @@ interface IssueStatusOption {
 
 export interface IssueStatusFieldProps extends FieldProps<IssueStatus> {
   /** The current status is shown as the first option with a "Keep Current Status XXX" message. */
-  currentStatus: IssueStatus;
+  currentStatus?: IssueStatus;
 }
 
 export function IssueStatusField({
   currentStatus,
   ...fieldProps
 }: IssueStatusFieldProps) {
-  const options = [
-    {
+  const options = compact([
+    currentStatus && {
       value: undefined,
       label: `Keep Current Status (${startCase(currentStatus)})`,
     },
@@ -29,7 +29,7 @@ export function IssueStatusField({
         value,
         label: startCase(value),
       })),
-  ];
+  ]);
 
   const reactSelectStyle = useReactSelectStyle<IssueStatusOption>("w-[320px]");
 
