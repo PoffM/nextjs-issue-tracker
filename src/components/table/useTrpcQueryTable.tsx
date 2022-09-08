@@ -61,6 +61,13 @@ export interface UseTrpcQueryTableParams<TPath extends ListQueryName>
   ) => inferQueryInput<TPath>;
 }
 
+/**
+ * Connects a TRPC list query to react-table's useTable hook.
+ * Stores pagination, sort and filter state.
+ *
+ * The query's input must implement ListQueryInput, and
+ * the query's output must implement ListQueryOutput.
+ */
 export function useTrpcQueryTable<TPath extends ListQueryName>({
   columns,
   path,
