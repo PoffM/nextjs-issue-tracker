@@ -1,14 +1,14 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { IssueUpdateForm } from "../../components/issue/IssueForm";
+import { IssueForm } from "../../components/issue/IssueForm";
 import { trpc } from "../../utils/trpc";
 
 const IssueEditPage: NextPage = () => {
   const router = useRouter();
   const id = Number(router.query.id);
 
-  const { data: issue } = trpc.useQuery(["issue.findOne", { id }]);
+  const { data: issue, refetch } = trpc.useQuery(["issue.findOne", { id }]);
 
   return (
     <main className="flex justify-center">
@@ -17,9 +17,13 @@ const IssueEditPage: NextPage = () => {
           <Head>
             <title>{issue.title}</title>
           </Head>
-          <IssueUpdateForm
-            data={issue}
-            onSuccess={() => router.push(`/issue/${id}`)}
+          <IssueForm
+            id={id}
+            onSuccess={async () => {
+              // Do a refetch to make sure the up-to-date data is shown on the next page.
+              await refetch();
+              void router.push(`/issue/${id}`);
+            }}
           />
         </>
       )}

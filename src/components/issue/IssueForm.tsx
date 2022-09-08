@@ -62,10 +62,7 @@ interface IssueUpdateFormProps {
   onSuccess?: (data: Issue) => void | Promise<unknown>;
 }
 
-export function IssueUpdateForm({
-  data: issue,
-  onSuccess,
-}: IssueUpdateFormProps) {
+function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
   const {
     id: issueId,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

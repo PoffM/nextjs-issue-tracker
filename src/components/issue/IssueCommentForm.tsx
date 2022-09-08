@@ -26,7 +26,6 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   const defaultValues: inferMutationInput<"issue.addEvent"> = {
     issueId: issue.id,
     comment: "",
-    status: issue.status,
   };
   const form = useTypeForm({ defaultValues });
 
@@ -38,18 +37,18 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
       mutation={mutation}
       preSubmitTransform={(input) => ({
         ...input,
-        // Omit the status if it's unchanged:
-        status: issue.status === input.status ? undefined : input.status,
         // Omit the comment if it's blank:
         comment: input.comment?.trim() || undefined,
       })}
-      onSuccess={({ data }) =>
-        form.reset({ ...defaultValues, status: data.issue.status })
-      }
+      onSuccess={() => form.reset()}
     >
       <TextField field={form.field("comment")} label="Add a Comment" textarea />
       <div className="flex items-end justify-end gap-2">
-        <IssueStatusField field={form.field("status")} label="New Status" />
+        <IssueStatusField
+          field={form.field("status")}
+          label="New Status"
+          currentStatus={issue.status}
+        />
         <SubmitButton formCtx={form} />
       </div>
       {/* Invisible spacer div to make room for the status dropdown if it's at the bottom of the page */}

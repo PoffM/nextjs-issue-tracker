@@ -22,7 +22,7 @@ export interface FieldHandle<T> {
 export interface FieldController<T> {
   fieldProps: {
     /** Improved type safety over react-hook-form's onChange type: "(...event: any[]) => void" */
-    onChange: (newVal: T) => void;
+    onChange: (newVal: T | undefined) => void;
     onBlur: () => void;
     value?: T;
     name: string;

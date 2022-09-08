@@ -6,16 +6,32 @@ import { useReactSelectStyle } from "./useReactSelectStyle";
 
 interface IssueStatusOption {
   label: string;
-  value: IssueStatus;
+  value: IssueStatus | undefined;
 }
 
-export function IssueStatusField(fieldProps: FieldProps<IssueStatus>) {
-  const options = (Object.keys(IssueStatus) as IssueStatus[]).map((value) => ({
-    value,
-    label: startCase(value),
-  }));
+export interface IssueStatusFieldProps extends FieldProps<IssueStatus> {
+  /** The current status is shown as the first option with a "Keep Current Status XXX" message. */
+  currentStatus: IssueStatus;
+}
 
-  const reactSelectStyle = useReactSelectStyle<IssueStatusOption>("w-[170px]");
+export function IssueStatusField({
+  currentStatus,
+  ...fieldProps
+}: IssueStatusFieldProps) {
+  const options = [
+    {
+      value: undefined,
+      label: `Keep Current Status (${startCase(currentStatus)})`,
+    },
+    ...(Object.keys(IssueStatus) as IssueStatus[])
+      .filter((it) => it !== currentStatus)
+      .map((value) => ({
+        value,
+        label: startCase(value),
+      })),
+  ];
+
+  const reactSelectStyle = useReactSelectStyle<IssueStatusOption>("w-[320px]");
 
   return (
     <FieldWrapper {...fieldProps}>
@@ -24,7 +40,7 @@ export function IssueStatusField(fieldProps: FieldProps<IssueStatus>) {
           {...fieldProps}
           options={options}
           value={options.find((option) => option.value === value)}
-          onChange={(option) => option?.value && onChange(option.value)}
+          onChange={(option) => onChange(option?.value)}
           {...reactSelectStyle}
         />
       )}
