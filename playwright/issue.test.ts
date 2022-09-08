@@ -35,7 +35,7 @@ test("Add an issue and a comment, then delete the issue.", async ({ page }) => {
 
   // Go back to the home page to view the new Issue in the table:
   await page.goto("/");
-  await page.waitForSelector(`a:visible text="${testTitle}"`);
+  await page.waitForSelector(`a:visible >> text="${testTitle}"`);
 
   // Logout and then back in as admin:
   await page.click("button >> text=Logout");
@@ -54,5 +54,7 @@ test("Add an issue and a comment, then delete the issue.", async ({ page }) => {
   await page.waitForNavigation({ url: "/" });
 
   // The Issue's link should not be visible:
-  await expect(page.locator(`a:visible text="${testTitle}"`)).not.toBeVisible();
+  await expect(
+    page.locator(`a:visible >> text="${testTitle}"`)
+  ).not.toBeVisible();
 });
