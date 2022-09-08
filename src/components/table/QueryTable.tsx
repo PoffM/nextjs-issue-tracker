@@ -6,6 +6,7 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
+import { ErrorAlert } from "../ErrorAlert";
 import { useQueryTable } from "./useQueryTable";
 
 export interface QueryTableProps<
@@ -26,7 +27,7 @@ export function QueryTable<
 }: QueryTableProps<TData, TOrderField, TFilter>) {
   return (
     <div className="space-y-2">
-      {error && <div className="alert alert-error">{error.message}</div>}
+      <ErrorAlert error={error} />
       <div className="relative flex flex-col items-center gap-4">
         {/* Show a loading dimmer while loading. */}
         {isPreviousData && (

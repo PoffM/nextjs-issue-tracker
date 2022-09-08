@@ -2,7 +2,6 @@ import { TRPCClientError } from "@trpc/client";
 import { toPairs } from "lodash";
 import { ReactNode, useState } from "react";
 import { Path, UseFormReturn } from "react-hook-form";
-import { VscError } from "react-icons/vsc";
 import { UseMutationResult } from "react-query";
 import type { AppRouter } from "../../server/routers/appRouter";
 import {
@@ -10,6 +9,7 @@ import {
   inferMutationOutput,
   trpc,
 } from "../../utils/trpc";
+import { ErrorAlert } from "../ErrorAlert";
 
 type MutationKey = keyof AppRouter["_def"]["mutations"];
 
@@ -95,14 +95,7 @@ export function MutationForm<
 
   return (
     <form onSubmit={(e) => void onSubmit(e)}>
-      {formError && (
-        <div className="alert alert-error shadow-lg">
-          <div>
-            <VscError />
-            <span>{formError}</span>
-          </div>
-        </div>
-      )}
+      {formError && <ErrorAlert error={{ message: formError }} />}
       {children}
     </form>
   );

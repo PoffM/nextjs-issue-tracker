@@ -1,6 +1,7 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { ErrorAlert } from "../../components/ErrorAlert";
 import { IssueForm } from "../../components/issue/IssueForm";
 import { trpc } from "../../utils/trpc";
 
@@ -8,10 +9,15 @@ const IssueEditPage: NextPage = () => {
   const router = useRouter();
   const id = Number(router.query.id);
 
-  const { data: issue, refetch } = trpc.useQuery(["issue.findOne", { id }]);
+  const {
+    data: issue,
+    refetch,
+    error,
+  } = trpc.useQuery(["issue.findOne", { id }]);
 
   return (
     <main className="flex justify-center">
+      <ErrorAlert error={error} />
       {issue && (
         <>
           <Head>

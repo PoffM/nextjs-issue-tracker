@@ -1,6 +1,7 @@
 import { Issue } from "@prisma/client";
 import { shallowDiff } from "../../utils/object-shallow-diff";
 import { inferMutationInput, trpc } from "../../utils/trpc";
+import { ErrorAlert } from "../ErrorAlert";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
 import { MutationForm } from "../form/MutationForm";
@@ -13,14 +14,18 @@ export interface IssueFormProps {
 }
 
 export function IssueForm({ id, onSuccess }: IssueFormProps) {
-  const { data: issue } = trpc.useQuery(["issue.findOne", { id: id ?? NaN }], {
-    enabled: id !== undefined,
-  });
+  const { data: issue, error } = trpc.useQuery(
+    ["issue.findOne", { id: id ?? NaN }],
+    {
+      enabled: id !== undefined,
+    }
+  );
 
   const formProps = { onSuccess };
 
   return (
     <div>
+      <ErrorAlert error={error} />
       {id ? (
         issue && <IssueUpdateForm data={issue} {...formProps} />
       ) : (

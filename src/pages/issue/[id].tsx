@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ErrorAlert } from "../../components/ErrorAlert";
 import { AdminDeleteIssueButton } from "../../components/issue/AdminDeleteIssueButton";
 import { IssueEventList } from "../../components/issue/IssueEventList";
 import { IssueStatusBadge } from "../../components/issue/IssueStatusBadge";
@@ -10,10 +11,11 @@ export default function IssuePage() {
   const { query } = useRouter();
   const id = Number(query.id);
 
-  const { data: issue } = trpc.useQuery(["issue.findOne", { id }]);
+  const { data: issue, error } = trpc.useQuery(["issue.findOne", { id }]);
 
   return (
     <main className="flex justify-center">
+      <ErrorAlert error={error} />
       {issue && (
         <div className="flex w-full max-w-[600px] flex-col gap-4">
           <Head>

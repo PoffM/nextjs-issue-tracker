@@ -3,6 +3,7 @@ import FocusTrap from "focus-trap-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
+import { ErrorAlert } from "../ErrorAlert";
 
 export interface AdminDeleteIssueButtonProps {
   issueId: number;
@@ -38,6 +39,7 @@ export function AdminDeleteIssueButton({
           <FocusTrap>
             <div className="animate-fadeIn modal-box relative flex flex-col items-center gap-4">
               <h2>Are you sure you want to delete this Issue?</h2>
+              <ErrorAlert error={mutation.error} />
               <div className="flex w-[300px] gap-4">
                 <button
                   className="btn flex-1"
