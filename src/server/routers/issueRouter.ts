@@ -1,4 +1,5 @@
 import { Issue, Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { compact } from "lodash";
 import { z } from "zod";
 import { createRouter } from "../createRouter";
@@ -123,6 +124,31 @@ export const issueRouter = createRouter()
           },
         },
       });
+    },
+  })
+  .mutation("delete", {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ ctx, input }) {
+      const sessionUser = await ctx.requireUser();
+      const dbUser = await ctx.prisma.user.findUnique({
+        where: { id: sessionUser.id },
+        select: { roles: true },
+      });
+
+      if (!dbUser?.roles.includes("ADMIN")) {
+        throw new TRPCError({
+          message: "Must be an Admin to delete an Issue.",
+          code: "UNAUTHORIZED",
+        });
+      }
+
+      const issue = await ctx.prisma.issue.delete({
+        where: { id: input.id },
+      });
+
+      return issue;
     },
   })
   // Adds an event, e.g. a comment or a Status update:

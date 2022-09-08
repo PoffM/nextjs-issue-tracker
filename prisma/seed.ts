@@ -9,7 +9,7 @@ import { range } from "lodash";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Insert test posts to an empty database:
+  // Insert example data:
   if ((await prisma.issue.count()) === 0) {
     const testIssueNums = range(1, 100 + 1);
 
@@ -20,6 +20,7 @@ async function main() {
           id: "admin-id",
           name: "Admin",
           email: "admin@example.com",
+          roles: ["ADMIN"],
         },
       }),
       prisma.user.create({

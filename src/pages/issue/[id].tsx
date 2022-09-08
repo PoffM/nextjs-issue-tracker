@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AdminDeleteIssueButton } from "../../components/issue/AdminDeleteIssueButton";
 import { IssueEventList } from "../../components/issue/IssueEventList";
 import { IssueStatusBadge } from "../../components/issue/IssueStatusBadge";
 import { trpc } from "../../utils/trpc";
@@ -14,7 +15,7 @@ export default function IssuePage() {
   return (
     <main className="flex justify-center">
       {issue && (
-        <div className="flex w-[600px] flex-col gap-4">
+        <div className="flex w-full max-w-[600px] flex-col gap-4">
           <Head>
             <title>{issue.title}</title>
           </Head>
@@ -28,10 +29,11 @@ export default function IssuePage() {
             </div>
             <div>{issue.description}</div>
           </div>
-          <div>
+          <div className="flex justify-between">
             <Link href={`/issue/edit?id=${issue.id}`}>
               <a className="btn">Edit</a>
             </Link>
+            <AdminDeleteIssueButton issueId={issue.id} />
           </div>
           <div className="divider"></div>
           <IssueEventList issue={issue} />

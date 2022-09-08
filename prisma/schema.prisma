@@ -56,6 +56,10 @@ model IssueEvent {
   createdBy User  @relation(fields: [createdByUserId], references: [id])
 }
 
+enum UserRole {
+  ADMIN
+}
+
 // next-auth User
 model User {
   // next-auth fields:
@@ -68,6 +72,7 @@ model User {
   sessions      Session[]
 
   // Custom fields:
+  roles       UserRole[]
   issues      Issue[]
   issueEvents IssueEvent[]
 }

@@ -59,15 +59,11 @@ export async function requestContext(
     return await getServerSession(opts?.req, opts?.res, nextAuthOptions);
   }
 
-  /** Returns the user if logged in, otherwise  */
-  async function requireUser() {
+  async function getUserOrNull() {
     const session = await getSession();
 
     if (!session) {
-      throw new TRPCError({
-        message: "Must be logged in.",
-        code: "UNAUTHORIZED",
-      });
+      return null;
     }
 
     // Ensure there is a valid user (with an ID) in the session:
@@ -76,7 +72,21 @@ export async function requestContext(
     return user;
   }
 
-  return { ...globalContext, getSession, requireUser };
+  /** Returns the user if logged in, otherwise  */
+  async function requireUser() {
+    const user = await getUserOrNull();
+
+    if (!user) {
+      throw new TRPCError({
+        message: "Must be logged in.",
+        code: "UNAUTHORIZED",
+      });
+    }
+
+    return user;
+  }
+
+  return { ...globalContext, getSession, requireUser, getUserOrNull };
 }
 
 export type RequestContext = trpc.inferAsyncReturnType<typeof requestContext>;

@@ -20,6 +20,23 @@ export const appRouter = createRouter()
     resolve: () => "UP",
   })
   .merge("issue.", issueRouter)
+  /**
+   * Returns info about the current user.
+   */
+  .query("me", {
+    async resolve({ ctx }) {
+      const sessionUser = await ctx.getUserOrNull();
+      if (!sessionUser) {
+        return null;
+      }
+
+      const dbUser = await ctx.prisma.user.findUnique({
+        select: { id: true, name: true, roles: true },
+        where: { id: sessionUser.id },
+      });
+      return dbUser;
+    },
+  })
   .formatError(({ shape, error }) => {
     return {
       ...shape,
