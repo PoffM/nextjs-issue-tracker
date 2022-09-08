@@ -1,3 +1,4 @@
+import { startCase } from "lodash";
 import { ReactNode } from "react";
 import { datetimeString } from "../../utils/datetimeString";
 import { inferQueryOutput } from "../../utils/trpc";
@@ -30,6 +31,12 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
               {event.title}
             </div>
           )}
+          {event.status && (
+            <div>
+              <label className="font-bold">Status: </label>
+              {startCase(event.status)}
+            </div>
+          )}
           {event.description && (
             <div>
               <label className="font-bold">Description:</label>
@@ -48,8 +55,8 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
       )}
       {event.status && (
         <div>
-          {username} changed the status to {event.status.replaceAll("_", " ")}{" "}
-          on {timestamp}
+          {username} changed the status to {startCase(event.status)} on{" "}
+          {timestamp}
         </div>
       )}
       {event.description && (
