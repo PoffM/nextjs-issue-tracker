@@ -108,7 +108,7 @@ export function IssueTable() {
     columns,
     defaultSortField: "id",
     defaultFilter: { status: "OPEN" },
-    getQueryInput: (it) => it,
+    getQueryInput: (queryInput) => queryInput,
   });
 
   return (

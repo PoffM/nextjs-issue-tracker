@@ -16,6 +16,7 @@ export interface QueryTableProps<
   table: ReturnType<typeof useQueryTable<TData, TOrderField, TFilter>>;
 }
 
+/** Renders the data returned from the useQueryTable hook. */
 export function QueryTable<
   TData,
   TOrderField extends string = never,

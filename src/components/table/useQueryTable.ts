@@ -67,7 +67,7 @@ export interface UseQueryTableParams<
 
 /**
  * Connects an asynchronous list data query to react-table's useTable hook.
- * Stores pagination and sorting state.
+ * Stores pagination, sort and filter state.
  *
  * The query must accept take/skip pagination input, and must return the current
  * page's data and a total record count.

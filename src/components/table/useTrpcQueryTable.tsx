@@ -53,6 +53,8 @@ export interface UseTrpcQueryTableParams<TPath extends ListQueryName>
   /**
    * Get the path's query input, given the table hook's internally stored
    * pagination+sorting+filter state.
+   *
+   * Required because the actual route's input can extend the base ListQueryInput.
    */
   getQueryInput: (
     listQueryInput: ListQueryInput<OrderField<TPath>>
