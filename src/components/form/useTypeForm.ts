@@ -43,6 +43,9 @@ export interface FieldController<T> {
  * // The field's value and onChange properties are type-safe:
  * const value: string = fieldHandle.fieldProps.value;
  * fieldHandle.fieldProps.onChange("My post");
+ *
+ * // Typical usage in a form component:
+ * return <TextField field={form.field("post")} />
  * ```
  */
 export function useTypeForm<TFieldValues extends FieldValues = FieldValues>(
