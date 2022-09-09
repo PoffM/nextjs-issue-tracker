@@ -31,8 +31,8 @@ function dateTimeColumnDef(
 
 const columns = [
   // On mobile screens: The first column shows the "Issue" header
-  // with
-  // Condensed column for mobile screens only:
+  // with Issue number and Status in a condensed table cell.
+  // On desktop: Expands these fields to multiple columns.
   accessor("id", {
     header: () => (
       <span>
