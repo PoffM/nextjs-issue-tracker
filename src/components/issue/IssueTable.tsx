@@ -124,51 +124,49 @@ export function IssueTable() {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="flex gap-8">
-            <div className="flex items-center gap-4">
-              {(["OPEN", "CLOSED"] as const).map((statusOption) => (
-                <label
-                  key={statusOption}
-                  className="flex cursor-pointer items-center gap-1"
-                >
-                  <input
-                    type="radio"
-                    className="radio radio-accent"
-                    checked={table.filter?.status === statusOption}
-                    onChange={() =>
-                      table.setFilter((it) => ({ ...it, status: statusOption }))
-                    }
-                  />
-                  {startCase(statusOption)}
-                </label>
-              ))}
-            </div>
-            <TextField
-              field={searchForm.field("search")}
-              className="w-[300px]"
-              dir="row"
-              inputElement={(inputProps) => (
-                <div className="input-group">
-                  <input
-                    {...inputProps}
-                    className="input input-bordered"
-                    type="search"
-                    ref={searchInputRef}
-                  />
-                  <button className="btn">
-                    <ImSearch size="18px" />
-                  </button>
-                </div>
-              )}
-            />
-          </div>
-        </div>
-        <div className="flex justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between">
+        <div className="flex justify-between self-end">
           <Link href="/issue/new">
             <a className="btn btn-primary">Create Issue</a>
           </Link>
+        </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
+          <div className="flex items-center gap-4">
+            {(["OPEN", "CLOSED"] as const).map((statusOption) => (
+              <label
+                key={statusOption}
+                className="flex cursor-pointer items-center gap-1"
+              >
+                <input
+                  type="radio"
+                  className="radio radio-accent"
+                  checked={table.filter?.status === statusOption}
+                  onChange={() =>
+                    table.setFilter((it) => ({ ...it, status: statusOption }))
+                  }
+                />
+                {startCase(statusOption)}
+              </label>
+            ))}
+          </div>
+          <TextField
+            field={searchForm.field("search")}
+            className="sm:max-w-[300px]"
+            dir="row"
+            inputElement={(inputProps) => (
+              <div className="input-group">
+                <input
+                  {...inputProps}
+                  className="input input-bordered grow"
+                  type="search"
+                  ref={searchInputRef}
+                />
+                <button className="btn" onClick={() => void submitSearch()}>
+                  <ImSearch size="18px" />
+                </button>
+              </div>
+            )}
+          />
         </div>
       </div>
       <QueryTable table={table} />
