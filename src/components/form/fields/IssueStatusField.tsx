@@ -44,13 +44,19 @@ export function IssueStatusField({
       )}
     >
       {({ fieldProps: { value, onChange, ...fieldProps } }) => (
-        <Select<IssueStatusOption>
-          {...fieldProps}
-          options={options}
-          value={options.find((option) => option.value === value)}
-          onChange={(option) => onChange(option?.value)}
-          {...reactSelectStyle}
-        />
+        <>
+          <Select<IssueStatusOption>
+            {...fieldProps}
+            options={options}
+            value={options.find((option) => option.value === value)}
+            onChange={(option) => onChange(option?.value)}
+            {...reactSelectStyle}
+          />
+          {/* Invisible spacer div to make room for the dropdown options if it's at the bottom of the page */}
+          <div className="relative">
+            <div className="absolute h-[250px] w-[1px]"></div>
+          </div>
+        </>
       )}
     </FieldWrapper>
   );
