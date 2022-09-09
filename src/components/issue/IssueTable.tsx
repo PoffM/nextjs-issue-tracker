@@ -1,8 +1,11 @@
-// import { Prisma } from "@prisma/client";
-import { createColumnHelper, IdentifiedColumnDef } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { startCase } from "lodash";
 import Link from "next/link";
-import { datetimeString } from "../../utils/datetimeString";
+import { useEffect, useRef } from "react";
+import { ImSearch } from "react-icons/im";
+import { TextField } from "../form/fields/TextField";
+import { useTypeForm } from "../form/useTypeForm";
+import { dateTimeColumnDef } from "../table/dateTimeColumnDef";
 import { QueryTable } from "../table/QueryTable";
 import { ListItemType, useTrpcQueryTable } from "../table/useTrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
@@ -17,17 +20,6 @@ const accessor: typeof columnHelper.accessor = (accessor, column) =>
     enableSorting: false,
     ...column,
   });
-
-/** Helper function for creating Date columns. */
-function dateTimeColumnDef(
-  header: string
-): IdentifiedColumnDef<IssueListItem, Date> {
-  return {
-    header,
-    cell: (ctx) => datetimeString(ctx.getValue()),
-    size: 50,
-  };
-}
 
 const columns = [
   // On mobile screens: The first column shows the "Issue" header
@@ -111,28 +103,66 @@ export function IssueTable() {
     getQueryInput: (queryInput) => queryInput,
   });
 
+  const searchForm = useTypeForm({ defaultValues: { search: "" } });
+
+  const submitSearch = searchForm.handleSubmit((data) => {
+    table.setFilter((filter) => ({
+      ...filter,
+      search: data.search.trim() || undefined,
+    }));
+  });
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  // One the search input, when the user presses enter or presses
+  // the clear (x) button, submit the search:
+  useEffect(() => {
+    const input = searchInputRef.current;
+    const submitCallback = () => void submitSearch();
+    input?.addEventListener("search", submitCallback);
+    return () => input?.removeEventListener("search", submitCallback);
+  }, [submitSearch]);
+
   return (
     <div className="space-y-2">
       <div className="flex items-end justify-between">
         <div>
-          <label className="font-bold">Filter Issues</label>
-          <div className="flex items-center gap-4">
-            {(["OPEN", "CLOSED"] as const).map((statusOption) => (
-              <label
-                key={statusOption}
-                className="flex cursor-pointer items-center gap-1"
-              >
-                <input
-                  type="radio"
-                  className="radio radio-accent"
-                  checked={table.filter?.status === statusOption}
-                  onChange={() =>
-                    table.setFilter((it) => ({ ...it, status: statusOption }))
-                  }
-                />
-                {startCase(statusOption)}
-              </label>
-            ))}
+          <div className="flex gap-8">
+            <div className="flex items-center gap-4">
+              {(["OPEN", "CLOSED"] as const).map((statusOption) => (
+                <label
+                  key={statusOption}
+                  className="flex cursor-pointer items-center gap-1"
+                >
+                  <input
+                    type="radio"
+                    className="radio radio-accent"
+                    checked={table.filter?.status === statusOption}
+                    onChange={() =>
+                      table.setFilter((it) => ({ ...it, status: statusOption }))
+                    }
+                  />
+                  {startCase(statusOption)}
+                </label>
+              ))}
+            </div>
+            <TextField
+              field={searchForm.field("search")}
+              className="w-[300px]"
+              dir="row"
+              inputElement={(inputProps) => (
+                <div className="input-group">
+                  <input
+                    {...inputProps}
+                    className="input input-bordered"
+                    type="search"
+                    ref={searchInputRef}
+                  />
+                  <button className="btn">
+                    <ImSearch size="18px" />
+                  </button>
+                </div>
+              )}
+            />
           </div>
         </div>
         <div className="flex justify-between">

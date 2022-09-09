@@ -87,6 +87,7 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
       mutation={mutation}
       onSuccess={({ data }) => onSuccess?.(data.issue)}
       preSubmitTransform={(data) => ({
+        // Only submit changed values:
         ...shallowDiff(defaultValues, data),
         issueId,
       })}

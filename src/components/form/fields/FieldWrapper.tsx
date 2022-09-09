@@ -7,6 +7,8 @@ export interface FieldProps<T> {
   className?: string;
   label?: string;
   field: FieldHandle<T>;
+  /** Layout direction. Default is column. */
+  dir?: "row" | "column";
 }
 
 export interface FieldWrapperProps<T> extends FieldProps<T> {
@@ -18,6 +20,7 @@ export function FieldWrapper<T>({
   children,
   field,
   label = startCase(field.name),
+  dir,
 }: FieldWrapperProps<T>) {
   const controller = field.useController();
   const {
@@ -26,7 +29,7 @@ export function FieldWrapper<T>({
 
   return (
     <div className={clsx("form-control", className)}>
-      <label>
+      <label className={clsx(dir === "row" && "flex flex-row gap-1")}>
         <div className="label">
           <span className={clsx("label-text font-bold", error && "text-error")}>
             {label}

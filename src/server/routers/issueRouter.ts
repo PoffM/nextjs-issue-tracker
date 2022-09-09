@@ -41,7 +41,8 @@ export const issueRouter = createRouter()
       }),
       filter: z
         .object({
-          status: z.enum(["OPEN", "CLOSED"]),
+          status: z.enum(["OPEN", "CLOSED"]).optional(),
+          search: z.string().optional(),
         })
         .optional(),
     }),
@@ -55,6 +56,12 @@ export const issueRouter = createRouter()
               ? ["CLOSED", "RESOLVED"]
               : ["NEW", "IN_PROGRESS"],
         },
+        ...(filter.search && {
+          OR: {
+            title: { search: filter.search },
+            description: { search: filter.search },
+          },
+        }),
       };
 
       const [count, records] = await ctx.prisma.$transaction([

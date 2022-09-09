@@ -1,5 +1,6 @@
 import { flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
+import { clamp } from "lodash";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
@@ -114,7 +115,7 @@ export function QueryTable<
           </button>
           <button className="btn">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {clamp(table.getPageCount(), 1, Infinity)}
           </button>
           <button
             className="btn"
