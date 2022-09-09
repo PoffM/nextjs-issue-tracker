@@ -13,6 +13,7 @@ Full-stack TypeScript Issue Tracker web application.
 - Type-safe API using [TRPC](https://trpc.io/).
 - Type-safe database access using [Prisma](https://www.prisma.io/).
 - Type-safe form state management using [react-hook-form](https://react-hook-form.com/).
+- Automatic code linting and formatting on Git commit, using lint-staged, eslint and prettier
 
 ## Stack
 
