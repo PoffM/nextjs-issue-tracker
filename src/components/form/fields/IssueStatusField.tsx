@@ -1,4 +1,5 @@
 import { IssueStatus } from "@prisma/client";
+import clsx from "clsx";
 import { compact, startCase } from "lodash";
 import Select from "react-select";
 import { FieldProps, FieldWrapper } from "./FieldWrapper";
@@ -31,10 +32,17 @@ export function IssueStatusField({
       })),
   ]);
 
-  const reactSelectStyle = useReactSelectStyle<IssueStatusOption>("w-[320px]");
+  const reactSelectStyle = useReactSelectStyle<IssueStatusOption>();
 
   return (
-    <FieldWrapper {...fieldProps}>
+    <FieldWrapper
+      {...fieldProps}
+      className={clsx(
+        // Min width must be bigger when fitting the "Keep Current Status" option:
+        currentStatus ? "min-w-[320px]" : "min-w-[200px]",
+        fieldProps.className
+      )}
+    >
       {({ fieldProps: { value, onChange, ...fieldProps } }) => (
         <Select<IssueStatusOption>
           {...fieldProps}

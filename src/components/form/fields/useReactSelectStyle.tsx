@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useMemo } from "react";
 import { GroupBase, StylesConfig } from "react-select";
 import { useColorMode } from "../../color-mode/useColorMode";
@@ -8,7 +7,6 @@ interface useReactSelectStyleReturn<
   IsMulti extends boolean = boolean,
   Group extends GroupBase<Option> = GroupBase<Option>
 > {
-  className: string;
   styles: StylesConfig<Option, IsMulti, Group>;
 }
 
@@ -20,7 +18,7 @@ export function useReactSelectStyle<
   Option = unknown,
   IsMulti extends boolean = boolean,
   Group extends GroupBase<Option> = GroupBase<Option>
->(className?: string): useReactSelectStyleReturn<Option, IsMulti, Group> {
+>(): useReactSelectStyleReturn<Option, IsMulti, Group> {
   const { colorMode } = useColorMode();
 
   return useMemo(() => {
@@ -37,7 +35,7 @@ export function useReactSelectStyle<
     return {
       // input-bordered gives the input the same border
       // opacity/color as the other daisyUI inputs:
-      className: clsx("input-bordered", className),
+      className: "input-bordered",
       styles: {
         control: (base) => ({
           ...base,
@@ -66,5 +64,5 @@ export function useReactSelectStyle<
         input: (base) => ({ ...base, color: "inherit" }),
       },
     };
-  }, [className, colorMode]);
+  }, [colorMode]);
 }

@@ -43,7 +43,7 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
       onSuccess={() => form.reset()}
     >
       <TextField field={form.field("comment")} label="Add a Comment" textarea />
-      <div className="flex items-end justify-end gap-2">
+      <div className="flex flex-col items-end gap-2 sm:flex-row sm:justify-end">
         <IssueStatusField
           field={form.field("status")}
           label="New Status"

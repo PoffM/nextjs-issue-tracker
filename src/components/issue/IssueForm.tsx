@@ -24,7 +24,7 @@ export function IssueForm({ id, onSuccess }: IssueFormProps) {
   const formProps = { onSuccess };
 
   return (
-    <div>
+    <div className="w-full max-w-[600px]">
       <ErrorAlert error={error} />
       {id ? (
         issue && <IssueUpdateForm data={issue} {...formProps} />
@@ -107,8 +107,8 @@ interface IssueFormFieldsProps {
 
 function IssueFormFields({ form }: IssueFormFieldsProps) {
   return (
-    <div className="flex w-[600px] flex-col gap-2">
-      <div className="flex items-end gap-2">
+    <div className="space-y-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <TextField field={form.field("title")} className="grow" />
         <IssueStatusField field={form.field("status")} />
       </div>
