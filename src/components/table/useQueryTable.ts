@@ -41,7 +41,6 @@ export interface TableProvidedQueryParams<
   listQueryInput: ListQueryInput<TOrderField, TFilter>;
   queryOptions: {
     keepPreviousData: boolean;
-    onSettled: () => void;
   };
 }
 
@@ -96,11 +95,16 @@ export function useQueryTable<
     _setFilter(updater);
     // When the filter changes, reset to page 1:
     setPagination((it) => ({ ...it, pageIndex: 0 }));
+    scrollToTopOfTable();
   };
 
   const [sorting, setSorting] = useState<SortingState & { id: TOrderField }[]>(
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
+
+  function scrollToTopOfTable() {
+    tableRef.current?.scrollIntoView({ inline: "start" });
+  }
 
   const listQueryInput: ListQueryInput<TOrderField, TFilter> = {
     take: pageSize,
@@ -117,10 +121,6 @@ export function useQueryTable<
     queryOptions: {
       // Keep the previous page's data in the table while the next page is loading:
       keepPreviousData: true,
-      onSettled: () => {
-        // Scroll to the top of the table:
-        tableRef.current?.scrollIntoView();
-      },
     },
   });
 
@@ -141,7 +141,10 @@ export function useQueryTable<
 
     // Pagination props:
     pageCount,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      setPagination(updater);
+      scrollToTopOfTable();
+    },
     manualPagination: true,
 
     // Sorting props:
@@ -156,6 +159,7 @@ export function useQueryTable<
       setSorting(newSort as any);
       // On sort change, also reset to page 1:
       setPagination((it) => ({ ...it, pageIndex: 0 }));
+      scrollToTopOfTable();
     },
 
     debugTable: true,
