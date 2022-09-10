@@ -116,7 +116,7 @@ export function useQueryTable<
     filter,
   };
 
-  const { data, error, isPreviousData } = useQuery({
+  const query = useQuery({
     listQueryInput,
     queryOptions: {
       // Keep the previous page's data in the table while the next page is loading:
@@ -124,7 +124,7 @@ export function useQueryTable<
     },
   });
 
-  const { records, count } = data ?? {};
+  const { records, count } = query.data ?? {};
 
   const pageCount = count && Math.ceil(count / pageSize);
 
@@ -165,5 +165,5 @@ export function useQueryTable<
     debugTable: true,
   });
 
-  return { ...table, error, isPreviousData, tableRef, filter, setFilter };
+  return { ...table, query, tableRef, filter, setFilter };
 }

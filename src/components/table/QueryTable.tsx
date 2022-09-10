@@ -24,7 +24,11 @@ export function QueryTable<
   TOrderField extends string = never,
   TFilter = never
 >({
-  table: { error, isPreviousData, tableRef, ...table },
+  table: {
+    query: { data, error, isPreviousData },
+    tableRef,
+    ...table
+  },
 }: QueryTableProps<TData, TOrderField, TFilter>) {
   return (
     <div className="space-y-2">
@@ -98,6 +102,7 @@ export function QueryTable<
             ))}
           </tbody>
         </table>
+        {data?.count === 0 && <div>No results</div>}
         <div className="btn-group">
           <button
             className="btn"
