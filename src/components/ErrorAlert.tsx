@@ -9,7 +9,7 @@ export interface ErrorAlertProps {
 /** Renders an error message in a red alert box. */
 export function ErrorAlert({ error }: ErrorAlertProps) {
   return error ? (
-    <div className="bg alert alert-error shadow-lg">
+    <div className="bg alert alert-error shadow-lg dark:bg-red-900 dark:text-base-content">
       <div>
         <VscError className="aspect-square min-w-[25px]" />
         <span>{error?.message}</span>
