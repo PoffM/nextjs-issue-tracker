@@ -1,31 +1,22 @@
-import { createColumnHelper } from "@tanstack/react-table";
 import { startCase } from "lodash";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ImSearch } from "react-icons/im";
 import { TextField } from "../form/fields/TextField";
 import { useTypeForm } from "../form/useTypeForm";
+import { createTrpcTableColumnHelper } from "../table/createTrpcTableColumnHelper";
 import { dateTimeColumnDef } from "../table/dateTimeColumnDef";
 import { QueryTable } from "../table/QueryTable";
-import { ListItemType, useTrpcQueryTable } from "../table/useTrpcQueryTable";
+import { useTrpcQueryTable } from "../table/useTrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
-type IssueListItem = ListItemType<"issue.list">;
-
-const columnHelper = createColumnHelper<IssueListItem>();
-
-/** Override default config when creating accessors. */
-const accessor: typeof columnHelper.accessor = (accessor, column) =>
-  columnHelper.accessor(accessor, {
-    enableSorting: false,
-    ...column,
-  });
+const columnHelper = createTrpcTableColumnHelper<"issue.list">();
 
 const columns = [
   // On mobile screens: The first column shows the "Issue" header
   // with Issue number and Status in a condensed table cell.
   // On desktop: Expands these fields to multiple columns.
-  accessor("id", {
+  columnHelper.accessor("id", {
     header: () => (
       <span>
         <span className="hidden sm:table-cell">Number</span>
@@ -57,19 +48,19 @@ const columns = [
     maxSize: 50,
     enableSorting: true,
   }),
-  accessor("createdAt", {
+  columnHelper.accessor("createdAt", {
     ...dateTimeColumnDef("Created On"),
     enableSorting: true,
     size: 50,
     meta: { className: "hidden lg:table-cell" },
   }),
-  accessor("status", {
+  columnHelper.accessor("status", {
     header: "Status",
     cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
     size: 120,
     meta: { className: "hidden sm:table-cell" },
   }),
-  accessor("title", {
+  columnHelper.accessor("title", {
     header: "Title",
     cell: (ctx) => (
       <Link href={`/issue/${ctx.row.original.id}`}>
@@ -85,7 +76,7 @@ const columns = [
     maxSize: 400,
     meta: { className: "hidden sm:table-cell" },
   }),
-  accessor("updatedAt", {
+  columnHelper.accessor("updatedAt", {
     ...dateTimeColumnDef("Last Updated"),
     enableSorting: true,
     size: 50,
