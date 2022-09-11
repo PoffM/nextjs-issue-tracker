@@ -19,6 +19,17 @@ const zIssueCreateArgs = z.object({
 
 const userShallowInclude = { select: { id: true, name: true } } as const;
 
+/** Convert a user-supplied string to a Postgres tsquery-safe search string. */
+function safeSearchString(rawSearchText: string) {
+  return (
+    rawSearchText
+      // Remove all non-searchable characters e.g. !@#<>?
+      .replaceAll(/[^a-zA-Z0-9\s]/g, " ")
+      // Replace spaces with "&", e.g. "Example Issue" -> "Example&Issue"
+      .replaceAll(/\s+/g, "&")
+  );
+}
+
 export const issueRouter = createRouter()
   .query("findOne", {
     input: z.object({
@@ -42,7 +53,7 @@ export const issueRouter = createRouter()
       filter: z
         .object({
           status: z.enum(["OPEN", "CLOSED"]).optional(),
-          search: z.string().optional(),
+          search: z.string().transform(safeSearchString).optional(),
         })
         .optional(),
     }),
