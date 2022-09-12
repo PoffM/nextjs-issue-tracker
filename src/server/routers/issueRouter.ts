@@ -25,6 +25,7 @@ function safeSearchString(rawSearchText: string) {
     rawSearchText
       // Remove all non-searchable characters e.g. !@#<>?
       .replaceAll(/[^a-zA-Z0-9\s]/g, " ")
+      .trim()
       // Replace spaces with "&", e.g. "Example Issue" -> "Example&Issue"
       .replaceAll(/\s+/g, "&")
   );
