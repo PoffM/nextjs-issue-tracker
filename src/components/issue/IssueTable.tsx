@@ -1,6 +1,5 @@
 import { startCase } from "lodash";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 import { ImSearch } from "react-icons/im";
 import { TextField } from "../form/fields/TextField";
 import { useTypeForm } from "../form/useTypeForm";
@@ -103,16 +102,6 @@ export function IssueTable() {
     }));
   });
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  // One the search input, when the user presses enter or presses
-  // the clear (x) button, submit the search:
-  useEffect(() => {
-    const input = searchInputRef.current;
-    const submitCallback = () => void submitSearch();
-    input?.addEventListener("search", submitCallback);
-    return () => input?.removeEventListener("search", submitCallback);
-  }, [submitSearch]);
-
   return (
     <div className="space-y-2">
       <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between">
@@ -150,7 +139,9 @@ export function IssueTable() {
                   {...inputProps}
                   className="input input-bordered grow"
                   type="search"
-                  ref={searchInputRef}
+                  // When the user presses enter or the input's clear (x) button, submit the search:
+                  // @ts-expect-error "onsearch" is not in the type definition but works at runtime.
+                  ref={(ref) => ref && (ref.onsearch = submitSearch)}
                 />
                 <button className="btn" onClick={() => void submitSearch()}>
                   <ImSearch size="18px" />
