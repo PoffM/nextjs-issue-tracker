@@ -1,5 +1,4 @@
 import { Issue } from "@prisma/client";
-import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { trpc } from "../../utils/trpc";
 import { IssueCommentForm } from "./IssueCommentForm";
@@ -30,12 +29,13 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     });
   }
 
-  const [loadButtonRef, loadButtonInView] = useInView();
-  useEffect(() => {
-    if (hasNextPage && loadButtonInView) {
-      void fetchNextPage();
-    }
-  }, [loadButtonInView, fetchNextPage, hasNextPage]);
+  const [loadButtonRef] = useInView({
+    onChange(inView) {
+      if (hasNextPage && inView) {
+        void fetchNextPage();
+      }
+    },
+  });
 
   return eventsData ? (
     <div className="flex flex-col gap-4">
