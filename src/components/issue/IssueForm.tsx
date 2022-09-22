@@ -53,10 +53,8 @@ function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
       onSuccess={({ data }) => onSuccess?.(data)}
     >
       <IssueFormFields
-        form={
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-          form as any
-        }
+        // @ts-expect-error Should work because the create and update forms use the same fields; TODO improve the type checking
+        form={form}
       />
     </MutationForm>
   );

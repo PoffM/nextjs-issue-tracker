@@ -152,11 +152,10 @@ export function useQueryTable<
     enableMultiSort: false,
     enableSortingRemoval: false,
     onSortingChange: (newSort) => {
-      // Setting the sort through react-table is technically type-unsafe because
+      // @ts-expect-error Setting the sort through react-table is technically type-unsafe because
       // the back-end doesn't recognize every string it gets as a sortable field.
       // This should be fine as long as unsortable columns aren't given the "enableSorting" param:
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      setSorting(newSort as any);
+      setSorting(newSort);
       // On sort change, also reset to page 1:
       setPagination((it) => ({ ...it, pageIndex: 0 }));
       scrollToTopOfTable();

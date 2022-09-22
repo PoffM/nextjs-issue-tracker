@@ -88,10 +88,9 @@ export function useTrpcQueryTable<TPath extends ListQueryName>({
       const queryInput = getQueryInput(listQueryInput);
       const queryTuple: [TPath, inferQueryInput<TPath>] = [path, queryInput];
 
-      // Not sure why this type check fails, but it shouldn't.
+      // @ts-expect-error Not sure why this type check fails, but it shouldn't.
       // The type guard on queryTuple should be good enough.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-      return trpc.useQuery(queryTuple as any, {
+      return trpc.useQuery(queryTuple, {
         ...queryOptions,
         onSuccess() {
           const prefetchNextPageTuple: [TPath, inferQueryInput<TPath>] = [
@@ -99,8 +98,8 @@ export function useTrpcQueryTable<TPath extends ListQueryName>({
             { ...queryInput, skip: queryInput.skip + queryInput.take },
           ];
           // Prefetch the next page to avoid the loading time:
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-          void utils.prefetchQuery(prefetchNextPageTuple as any);
+          // @ts-expect-error The type guard on prefetchNextPageTuple should be good enough.
+          void utils.prefetchQuery(prefetchNextPageTuple);
         },
       });
     },
