@@ -29,6 +29,9 @@ if (env.NODE_ENV !== "production") {
   prismaGlobal.prisma = prisma;
 }
 
+/**
+ * Global context objects that are only instantiated once per app. e.g. a database client
+ */
 export const globalContext = { prisma };
 
 /**
@@ -41,7 +44,8 @@ const zUser = z.object({
 });
 
 /**
- * Creates context for an incoming request
+ * Creates context for an incoming request.
+ * Returns objects and functions which are instantiated per request, e.g. the current user.
  * @link https://trpc.io/docs/context
  */
 export async function requestContext(

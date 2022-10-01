@@ -13,7 +13,7 @@ import {
   UseQueryTableParams,
 } from "./useQueryTable";
 
-// /** All routes that match the List Route input and output requirements. */
+/** String key of a route that matches the List Route input and output requirements. e.g. "issue.list" */
 export type ListQueryName = {
   [TPath in RouteKey]: inferProcedureOutput<TPath> extends ListQueryOutput<unknown>
     ? inferProcedureInput<TPath> extends ListQueryInput<string, unknown>

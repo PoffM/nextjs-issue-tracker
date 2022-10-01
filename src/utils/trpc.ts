@@ -139,7 +139,7 @@ export type AppRouterTypes = GetInferenceHelpers<AppRouter>;
 /** All dot paths on the router, including non-route keys. */
 type RouterDotPath = Path<AppRouterTypes>;
 
-/** All Route keys,, including queries and mutations */
+/** All TRPC procedure keys, including queries and mutations */
 export type RouteKey = {
   [P in RouterDotPath]: PathValue<AppRouterTypes, P> extends {
     input: unknown;
@@ -149,7 +149,7 @@ export type RouteKey = {
 }[RouterDotPath];
 
 /**
- * This is a helper method to infer the output of a query resolver
+ * Helper method to infer the input of a query resolver
  * @example type HelloInput = inferProcedureInput<'hello'>
  * @example type IssueListInput = inferProcedureInput<'issue.list'>
  */
@@ -157,6 +157,12 @@ export type inferProcedureInput<TRouteKey extends RouteKey> = PathValue<
   AppRouterTypes,
   TRouteKey
 >["input"];
+
+/**
+ * Helper method to infer the output of a query resolver
+ * @example type HelloOutput = inferProcedureOutput<'hello'>
+ * @example type IssueListOutput = inferProcedureOutput<'issue.list'>
+ */
 export type inferProcedureOutput<TRouteKey extends RouteKey> = PathValue<
   AppRouterTypes,
   TRouteKey
