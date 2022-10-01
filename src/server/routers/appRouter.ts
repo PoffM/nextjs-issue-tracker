@@ -1,9 +1,7 @@
 /**
  * This file contains the root router of your tRPC-backend
  */
-import superjson from "superjson";
-import { ZodError } from "zod";
-import { createRouter } from "../createRouter";
+import { t } from "../trpc";
 import { issueRouter } from "./issueRouter";
 
 /**
@@ -12,41 +10,27 @@ import { issueRouter } from "./issueRouter";
  * @link https://trpc.io/docs/ssg
  * @link https://trpc.io/docs/router
  */
-export const appRouter = createRouter()
+export const appRouter = t.router({
   /**
    * Add a health check endpoint to be called with `/api/trpc/healthz`
    */
-  .query("healthz", {
-    resolve: () => "UP",
-  })
-  .merge("issue.", issueRouter)
+  healthz: t.procedure.query(() => "UP"),
+  issue: issueRouter,
   /**
    * Returns info about the current user.
    */
-  .query("me", {
-    async resolve({ ctx }) {
-      const sessionUser = await ctx.getUserOrNull();
-      if (!sessionUser) {
-        return null;
-      }
+  me: t.procedure.query(async ({ ctx }) => {
+    const sessionUser = await ctx.getUserOrNull();
+    if (!sessionUser) {
+      return null;
+    }
 
-      const dbUser = await ctx.prisma.user.findUnique({
-        select: { id: true, name: true, roles: true },
-        where: { id: sessionUser.id },
-      });
-      return dbUser;
-    },
-  })
-  .formatError(({ shape, error }) => {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  })
-  .transformer(superjson);
+    const dbUser = await ctx.prisma.user.findUnique({
+      select: { id: true, name: true, roles: true },
+      where: { id: sessionUser.id },
+    });
+    return dbUser;
+  }),
+});
 
 export type AppRouter = typeof appRouter;

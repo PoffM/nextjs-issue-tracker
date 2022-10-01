@@ -9,11 +9,7 @@ const IssueEditPage: NextPage = () => {
   const router = useRouter();
   const id = Number(router.query.id);
 
-  const {
-    data: issue,
-    refetch,
-    error,
-  } = trpc.useQuery(["issue.findOne", { id }]);
+  const { data: issue, refetch, error } = trpc.issue.findOne.useQuery({ id });
 
   return (
     <main className="flex justify-center">

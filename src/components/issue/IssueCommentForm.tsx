@@ -1,6 +1,8 @@
 import { Issue } from "@prisma/client";
+import { inferProcedureInput } from "@trpc/server";
 import { useSession } from "next-auth/react";
-import { inferMutationInput, trpc } from "../../utils/trpc";
+import { AppRouter } from "../../server/routers/appRouter";
+import { trpc } from "../../utils/trpc";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
 import { MutationForm } from "../form/MutationForm";
@@ -16,14 +18,14 @@ interface IssueCommentFormProps {
 /** Form for adding IssueEvents (comments / status changes etc to an Issue) */
 export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   const ctx = trpc.useContext();
-  const mutation = trpc.useMutation(["issue.addEvent"], {
+  const mutation = trpc.issue.addEvent.useMutation({
     onSuccess: () => {
-      void ctx.invalidateQueries(["issue.findOne", { id: issue.id }]);
+      void ctx.issue.findOne.invalidate({ id: issue.id });
       onSuccess?.();
     },
   });
 
-  const defaultValues: inferMutationInput<"issue.addEvent"> = {
+  const defaultValues: inferProcedureInput<AppRouter["issue"]["addEvent"]> = {
     issueId: issue.id,
     comment: "",
   };

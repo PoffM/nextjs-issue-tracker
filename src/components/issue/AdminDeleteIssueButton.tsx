@@ -13,11 +13,12 @@ export function AdminDeleteIssueButton({
   issueId,
 }: AdminDeleteIssueButtonProps) {
   const router = useRouter();
-  const { data: currentUser } = trpc.useQuery(["me"]);
+
+  const { data: currentUser } = trpc.me.useQuery();
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const mutation = trpc.useMutation(["issue.delete"], {
+  const mutation = trpc.issue.delete.useMutation({
     onSuccess() {
       setModalIsOpen(false);
       void router.push("/");

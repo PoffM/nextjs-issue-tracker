@@ -1,41 +1,33 @@
-import { TRPCClientError } from "@trpc/client";
+import { UseMutationResult } from "@tanstack/react-query";
+import { TRPCClientError, TRPCClientErrorLike } from "@trpc/client";
 import { toPairs } from "lodash";
 import { ReactNode, useState } from "react";
-import { Path, UseFormReturn } from "react-hook-form";
-import { UseMutationResult } from "react-query";
+import { FieldValues, UseFormReturn } from "react-hook-form";
 import type { AppRouter } from "../../server/routers/appRouter";
 import {
-  inferMutationInput,
-  inferMutationOutput,
-  trpc,
+  inferProcedureInput,
+  inferProcedureOutput,
+  RouteKey,
 } from "../../utils/trpc";
 import { ErrorAlert } from "../ErrorAlert";
 
-type MutationKey = keyof AppRouter["_def"]["mutations"];
-
-export interface MutationFormProps<
-  TPath extends MutationKey,
-  TMutationInput extends inferMutationInput<TPath> = inferMutationInput<TPath>,
-  TMutationOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>
-> {
-  form: UseFormReturn<TMutationInput>;
+export interface MutationFormProps<TPath extends RouteKey> {
+  form: UseFormReturn<inferProcedureInput<TPath> & FieldValues>;
   mutation: UseMutationResult<
-    TMutationOutput,
-    ReturnType<typeof trpc.useMutation>["error"],
-    TMutationInput
+    inferProcedureOutput<TPath>,
+    TRPCClientErrorLike<AppRouter>,
+    inferProcedureInput<TPath>
   >;
-  onSuccess?: OnSuccessFn<TPath, TMutationInput, TMutationOutput>;
-  preSubmitTransform?: (formValues: TMutationInput) => TMutationInput;
+  onSuccess?: OnSuccessFn<TPath>;
+  preSubmitTransform?: (
+    formValues: inferProcedureInput<TPath>
+  ) => inferProcedureInput<TPath>;
   children?: ReactNode;
 }
 
-export type OnSuccessFn<
-  TPath extends MutationKey,
-  TMutationInput extends inferMutationInput<TPath>,
-  TMutationOutput = inferMutationOutput<TPath>
-> = (args: {
-  form: UseFormReturn<TMutationInput>;
-  data: TMutationOutput;
+export type OnSuccessFn<TPath extends RouteKey> = (args: {
+  form: UseFormReturn<inferProcedureInput<TPath> & FieldValues>;
+  data: inferProcedureOutput<TPath>;
 }) => Promise<unknown> | void;
 
 /**
@@ -43,17 +35,13 @@ export type OnSuccessFn<
  * * Submits the data with a TRPC mutation.
  * * Provides form and field error messages from the back-end.
  */
-export function MutationForm<
-  TPath extends MutationKey,
-  TInput extends inferMutationInput<TPath> = inferMutationInput<TPath>,
-  TOutput extends inferMutationOutput<TPath> = inferMutationOutput<TPath>
->({
+export function MutationForm<TPath extends RouteKey>({
   children,
   form,
   mutation,
   onSuccess,
   preSubmitTransform,
-}: MutationFormProps<TPath, TInput, TOutput>) {
+}: MutationFormProps<TPath>) {
   // Top-level form error message:
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -71,7 +59,10 @@ export function MutationForm<
             for (const [field, messages] of toPairs(zodError.fieldErrors)) {
               const message = messages?.join(", ");
               if (message) {
-                form.setError(field as Path<TInput>, { message });
+                // @ts-expect-error Unknown error keys shouldn't happen:
+                form.setError(field, {
+                  message,
+                });
               }
             }
             const formErrorMessage = zodError.formErrors?.join(", ");

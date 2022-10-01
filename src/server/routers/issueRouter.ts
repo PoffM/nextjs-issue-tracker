@@ -2,7 +2,7 @@ import { Issue, Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { compact } from "lodash";
 import { z } from "zod";
-import { createRouter } from "../createRouter";
+import { t } from "../trpc";
 
 export const zIssueListSortOrder = z.object({
   field: z.enum(["createdAt", "updatedAt", "id"]),
@@ -31,34 +31,37 @@ function safeSearchString(rawSearchText: string) {
   );
 }
 
-export const issueRouter = createRouter()
-  .query("findOne", {
-    input: z.object({
-      id: z.number().int(),
-    }),
-    async resolve({ ctx, input }) {
+export const issueRouter = t.router({
+  findOne: t.procedure
+    .input(
+      z.object({
+        id: z.number().int(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
       return await ctx.prisma.issue.findUnique({
         include: { createdBy: userShallowInclude },
         where: { id: input.id },
       });
-    },
-  })
-  .query("list", {
-    input: z.object({
-      take: z.number().min(0).max(50),
-      skip: z.number(),
-      order: zIssueListSortOrder.default({
-        field: "id",
-        direction: "desc",
-      }),
-      filter: z
-        .object({
-          status: z.enum(["OPEN", "CLOSED"]).optional(),
-          search: z.string().transform(safeSearchString).optional(),
-        })
-        .optional(),
     }),
-    async resolve({ ctx, input: { take, skip, order, filter } }) {
+  list: t.procedure
+    .input(
+      z.object({
+        take: z.number().min(0).max(50),
+        skip: z.number(),
+        order: zIssueListSortOrder.default({
+          field: "id",
+          direction: "desc",
+        }),
+        filter: z
+          .object({
+            status: z.enum(["OPEN", "CLOSED"]).optional(),
+            search: z.string().transform(safeSearchString).optional(),
+          })
+          .optional(),
+      })
+    )
+    .query(async ({ ctx, input: { take, skip, order, filter } }) => {
       // Ensure keyof Issue here for better type safety:
       const orderField: keyof Issue = order.field;
       const where: Prisma.IssueWhereInput | undefined = filter && {
@@ -94,14 +97,15 @@ export const issueRouter = createRouter()
       ]);
 
       return { records, count };
-    },
-  })
-  .query("listEvents", {
-    input: z.object({
-      issueId: z.number().int(),
-      cursor: z.number().int().optional(),
     }),
-    async resolve({ ctx, input: { issueId, cursor } }) {
+  listEvents: t.procedure
+    .input(
+      z.object({
+        issueId: z.number().int(),
+        cursor: z.number().int().optional(),
+      })
+    )
+    .query(async ({ ctx, input: { issueId, cursor } }) => {
       const limit = 20;
 
       const items = await ctx.prisma.issueEvent.findMany({
@@ -123,11 +127,10 @@ export const issueRouter = createRouter()
         events: items,
         nextCursor: nextItem?.id,
       };
-    },
-  })
-  .mutation("create", {
-    input: zIssueCreateArgs,
-    async resolve({ ctx, input }) {
+    }),
+  create: t.procedure
+    .input(zIssueCreateArgs)
+    .mutation(async ({ ctx, input }) => {
       const user = await ctx.requireUser();
       return await ctx.prisma.issue.create({
         data: {
@@ -143,13 +146,14 @@ export const issueRouter = createRouter()
           },
         },
       });
-    },
-  })
-  .mutation("delete", {
-    input: z.object({
-      id: z.number(),
     }),
-    async resolve({ ctx, input }) {
+  delete: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
       const sessionUser = await ctx.requireUser();
       const dbUser = await ctx.prisma.user.findUnique({
         where: { id: sessionUser.id },
@@ -168,16 +172,16 @@ export const issueRouter = createRouter()
       });
 
       return issue;
-    },
-  })
-  // Adds an event, e.g. a comment or a Status update:
-  .mutation("addEvent", {
-    input: zIssueCreateArgs.partial().extend({
-      issueId: z.number().int(),
-
-      comment: z.string().min(1).max(10_000).optional(),
     }),
-    async resolve({ ctx, input: { issueId, ...eventAttributes } }) {
+  addEvent: t.procedure
+    .input(
+      zIssueCreateArgs.partial().extend({
+        issueId: z.number().int(),
+
+        comment: z.string().min(1).max(10_000).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input: { issueId, ...eventAttributes } }) => {
       const user = await ctx.requireUser();
 
       if (!compact(Object.values(eventAttributes)).length) {
@@ -209,5 +213,5 @@ export const issueRouter = createRouter()
       ]);
 
       return { issue, event };
-    },
-  });
+    }),
+});

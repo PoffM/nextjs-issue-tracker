@@ -1,10 +1,10 @@
 import { startCase } from "lodash";
 import { ReactNode } from "react";
 import { datetimeString } from "../../utils/datetimeString";
-import { inferQueryOutput } from "../../utils/trpc";
+import { inferProcedureOutput } from "../../utils/trpc";
 
 interface IssueEventListItemProps {
-  event: inferQueryOutput<"issue.listEvents">["events"][number];
+  event: inferProcedureOutput<"issue.listEvents">["events"][number];
 }
 
 export function IssueEventListItem({ event }: IssueEventListItemProps) {

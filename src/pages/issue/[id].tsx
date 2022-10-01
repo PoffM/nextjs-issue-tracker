@@ -11,7 +11,7 @@ export default function IssuePage() {
   const { query } = useRouter();
   const id = Number(query.id);
 
-  const { data: issue, error } = trpc.useQuery(["issue.findOne", { id }]);
+  const { data: issue, error } = trpc.issue.findOne.useQuery({ id });
 
   return (
     <main className="flex justify-center">

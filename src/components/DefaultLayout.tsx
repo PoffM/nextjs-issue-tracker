@@ -1,8 +1,8 @@
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { ColorModeToggleButton } from "./color-mode/ColorModeToggleButton";
 import { LoginButton } from "./LoginButton";
 
