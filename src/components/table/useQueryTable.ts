@@ -61,7 +61,7 @@ export interface UseQueryTableParams<
   /** react-query style hook that gets called internally. */
   useQuery: (
     params: TableProvidedQueryParams<TOrderField, TFilter>
-  ) => UseQueryResult<ListQueryOutput<TData>, TableError>;
+  ) => UseQueryResult<ListQueryOutput<TData> | undefined, TableError>;
 }
 
 /**
