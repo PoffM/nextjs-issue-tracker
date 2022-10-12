@@ -1,3 +1,4 @@
+import { UseQueryResult } from "@tanstack/react-query";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -7,7 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useRef, useState } from "react";
-import { UseQueryResult } from "react-query";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

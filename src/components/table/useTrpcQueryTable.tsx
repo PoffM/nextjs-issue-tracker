@@ -1,5 +1,11 @@
-import { AppRouter } from "../../server/routers/appRouter";
-import { inferQueryInput, inferQueryOutput, trpc } from "../../utils/trpc";
+import { get } from "lodash";
+import { PathValue } from "react-hook-form";
+import {
+  inferProcedureInput,
+  inferProcedureOutput,
+  RouteKey,
+  trpc,
+} from "../../utils/trpc";
 import {
   ListQueryInput,
   ListQueryOutput,
@@ -7,24 +13,22 @@ import {
   UseQueryTableParams,
 } from "./useQueryTable";
 
-export type AllQueries = AppRouter["_def"]["queries"];
-
-/** Gets all routes that match the List Route input and output requirements. */
+/** String key of a route that matches the List Route input and output requirements. e.g. "issue.list" */
 export type ListQueryName = {
-  [TPath in keyof AllQueries]: inferQueryOutput<TPath> extends ListQueryOutput<unknown>
-    ? inferQueryInput<TPath> extends ListQueryInput<string, unknown>
+  [TPath in RouteKey]: inferProcedureOutput<TPath> extends ListQueryOutput<unknown>
+    ? inferProcedureInput<TPath> extends ListQueryInput<string, unknown>
       ? TPath
       : never
     : never;
-}[keyof AllQueries];
+}[RouteKey];
 
 /** Gets the single list item type from a List Route. */
 export type ListItemType<TPath extends ListQueryName> =
-  inferQueryOutput<TPath>["records"][number];
+  inferProcedureOutput<TPath>["records"][number];
 
 /** Gets the valid "order" field strings from a List Route. */
 export type OrderField<TPath extends ListQueryName> =
-  inferQueryInput<TPath> extends ListQueryInput<infer TOrderField, unknown>
+  inferProcedureInput<TPath> extends ListQueryInput<infer TOrderField, unknown>
     ? TOrderField extends string
       ? TOrderField
       : never
@@ -32,7 +36,7 @@ export type OrderField<TPath extends ListQueryName> =
 
 /** Gets the "filter" param from a List Route. */
 export type FilterType<TPath extends ListQueryName> =
-  inferQueryInput<TPath> extends ListQueryInput<unknown, infer TFilter>
+  inferProcedureInput<TPath> extends ListQueryInput<unknown, infer TFilter>
     ? TFilter extends Record<string, unknown>
       ? TFilter
       : never
@@ -58,7 +62,7 @@ export interface UseTrpcQueryTableParams<TPath extends ListQueryName>
    */
   getQueryInput: (
     listQueryInput: ListQueryInput<OrderField<TPath>>
-  ) => inferQueryInput<TPath>;
+  ) => inferProcedureInput<TPath>;
 }
 
 /**
@@ -86,20 +90,21 @@ export function useTrpcQueryTable<TPath extends ListQueryName>({
     columns,
     useQuery: ({ listQueryInput, queryOptions }) => {
       const queryInput = getQueryInput(listQueryInput);
-      const queryTuple: [TPath, inferQueryInput<TPath>] = [path, queryInput];
 
-      // @ts-expect-error Not sure why this type check fails, but it shouldn't.
-      // The type guard on queryTuple should be good enough.
-      return trpc.useQuery(queryTuple, {
+      const reactProcedure = get(trpc, path) as PathValue<typeof trpc, TPath>;
+
+      return reactProcedure.useQuery(queryInput, {
         ...queryOptions,
         onSuccess() {
-          const prefetchNextPageTuple: [TPath, inferQueryInput<TPath>] = [
-            path,
-            { ...queryInput, skip: queryInput.skip + queryInput.take },
-          ];
           // Prefetch the next page to avoid the loading time:
-          // @ts-expect-error The type guard on prefetchNextPageTuple should be good enough.
-          void utils.prefetchQuery(prefetchNextPageTuple);
+          const query = get(utils, path) as PathValue<
+            Omit<typeof utils, "ssrContext">,
+            TPath
+          >;
+          void query.prefetch({
+            ...queryInput,
+            skip: queryInput.skip + queryInput.take,
+          });
         },
       });
     },

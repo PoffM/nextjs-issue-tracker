@@ -1,6 +1,6 @@
 import { Issue } from "@prisma/client";
 import { shallowDiff } from "../../utils/object-shallow-diff";
-import { inferMutationInput, trpc } from "../../utils/trpc";
+import { inferProcedureInput, trpc } from "../../utils/trpc";
 import { ErrorAlert } from "../ErrorAlert";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
@@ -14,11 +14,9 @@ export interface IssueFormProps {
 }
 
 export function IssueForm({ id, onSuccess }: IssueFormProps) {
-  const { data: issue, error } = trpc.useQuery(
-    ["issue.findOne", { id: id ?? NaN }],
-    {
-      enabled: id !== undefined,
-    }
+  const { data: issue, error } = trpc.issue.findOne.useQuery(
+    { id: id ?? NaN },
+    { enabled: id !== undefined }
   );
 
   const formProps = { onSuccess };
@@ -40,14 +38,14 @@ interface IssueCreateFormProps {
 }
 
 function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
-  const form = useTypeForm<inferMutationInput<"issue.create">>({
+  const form = useTypeForm<inferProcedureInput<"issue.create">>({
     defaultValues: { status: "NEW" },
   });
 
-  const mutation = trpc.useMutation(["issue.create"]);
+  const mutation = trpc.issue.create.useMutation();
 
   return (
-    <MutationForm
+    <MutationForm<"issue.create">
       form={form}
       mutation={mutation}
       onSuccess={({ data }) => onSuccess?.(data)}
@@ -77,10 +75,10 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
     defaultValues,
   });
 
-  const mutation = trpc.useMutation(["issue.addEvent"]);
+  const mutation = trpc.issue.addEvent.useMutation();
 
   return (
-    <MutationForm
+    <MutationForm<"issue.addEvent">
       form={form}
       mutation={mutation}
       onSuccess={({ data }) => onSuccess?.(data.issue)}
@@ -96,7 +94,7 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
 }
 
 type IssueFormShape = Pick<
-  inferMutationInput<"issue.addEvent">,
+  inferProcedureInput<"issue.addEvent">,
   "title" | "status" | "description" | "issueId"
 >;
 

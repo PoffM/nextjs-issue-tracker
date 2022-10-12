@@ -4,21 +4,21 @@ import { useRouter } from "next/router";
 import { ErrorAlert } from "../../components/ErrorAlert";
 import { IssueForm } from "../../components/issue/IssueForm";
 import { trpc } from "../../utils/trpc";
+import { useRequireSession } from "../../utils/useRequireSession";
 
 const IssueEditPage: NextPage = () => {
   const router = useRouter();
   const id = Number(router.query.id);
 
-  const {
-    data: issue,
-    refetch,
-    error,
-  } = trpc.useQuery(["issue.findOne", { id }]);
+  // Require the user to be signed in:
+  const session = useRequireSession();
+
+  const { data: issue, refetch, error } = trpc.issue.findOne.useQuery({ id });
 
   return (
     <main className="flex justify-center">
       <ErrorAlert error={error} />
-      {issue && (
+      {session.status === "authenticated" && issue && (
         <>
           <Head>
             <title>{issue.title}</title>

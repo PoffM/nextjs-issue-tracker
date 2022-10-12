@@ -15,10 +15,13 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     fetchNextPage,
     refetch,
     isFetching,
-  } = trpc.useInfiniteQuery(["issue.listEvents", { issueId: issue.id }], {
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    refetchOnWindowFocus: false,
-  });
+  } = trpc.issue.listEvents.useInfiniteQuery(
+    { issueId: issue.id },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   function refetchLastPage() {
     void refetch({
@@ -29,6 +32,7 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     });
   }
 
+  // Fetch the next page when the "Load More" button comes in view.
   const [loadButtonRef] = useInView({
     onChange(inView) {
       if (hasNextPage && inView) {

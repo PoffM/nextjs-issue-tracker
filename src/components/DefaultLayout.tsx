@@ -1,8 +1,9 @@
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { ReactQueryDevtools } from "react-query/devtools";
+import { AiFillGithub } from "react-icons/ai";
 import { ColorModeToggleButton } from "./color-mode/ColorModeToggleButton";
 import { LoginButton } from "./LoginButton";
 
@@ -28,7 +29,16 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
               <a className="text-3xl font-bold">Issue Tracker</a>
             </Link>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row">
+          <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row sm:gap-4">
+            <a
+              href="https://github.com/PoffM/nextjs-issue-tracker"
+              className="hover:link"
+            >
+              <div className="flex items-center gap-1">
+                <AiFillGithub size="25px" />
+                Github Repo
+              </div>
+            </a>
             {session.status === "unauthenticated" && <LoginButton />}
             {session.status === "authenticated" && (
               <>

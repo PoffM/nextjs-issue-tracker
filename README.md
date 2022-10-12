@@ -79,9 +79,19 @@ DATABASE_URL=postgresql://my-username:my-password@example.com:5432/appdb
 
 ### Google account authentication (Optional)
 
-Read where to get these at https://next-auth.js.org/providers/google
+Find out where to get these at https://next-auth.js.org/providers/google
 
 ```
 GOOGLE_ID=example-id.apps.googleusercontent.com
 GOOGLE_SECRET=example-secret
+```
+
+### Custom Admin account password
+
+You can override the default Admin account password, e.g. for a public demo of the application where only an Admin with the password can log in.
+
+You will need to make sure the Admin user from the seed data is already inserted into the database ( `npm run db-seed` )
+
+```
+ADMIN_PASSWORD=my-password
 ```
