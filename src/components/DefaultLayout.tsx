@@ -3,6 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { AiFillGithub } from "react-icons/ai";
 import { ColorModeToggleButton } from "./color-mode/ColorModeToggleButton";
 import { LoginButton } from "./LoginButton";
 
@@ -29,6 +30,15 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
             </Link>
           </div>
           <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row">
+            <a
+              href="https://github.com/PoffM/nextjs-issue-tracker"
+              className="hover:link"
+            >
+              <div className="flex items-center gap-1">
+                <AiFillGithub size="25px" />
+                Github Repo
+              </div>
+            </a>
             {session.status === "unauthenticated" && <LoginButton />}
             {session.status === "authenticated" && (
               <>
