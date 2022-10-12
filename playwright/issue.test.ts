@@ -10,7 +10,7 @@ test("Add an issue and a comment, then delete the issue.", async ({ page }) => {
   // Login:
   await page.fill("text=Username", "user");
   await page.fill("text=Password", "user");
-  await page.click("text=Sign in with Local Dev Credentials");
+  await page.click("text=Sign in with Credentials");
 
   // Fill out the Issue form
   const testTitle = `Test Issue ${randomUUID()}`;
@@ -42,7 +42,7 @@ test("Add an issue and a comment, then delete the issue.", async ({ page }) => {
   await page.click("button >> text=Login");
   await page.fill("text=Username", "admin");
   await page.fill("text=Password", "admin");
-  await page.click("text=Sign in with Local Dev Credentials");
+  await page.click("text=Sign in with Credentials");
 
   // Go back to the new Issue's page and delete it:
   // await page.click(`a >> visible=true text="${testTitle}"`);

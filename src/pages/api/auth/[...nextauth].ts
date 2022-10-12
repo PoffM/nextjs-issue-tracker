@@ -40,30 +40,15 @@ const CREDENTIALS_PROVIDER = CredentialsProvider({
     const username = credentials?.username;
     const password = credentials?.password;
 
-    const isDevMode =
-      process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
-
-    // In dev mode allow user:user or admin:admin:
-    if (isDevMode) {
-      if (username === "admin" && password === "admin") {
-        return await globalContext.prisma.user.findUnique({
-          where: { id: "admin-id" },
-        });
-      }
-      if (username === "user" && password === "user") {
-        return await globalContext.prisma.user.findUnique({
-          where: { id: "user-id" },
-        });
-      }
+    if (username === "admin" && password === (env.ADMIN_PASSWORD || "admin")) {
+      return await globalContext.prisma.user.findUnique({
+        where: { id: "admin-id" },
+      });
     }
-
-    // Allow a custom admin password from the env variable:
-    if (env.ADMIN_PASSWORD?.length) {
-      if (username === "admin" && password === env.ADMIN_PASSWORD) {
-        return await globalContext.prisma.user.findUnique({
-          where: { id: "admin-id" },
-        });
-      }
+    if (username === "user" && password === "user") {
+      return await globalContext.prisma.user.findUnique({
+        where: { id: "user-id" },
+      });
     }
 
     // If you return null then an error will be displayed advising the user to check their details.
