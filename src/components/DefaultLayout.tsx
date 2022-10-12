@@ -29,7 +29,7 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
               <a className="text-3xl font-bold">Issue Tracker</a>
             </Link>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row">
+          <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row sm:gap-4">
             <a
               href="https://github.com/PoffM/nextjs-issue-tracker"
               className="hover:link"
