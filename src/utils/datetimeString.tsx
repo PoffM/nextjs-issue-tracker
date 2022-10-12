@@ -1,4 +1,4 @@
-/** Returns a formatted datetime */
+/** Returns a human readable formatted datetime */
 export function datetimeString(date: Date): string {
   const dateString = date.toLocaleString("fr-CA", {
     year: "numeric",
