@@ -1,15 +1,13 @@
 import { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { IssueForm } from "../../components/issue/IssueForm";
+import { useRequireSession } from "../../utils/useRequireSession";
 
 const NewIssuePage: NextPage = () => {
   const router = useRouter();
 
-  // Require the user to be singed in:
-  const session = useSession({
-    required: true,
-  });
+  // Require the user to be signed in:
+  const session = useRequireSession();
 
   return (
     <main className="flex justify-center">
