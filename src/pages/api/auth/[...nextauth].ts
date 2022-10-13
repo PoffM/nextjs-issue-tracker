@@ -7,7 +7,7 @@ import { env } from "../../../server/env";
 
 /**
  * For Logging in with a Google account.
- * Required a Google ID and secret
+ * Requires a Google ID and secret
  */
 const GOOGLE_PROVIDER =
   env.GOOGLE_ID &&
@@ -18,9 +18,7 @@ const GOOGLE_PROVIDER =
   });
 
 /**
- * Only works if either:
- * * You are in dev mode: Login using admin:admin or user:user.
- * * You've set the ADMIN_PASSWORD environment variable.
+ * Username+Password sign-in.
  *
  * This should only be used for development and demos,
  * not for a serious production deployment.
