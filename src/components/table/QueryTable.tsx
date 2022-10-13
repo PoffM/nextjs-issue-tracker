@@ -7,6 +7,7 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
+import { ImSpinner2 } from "react-icons/im";
 import { ErrorAlert } from "../ErrorAlert";
 import { useQueryTable } from "./useQueryTable";
 
@@ -25,7 +26,7 @@ export function QueryTable<
   TFilter = never
 >({
   table: {
-    query: { data, error, isPreviousData },
+    query: { data, error, isPreviousData, isLoading },
     tableRef,
     ...table
   },
@@ -35,8 +36,12 @@ export function QueryTable<
       <ErrorAlert error={error} />
       <div className="relative flex flex-col items-center gap-4">
         {/* Show a loading dimmer while loading. */}
-        {isPreviousData && (
-          <div className="absolute z-20 h-full w-full bg-base-100 bg-opacity-50"></div>
+        {(isPreviousData || isLoading) && (
+          <div className="absolute z-20 h-full w-full bg-base-100 bg-opacity-50">
+            <div className="flex h-full w-full items-center justify-center">
+              <ImSpinner2 className="animate-spin" size="30px" />
+            </div>
+          </div>
         )}
         <table
           className="table-zebra table-compact table w-full scroll-my-2"
