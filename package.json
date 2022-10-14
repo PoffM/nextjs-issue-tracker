@@ -31,7 +31,7 @@
     "@prisma/client": "^4.4.0",
     "@rehooks/local-storage": "^2.4.4",
     "@tanstack/react-query": "^4.10.3",
-    "@tanstack/react-query-devtools": "^4.11.0",
+    "@tanstack/react-query-devtools": "^4.12.0",
     "@tanstack/react-table": "^8.5.15",
     "@trpc/client": "10.0.0-proxy-beta.18",
     "@trpc/next": "10.0.0-proxy-beta.18",
