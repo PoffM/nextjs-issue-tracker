@@ -1,8 +1,8 @@
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import { GetInferenceHelpers } from "@trpc/server";
+import TRPC, { AnyRouter } from "@trpc/server";
 import { NextPageContext } from "next";
-import { Path, PathValue } from "react-hook-form";
+import { PathValue } from "react-hook-form";
 import superjson from "superjson";
 
 import type { AppRouter } from "../server/routers/appRouter";
@@ -134,36 +134,40 @@ export const trpc = createTRPCNext<AppRouter, SSRContext>({
   // },
 });
 
-export type AppRouterTypes = GetInferenceHelpers<AppRouter>;
+type inferProcedures<TRouter extends AnyRouter> = TRouter["_def"]["procedures"];
 
-/** All dot paths on the router, including non-route keys. */
-type RouterDotPath = Path<AppRouterTypes>;
-
-/** All TRPC procedure keys, including queries and mutations */
-export type RouteKey = {
-  [P in RouterDotPath]: PathValue<AppRouterTypes, P> extends {
-    input: unknown;
+/** Recursively gets all procedure dot-paths from the router. */
+type ProcedureNames<TRouter extends AnyRouter> = {
+  [P in keyof inferProcedures<TRouter>]: inferProcedures<TRouter>[P] extends {
+    _procedure: true;
   }
     ? P
+    : inferProcedures<TRouter>[P] extends AnyRouter
+    ? `${P & string}.${ProcedureNames<inferProcedures<TRouter>[P]> & string}`
     : never;
-}[RouterDotPath];
+}[keyof TRouter["_def"]["procedures"]];
+
+/** Union of all TRPC procedure dot-paths, including queries and mutations */
+export type RouteKey = ProcedureNames<AppRouter>;
 
 /**
- * Helper method to infer the input of a query resolver
+ * Helper method to infer the input of a query resolver. Supports dot-paths.
  * @example type HelloInput = inferProcedureInput<'hello'>
  * @example type IssueListInput = inferProcedureInput<'issue.list'>
  */
+// TODO re-implement using TRPC's built-in inferProcedureInput;
+// Currently that causes the output to be "void | {intended type}".
 export type inferProcedureInput<TRouteKey extends RouteKey> = PathValue<
-  AppRouterTypes,
+  AppRouter["_def"]["procedures"],
   TRouteKey
->["input"];
+>["_def"]["_input_in"];
 
 /**
- * Helper method to infer the output of a query resolver
+ * Helper method to infer the output of a query resolver. Supports dot-paths.
  * @example type HelloOutput = inferProcedureOutput<'hello'>
  * @example type IssueListOutput = inferProcedureOutput<'issue.list'>
  */
-export type inferProcedureOutput<TRouteKey extends RouteKey> = PathValue<
-  AppRouterTypes,
-  TRouteKey
->["output"];
+export type inferProcedureOutput<TRouteKey extends RouteKey> =
+  TRPC.inferProcedureOutput<
+    PathValue<AppRouter["_def"]["procedures"], TRouteKey>
+  >;

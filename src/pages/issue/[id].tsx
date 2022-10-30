@@ -32,8 +32,8 @@ export default function IssuePage() {
             <div>{issue.description}</div>
           </div>
           <div className="flex justify-between">
-            <Link href={`/issue/edit?id=${issue.id}`}>
-              <a className="btn">Edit</a>
+            <Link href={`/issue/edit?id=${issue.id}`} className="btn">
+              Edit
             </Link>
             <AdminDeleteIssueButton issueId={issue.id} />
           </div>

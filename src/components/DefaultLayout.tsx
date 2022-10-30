@@ -25,8 +25,8 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
             <ColorModeToggleButton />
           </div>
           <div className="flex flex-1 justify-center">
-            <Link href="/">
-              <a className="text-3xl font-bold">Issue Tracker</a>
+            <Link className="text-3xl font-bold" href="/">
+              Issue Tracker
             </Link>
           </div>
           <div className="flex flex-1 flex-col items-center justify-end gap-2 sm:flex-row sm:gap-4">
@@ -46,7 +46,7 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
                   Logged in as {session.data.user?.name}
                 </div>
                 <button
-                  className="btn btn-outline btn-secondary"
+                  className="btn-outline btn-secondary btn"
                   onClick={() => void signOut()}
                 >
                   Logout

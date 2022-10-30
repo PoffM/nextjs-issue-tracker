@@ -30,13 +30,12 @@ const columns = [
             <div className="mb-1 flex items-center gap-1">
               #{issue.id} <IssueStatusBadge status={issue.status} size="sm" />
             </div>
-            <Link href={`/issue/${ctx.row.original.id}`}>
-              <a
-                className="link text-blue-600 hover:text-blue-800 dark:link-accent"
-                title={issue.title}
-              >
-                {issue.title}
-              </a>
+            <Link
+              href={`/issue/${ctx.row.original.id}`}
+              className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+              title={issue.title}
+            >
+              {issue.title}
             </Link>
           </span>
           <span className="hidden sm:inline">{issue.id}</span>
@@ -62,13 +61,12 @@ const columns = [
   columnHelper.accessor("title", {
     header: "Title",
     cell: (ctx) => (
-      <Link href={`/issue/${ctx.row.original.id}`}>
-        <a
-          className="link text-blue-600 hover:text-blue-800 dark:link-accent"
-          title={ctx.getValue()}
-        >
-          {ctx.getValue()}
-        </a>
+      <Link
+        href={`/issue/${ctx.row.original.id}`}
+        className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+        title={ctx.getValue()}
+      >
+        {ctx.getValue()}
       </Link>
     ),
     size: 400,
@@ -106,8 +104,8 @@ export function IssueTable() {
     <div className="space-y-2">
       <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between">
         <div className="flex justify-between self-end">
-          <Link href="/issue/new">
-            <a className="btn btn-primary">Create Issue</a>
+          <Link href="/issue/new" className="btn-primary btn">
+            Create Issue
           </Link>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
@@ -119,7 +117,7 @@ export function IssueTable() {
               >
                 <input
                   type="radio"
-                  className="radio radio-accent"
+                  className="radio-accent radio"
                   checked={table.filter?.status === statusOption}
                   onChange={() =>
                     table.setFilter((it) => ({ ...it, status: statusOption }))
@@ -137,7 +135,7 @@ export function IssueTable() {
               <div className="input-group">
                 <input
                   {...inputProps}
-                  className="input input-bordered grow"
+                  className="input-bordered input grow"
                   type="search"
                   // When the user presses enter or the input's clear (x) button, submit the search:
                   // @ts-expect-error "onsearch" is not in the type definition but works at runtime.
