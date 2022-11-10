@@ -29,13 +29,23 @@ export function AdminDeleteIssueButton({
     <div>
       {currentUser?.roles.includes("ADMIN") && (
         <button
-          className="btn btn-link text-red-500"
+          className="btn-link btn text-red-500"
           onClick={() => setModalIsOpen(true)}
         >
           Delete Issue
         </button>
       )}
-      <div className={clsx("modal", modalIsOpen && "modal-open")}>
+      <div
+        className={clsx(
+          "modal",
+          modalIsOpen && "modal-open",
+
+          // Required for FocusTrap to work inside daisy-ui's modal class,
+          // because it requires a visible and focusable child element.
+          // The user won't see the "visible" closed modal anyway because it has 0 opacity.
+          "visible"
+        )}
+      >
         {modalIsOpen && (
           <FocusTrap>
             <div className="animate-fadeIn modal-box relative flex flex-col items-center gap-4">
