@@ -4,7 +4,6 @@ import {
   getCoreRowModel,
   PaginationState,
   RowData,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useRef, useState } from "react";
@@ -98,7 +97,7 @@ export function useQueryTable<
     scrollToTopOfTable();
   };
 
-  const [sorting, setSorting] = useState<SortingState & { id: TOrderField }[]>(
+  const [sorting, setSorting] = useState<{ id: TOrderField; desc: boolean }[]>(
     defaultSortField ? [{ id: defaultSortField, desc: true }] : []
   );
 
