@@ -12,7 +12,7 @@
     "lint": "eslint src",
     "lint-fix": "lint --fix",
     "test-dev": "dotenv -c test start-server-and-test dev 3000 test:e2e",
-    "test-start": "dotenv -c test npm run build && dotenv -c test start-server-and-test start 3000 test:e2e",
+    "test-start": "npm run db-up && dotenv -c test npm run build && dotenv -c test prisma db seed && dotenv -c test start-server-and-test start 3000 test:e2e",
     "test:e2e": "playwright test",
     "postinstall": "prisma generate",
     "prepare": "husky install"
