@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "build": "prisma migrate deploy && next build",
-    "db-up": "docker-compose up -d && wait-on --verbose tcp:5832",
+    "db-up": "docker-compose up -d && wait-on --verbose tcp:5832 && npm run init-db",
+    "init-db": "cat ./prisma/initdb.sql | docker-compose exec -T postgres psql -U postgres",
     "db-nuke": "docker-compose down --volumes --remove-orphans",
-    "dev": "npm run db-up && npx prisma migrate dev && prisma db seed && next dev",
+    "dev": "npm run db-up && prisma migrate dev && prisma db seed && next dev",
     "start": "next start",
     "lint": "eslint src",
     "lint-fix": "lint --fix",
