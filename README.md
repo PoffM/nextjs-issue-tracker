@@ -26,7 +26,6 @@ Full-stack TypeScript Issue Tracker web application.
 - [react-hook-form](https://react-hook-form.com/) (React form state management)
 - [Tailwind](https://tailwindcss.com/) (CSS utility framework)
 - [DaisyUI](https://daisyui.com/) (Tailwind-based UI component library)
-- [Jest](https://jestjs.io/) (Testing framework)
 - [Playwright](https://playwright.dev/) (End-to-end testing framework)
 
 ## Requirements
@@ -38,17 +37,15 @@ Full-stack TypeScript Issue Tracker web application.
 
 ```bash
 npm i
-npm run dx
+npm run dev
 ```
 
 ## Commands
 
 ```bash
-npm run build      # runs `prisma generate` + `prisma migrate` + `next build`
+npm run build      # runs `prisma migrate` + `next build`
 npm run db-nuke    # resets local db
-npm run dev        # starts next.js
-npm run dx         # starts postgres db + runs migrations + seeds + starts next.js
-npm test           # runs normal jest unit tests
+npm run dev        # starts postgres db + runs migrations + seeds + starts next.js
 npm run test-dev   # runs e2e tests on dev
 npm run test-start # runs e2e tests on `next start` - build required before
 npm run test:e2e   # runs e2e tests
@@ -74,7 +71,7 @@ Environment variables and their runtime validation are defined in the code at `s
 ### Database (Required)
 
 ```
-DATABASE_URL=postgresql://my-username:my-password@example.com:5432/appdb
+DATABASE_URL=postgresql://my-username:my-password@example.com:5432/devdb
 ```
 
 ### Google account authentication (Optional)

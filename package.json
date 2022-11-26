@@ -3,28 +3,21 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build:1-migrate": "prisma migrate deploy",
-    "build:2-build": "next build",
-    "build": "run-s build:*",
-    "db-up": "docker-compose up -d && npx wait-on tcp:5832",
-    "db-seed": "prisma db seed",
-    "db-migrate-dev": "npx prisma migrate dev",
+    "build": "prisma migrate deploy && next build",
+    "db-up": "docker-compose up -d && wait-on --verbose tcp:5832",
     "db-nuke": "docker-compose down --volumes --remove-orphans",
-    "dev": "next dev",
-    "dx": "run-s db-up db-migrate-dev db-seed dev",
+    "dev": "npm run db-up && npx prisma migrate dev && prisma db seed && next dev",
     "start": "next start",
     "lint": "eslint src",
-    "lint-fix": "npx lint --fix",
-    "test": "jest",
-    "test-dev": "start-server-and-test dev 3000 test:e2e",
-    "test-start": "start-server-and-test start 3000 test:e2e",
-    "test:e2e": "npm run db-seed && npx playwright test",
+    "lint-fix": "lint --fix",
+    "test-dev": "dotenv -c test start-server-and-test dev 3000 test:e2e",
+    "test-start": "dotenv -c test npm run build && dotenv -c test start-server-and-test start 3000 test:e2e",
+    "test:e2e": "playwright test",
     "postinstall": "prisma generate",
-    "prepare": "husky install",
-    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
+    "prepare": "husky install"
   },
   "prisma": {
-    "seed": "npm run ts-node prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.5",
@@ -62,13 +55,13 @@
     "@typescript-eslint/parser": "^5.44.0",
     "autoprefixer": "^10.4.13",
     "daisyui": "^2.41.0",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.28.0",
     "eslint-config-next": "^13.0.4",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.11",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
-    "npm-run-all": "^4.1.5",
     "playwright": "^1.28.0",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",
@@ -76,7 +69,7 @@
     "prisma": "^4.6.1",
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^3.2.4",
-    "ts-node": "^10.9.1",
+    "tsx": "^3.12.1",
     "typescript": "4.9.3",
     "wait-on": "^6.0.1"
   }
