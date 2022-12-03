@@ -34,7 +34,7 @@
     "focus-trap-react": "^10.0.2",
     "lodash": "^4.17.21",
     "next": "13.0.6",
-    "next-auth": "^4.18.0",
+    "next-auth": "4.17.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",

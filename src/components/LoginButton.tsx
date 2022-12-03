@@ -7,7 +7,7 @@ interface LoginButtonProps {
 
 export function LoginButton({ children }: LoginButtonProps) {
   return (
-    <button className="btn btn-primary" onClick={() => void signIn("google")}>
+    <button className="btn-primary btn" onClick={() => void signIn()}>
       {children ?? "Login"}
     </button>
   );
