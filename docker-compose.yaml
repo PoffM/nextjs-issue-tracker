@@ -7,10 +7,8 @@ services:
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
-      # Avoid using init SQL scripts here because Postgres restarts after running them,
-      # which causes timing issues when starting the database and then immediately trying to connect to it.
+      - ./prisma/initdb.sql:/docker-entrypoint-initdb.d/1-initdb.sql
     environment:
-      POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
 volumes:
   db_data:
