@@ -60,7 +60,7 @@ export async function requestContext(
     // Async import to avoid circular dependency as nextAuth imports prisma:
     const { nextAuthOptions } = await import("../pages/api/auth/[...nextauth]");
 
-    return await getServerSession(opts?.req, opts?.res, nextAuthOptions);
+    return await getServerSession(opts.req, opts.res, nextAuthOptions);
   }
 
   async function getUserOrNull() {
