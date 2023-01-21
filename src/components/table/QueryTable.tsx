@@ -14,7 +14,7 @@ import { useQueryTable } from "./useQueryTable";
 export interface QueryTableProps<
   TData,
   TOrderField extends string = never,
-  TFilter = never
+  TFilter extends object = never
 > {
   table: ReturnType<typeof useQueryTable<TData, TOrderField, TFilter>>;
 }
@@ -23,7 +23,7 @@ export interface QueryTableProps<
 export function QueryTable<
   TData,
   TOrderField extends string = never,
-  TFilter = never
+  TFilter extends object = never
 >({
   table: {
     query: { data, error, isPreviousData, isLoading },

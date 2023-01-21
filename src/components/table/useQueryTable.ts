@@ -4,9 +4,11 @@ import {
   getCoreRowModel,
   PaginationState,
   RowData,
+  Updater,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
+import { useLocalTableState } from "./table-state/useLocalTableState";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,6 +50,12 @@ export interface TableError {
   message: string;
 }
 
+export interface QueryTableState<TOrderField = never, TFilter = never> {
+  pagination: PaginationState;
+  filter?: TFilter;
+  sorting: { id: TOrderField; desc: boolean }[];
+}
+
 export interface UseQueryTableParams<
   TData,
   TOrderField = never,
@@ -61,6 +69,11 @@ export interface UseQueryTableParams<
   useQuery: (
     params: TableProvidedQueryParams<TOrderField, TFilter>
   ) => UseQueryResult<ListQueryOutput<TData> | undefined, TableError>;
+
+  useQueryTableState?: () => [
+    QueryTableState<TOrderField, TFilter>,
+    Dispatch<SetStateAction<QueryTableState<TOrderField, TFilter>>>
+  ];
 }
 
 /**
@@ -73,33 +86,32 @@ export interface UseQueryTableParams<
 export function useQueryTable<
   TData,
   TOrderField extends string = never,
-  TFilter = never
+  TFilter extends object = never
 >({
   defaultSortField,
   defaultFilter,
   columns,
   useQuery,
+  useQueryTableState = () =>
+    useLocalTableState({ defaultFilter, defaultSortField }),
 }: UseQueryTableParams<TData, TOrderField, TFilter>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 25,
-  });
+  const [{ pagination, filter, sorting }, setTableState] = useQueryTableState();
+
   const { pageIndex, pageSize } = pagination;
 
-  const [filter, _setFilter] = useState(defaultFilter);
-
-  const setFilter: typeof _setFilter = (updater) => {
-    _setFilter(updater);
-    // When the filter changes, reset to page 1:
-    setPagination((it) => ({ ...it, pageIndex: 0 }));
+  /** Change the filter, with the side effect of resetting the page to page 1. */
+  const setFilter = (newFilter?: Updater<TFilter | undefined>) => {
+    setTableState((it) => ({
+      ...it,
+      filter:
+        typeof newFilter === "function" ? newFilter(it.filter) : newFilter,
+      // When the filter changes, reset to page 1:
+      pagination: { ...it.pagination, pageIndex: 0 },
+    }));
     scrollToTopOfTable();
   };
-
-  const [sorting, setSorting] = useState<{ id: TOrderField; desc: boolean }[]>(
-    defaultSortField ? [{ id: defaultSortField, desc: true }] : []
-  );
 
   function scrollToTopOfTable() {
     tableRef.current?.scrollIntoView({ inline: "start" });
@@ -141,7 +153,11 @@ export function useQueryTable<
     // Pagination props:
     pageCount,
     onPaginationChange: (updater) => {
-      setPagination(updater);
+      setTableState((it) => ({
+        ...it,
+        pagination:
+          typeof updater === "function" ? updater(it.pagination) : updater,
+      }));
       scrollToTopOfTable();
     },
     manualPagination: true,
@@ -150,13 +166,19 @@ export function useQueryTable<
     manualSorting: true,
     enableMultiSort: false,
     enableSortingRemoval: false,
-    onSortingChange: (newSort) => {
+    onSortingChange: (sortUpdater) => {
       // @ts-expect-error Setting the sort through react-table is technically type-unsafe because
       // the back-end doesn't recognize every string it gets as a sortable field.
       // This should be fine as long as unsortable columns aren't given the "enableSorting" param:
-      setSorting(newSort);
-      // On sort change, also reset to page 1:
-      setPagination((it) => ({ ...it, pageIndex: 0 }));
+      setTableState((it) => ({
+        ...it,
+        sorting:
+          typeof sortUpdater === "function"
+            ? sortUpdater(it.sorting)
+            : sortUpdater,
+        // On sort change, also reset to page 1:
+        pagination: { ...it.pagination, pageIndex: 0 },
+      }));
       scrollToTopOfTable();
     },
 

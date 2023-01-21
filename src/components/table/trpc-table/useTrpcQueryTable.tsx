@@ -5,13 +5,13 @@ import {
   inferProcedureOutput,
   RouteKey,
   trpc,
-} from "../../utils/trpc";
+} from "../../../utils/trpc";
 import {
   ListQueryInput,
   ListQueryOutput,
   useQueryTable,
   UseQueryTableParams,
-} from "./useQueryTable";
+} from "../useQueryTable";
 
 /** String key of a route that matches the List Route input and output requirements. e.g. "issue.list" */
 export type ListQueryName = {

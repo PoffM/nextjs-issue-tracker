@@ -3,10 +3,10 @@ import Link from "next/link";
 import { ImSearch } from "react-icons/im";
 import { TextField } from "../form/fields/TextField";
 import { useTypeForm } from "../form/useTypeForm";
-import { createTrpcTableColumnHelper } from "../table/createTrpcTableColumnHelper";
+import { createTrpcTableColumnHelper } from "../table/trpc-table/createTrpcTableColumnHelper";
 import { dateTimeColumnDef } from "../table/dateTimeColumnDef";
 import { QueryTable } from "../table/QueryTable";
-import { useTrpcQueryTable } from "../table/useTrpcQueryTable";
+import { useTrpcQueryTable } from "../table/trpc-table/useTrpcQueryTable";
 import { IssueStatusBadge } from "./IssueStatusBadge";
 
 const columnHelper = createTrpcTableColumnHelper<"issue.list">();
