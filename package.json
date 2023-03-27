@@ -5,7 +5,7 @@
   "scripts": {
     "build": "prisma migrate deploy && next build",
     "db-up": "docker compose up -d && sh ./prisma/wait-for-postgres.sh",
-    "db-nuke": "docker compose down --volumes --remove-orphans",
+    "db-nuke": "docker compose down --remove-orphans",
     "dev": "npm run db-up && prisma migrate dev && prisma db seed && next dev",
     "start": "next start",
     "lint": "eslint src",
