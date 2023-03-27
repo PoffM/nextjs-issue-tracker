@@ -1,7 +1,8 @@
+import { ErrorMessage } from "@hookform/error-message";
 import { UseMutationResult } from "@tanstack/react-query";
 import { TRPCClientError, TRPCClientErrorLike } from "@trpc/client";
 import { toPairs } from "lodash";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import type { AppRouter } from "../../server/routers/appRouter";
 import {
@@ -42,13 +43,9 @@ export function MutationForm<TPath extends RouteKey>({
   onSuccess,
   preSubmitTransform,
 }: MutationFormProps<TPath>) {
-  // Top-level form error message:
-  const [formError, setFormError] = useState<string | null>(null);
-
   const onSubmit = form.handleSubmit(async (formValues) => {
     const input = preSubmitTransform?.(formValues) ?? formValues;
 
-    setFormError(null);
     try {
       const data = await mutation.mutateAsync(input, {
         onError: (error) => {
@@ -67,10 +64,10 @@ export function MutationForm<TPath extends RouteKey>({
             }
             const formErrorMessage = zodError.formErrors?.join(", ");
             if (formErrorMessage) {
-              setFormError(formErrorMessage);
+              form.setError("root", { message: formErrorMessage });
             }
           } else {
-            setFormError(error.message);
+            form.setError("root", { message: error.message });
           }
         },
       });
@@ -79,14 +76,18 @@ export function MutationForm<TPath extends RouteKey>({
       // TRPC errors are already handled in the "onError" callback;
       // Handle non-trpc errors here:
       if (error instanceof Error && !(error instanceof TRPCClientError)) {
-        setFormError(error.message);
+        form.setError("root", { message: error.message });
       }
     }
   });
 
   return (
     <form onSubmit={(e) => void onSubmit(e)}>
-      {formError && <ErrorAlert error={{ message: formError }} />}
+      <ErrorMessage<FieldValues>
+        errors={form.formState.errors}
+        name="root"
+        render={(error) => <ErrorAlert error={error} />}
+      />
       {children}
     </form>
   );
