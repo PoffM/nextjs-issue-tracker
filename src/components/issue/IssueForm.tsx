@@ -50,10 +50,7 @@ function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
       mutation={mutation}
       onSuccess={({ data }) => onSuccess?.(data)}
     >
-      <IssueFormFields
-        // @ts-expect-error Should work because the create and update forms use the same fields; TODO improve the type checking
-        form={form}
-      />
+      <IssueFormFields form={form} />
     </MutationForm>
   );
 }
@@ -71,7 +68,7 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
     ...defaultValues
   } = issue;
 
-  const form = useTypeForm<IssueFormShape>({
+  const form = useTypeForm<inferProcedureInput<"issue.addEvent">>({
     defaultValues,
   });
 
@@ -88,21 +85,20 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
         issueId,
       })}
     >
-      <IssueFormFields form={form} />
+      <IssueFormFields
+        // @ts-expect-error Should work because the create and update forms use the same fields; TODO improve the type checking
+        form={form}
+      />
     </MutationForm>
   );
 }
 
-type IssueFormShape = Pick<
-  inferProcedureInput<"issue.addEvent">,
-  "title" | "status" | "description" | "issueId"
->;
-
-interface IssueFormFieldsProps {
-  form: ReturnType<typeof useTypeForm<IssueFormShape>>;
+export interface IssueFormFieldsProps {
+  form: ReturnType<typeof useTypeForm<inferProcedureInput<"issue.create">>>;
 }
 
-function IssueFormFields({ form }: IssueFormFieldsProps) {
+/** Form fields which are common between the Create and Edit forms. */
+export function IssueFormFields({ form }: IssueFormFieldsProps) {
   return (
     <div className="space-y-2">
       <div className="flex flex-col gap-2 sm:flex-row">
