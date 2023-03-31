@@ -48,7 +48,7 @@ export interface FieldController<T> {
  * return <TextField field={form.field("post")} />
  * ```
  */
-export function useTypeForm<TFieldValues extends FieldValues = FieldValues>(
+export function useTypeForm<TFieldValues extends object>(
   props?: UseFormProps<TFieldValues>
 ) {
   const form = useForm<TFieldValues, FieldValues>(props);

@@ -85,16 +85,16 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
         issueId,
       })}
     >
-      <IssueFormFields
-        // @ts-expect-error Should work because the create and update forms use the same fields; TODO improve the type checking
-        form={form}
-      />
+      <IssueFormFields form={form} />
     </MutationForm>
   );
 }
 
 export interface IssueFormFieldsProps {
-  form: ReturnType<typeof useTypeForm<inferProcedureInput<"issue.create">>>;
+  form: Pick<
+    ReturnType<typeof useTypeForm<inferProcedureInput<"issue.create">>>,
+    "formState" | "field"
+  >;
 }
 
 /** Form fields which are common between the Create and Edit forms. */
