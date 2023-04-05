@@ -29,6 +29,7 @@ export function TextField({
             textarea ? "textarea textarea-bordered" : "input input-bordered",
             error && "input-error"
           ),
+          value: fieldProps.value ?? "",
         };
 
         return (
