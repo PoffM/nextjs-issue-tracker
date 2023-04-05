@@ -11,7 +11,7 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
   const timestamp = datetimeString(event.createdAt);
 
   const username = (
-    <span className="text-blue-600 hover:text-blue-800 dark:link-accent">
+    <span className="text-blue-600 dark:link-accent hover:text-blue-800">
       {event.createdBy.name}
     </span>
   );
@@ -91,10 +91,10 @@ interface IssueEventCardProps {
 function IssueEventCard({ header, content }: IssueEventCardProps) {
   return (
     <div className="rounded-md border border-base-content border-opacity-20">
-      <div className="border-b border-base-content border-opacity-20 p-2">
+      <div className="rounded-t-md border-b border-base-content border-opacity-20 bg-base-200 p-2">
         {header}
       </div>
-      <div className="whitespace-pre-line p-2">{content}</div>
+      <div className="whitespace-pre-line rounded-b-md p-2">{content}</div>
     </div>
   );
 }

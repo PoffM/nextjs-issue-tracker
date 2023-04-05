@@ -41,14 +41,25 @@ export function IssueEventList({ issue }: IssueEventListProps) {
     },
   });
 
-  return eventsData ? (
+  const events = eventsData?.pages.map((it) => it.events).flat();
+
+  return events ? (
     <div className="flex flex-col gap-4">
-      {eventsData.pages
-        .map((it) => it.events)
-        .flat()
-        .map((event) => (
-          <IssueEventListItem key={event.id} event={event} />
-        ))}
+      {events.map((event, idx) => (
+        <div key={event.id}>
+          <div>
+            <IssueEventListItem event={event} />
+          </div>
+          {idx !== events.length - 1 && (
+            <div className="relative">
+              <div
+                className="absolute h-4 w-[2px] bg-base-content bg-opacity-20"
+                style={{ translate: "20px" }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
       {hasNextPage && (
         <div className="flex justify-center">
           <button
