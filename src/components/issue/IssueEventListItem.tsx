@@ -49,12 +49,12 @@ export function IssueEventListItem({ event }: IssueEventListItemProps) {
   ) : (
     <>
       {event.title && (
-        <div>
+        <div className="pl-2">
           {username} changed the title to {`"${event.title}"`} on {timestamp}
         </div>
       )}
       {event.status && (
-        <div>
+        <div className="pl-2">
           {username} changed the status to {startCase(event.status)} on{" "}
           {timestamp}
         </div>
