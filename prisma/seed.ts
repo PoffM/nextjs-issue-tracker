@@ -64,6 +64,7 @@ async function main() {
       prisma.issue.create({
         data: {
           title: "Example issue with comments",
+          description: "Example description",
           createdByUserId: "example-user-id",
           events: {
             createMany: {
@@ -71,6 +72,7 @@ async function main() {
                 {
                   type: "INITIAL",
                   title: "Example issue with comments",
+                  description: "Example description",
                   createdByUserId: "example-user-id",
                 },
                 ...range(1, 100 + 1).map((commentNum) => ({
