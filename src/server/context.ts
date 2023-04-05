@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import * as trpc from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
-import { unstable_getServerSession as getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { env } from "./env";
 
