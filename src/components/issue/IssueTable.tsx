@@ -133,7 +133,7 @@ export function IssueTable() {
                   type="search"
                   // When the user presses enter or the input's clear (x) button, submit the search:
                   // @ts-expect-error "onsearch" is not in the type definition but works at runtime.
-                  ref={(ref) => ref && (ref.onsearch = submitSearch)}
+                  ref={(ref) => void (ref && (ref.onsearch = submitSearch))}
                 />
                 <button className="btn" onClick={() => void submitSearch()}>
                   <ImSearch size="18px" />
