@@ -44,7 +44,7 @@ export function QueryTable<
           </div>
         )}
         <table
-          className="table-zebra table-compact table w-full scroll-my-2"
+          className="table-zebra table-compact flex table w-full table-fixed scroll-my-2"
           ref={tableRef}
         >
           <thead>
@@ -58,7 +58,6 @@ export function QueryTable<
                       "[position:static!important]",
                       header.column.columnDef.meta?.className
                     )}
-                    style={{ width: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -95,10 +94,6 @@ export function QueryTable<
                       cell.column.columnDef.meta?.className
                     )}
                     key={cell.id}
-                    style={{
-                      width: cell.column.columnDef.size,
-                      maxWidth: cell.column.columnDef.maxSize,
-                    }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

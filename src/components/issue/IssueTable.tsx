@@ -32,7 +32,7 @@ const columns = [
             </div>
             <Link
               href={`/issue/${ctx.row.original.id}`}
-              className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+              className="link text-blue-600 dark:link-accent hover:text-blue-800"
               title={issue.title}
             >
               {issue.title}
@@ -42,42 +42,36 @@ const columns = [
         </>
       );
     },
-    size: 50,
-    maxSize: 50,
     enableSorting: true,
+    meta: { className: "sm:w-[8rem]" },
   }),
   columnHelper.accessor("createdAt", {
     ...dateTimeColumnDef("Created On"),
     enableSorting: true,
-    size: 50,
-    meta: { className: "hidden lg:table-cell" },
+    meta: { className: "hidden lg:table-cell lg:w-[14rem]" },
   }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: (ctx) => <IssueStatusBadge status={ctx.getValue()} size="sm" />,
-    size: 120,
-    meta: { className: "hidden sm:table-cell" },
+    meta: { className: "hidden sm:table-cell sm:w-[8rem]" },
   }),
   columnHelper.accessor("title", {
     header: "Title",
     cell: (ctx) => (
       <Link
         href={`/issue/${ctx.row.original.id}`}
-        className="link text-blue-600 hover:text-blue-800 dark:link-accent"
+        className="link text-blue-600 dark:link-accent hover:text-blue-800"
         title={ctx.getValue()}
       >
         {ctx.getValue()}
       </Link>
     ),
-    size: 400,
-    maxSize: 400,
-    meta: { className: "hidden sm:table-cell" },
+    meta: { className: "hidden sm:table-cell grow" },
   }),
   columnHelper.accessor("updatedAt", {
     ...dateTimeColumnDef("Last Updated"),
     enableSorting: true,
-    size: 50,
-    meta: { className: "hidden lg:table-cell" },
+    meta: { className: "hidden lg:table-cell lg:w-[15rem]" },
   }),
 ];
 
