@@ -16,7 +16,7 @@ export interface QueryTableProps<
   TOrderField extends string = never,
   TFilter = never
 > {
-  table: ReturnType<typeof useQueryTable<TData, TOrderField, TFilter>>;
+  tableState: ReturnType<typeof useQueryTable<TData, TOrderField, TFilter>>;
 }
 
 /** Renders the data returned from the useQueryTable hook. */
@@ -25,7 +25,7 @@ export function QueryTable<
   TOrderField extends string = never,
   TFilter = never
 >({
-  table: {
+  tableState: {
     query: { data, error, isPreviousData, isLoading },
     tableRef,
     ...table

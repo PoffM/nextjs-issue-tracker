@@ -77,7 +77,7 @@ const columns = [
 
 /** Lists the issues from the database. */
 export function IssueTable() {
-  const table = useTrpcQueryTable({
+  const tableState = useTrpcQueryTable({
     path: "issue.list",
     columns,
     defaultSortField: "id",
@@ -88,7 +88,7 @@ export function IssueTable() {
   const searchForm = useTypeForm({ defaultValues: { search: "" } });
 
   const submitSearch = searchForm.handleSubmit((data) => {
-    table.setFilter((filter) => ({
+    tableState.setFilter((filter) => ({
       ...filter,
       search: data.search.trim() || undefined,
     }));
@@ -112,9 +112,12 @@ export function IssueTable() {
                 <input
                   type="radio"
                   className="radio-accent radio"
-                  checked={table.filter?.status === statusOption}
+                  checked={tableState.filter?.status === statusOption}
                   onChange={() =>
-                    table.setFilter((it) => ({ ...it, status: statusOption }))
+                    tableState.setFilter((it) => ({
+                      ...it,
+                      status: statusOption,
+                    }))
                   }
                 />
                 {startCase(statusOption)}
@@ -143,7 +146,7 @@ export function IssueTable() {
           />
         </div>
       </div>
-      <QueryTable table={table} />
+      <QueryTable tableState={tableState} />
     </div>
   );
 }
