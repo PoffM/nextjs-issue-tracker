@@ -42,7 +42,6 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         // Omit the comment if it's blank:
         comment: input.comment?.trim() || undefined,
       })}
-      onSuccess={() => form.reset()}
     >
       <TextField field={form.field("comment")} label="Add a Comment" textarea />
       <div className="flex flex-col items-end gap-2 sm:flex-row sm:justify-end">
