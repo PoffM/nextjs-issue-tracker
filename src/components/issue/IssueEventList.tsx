@@ -72,12 +72,7 @@ export function IssueEventList({ issue }: IssueEventListProps) {
           </button>
         </div>
       )}
-      <IssueCommentForm
-        issue={issue}
-        onSuccess={refetchLastPage}
-        // Re-initialize the form whenever the issue is updated:
-        key={issue.updatedAt.toString()}
-      />
+      <IssueCommentForm issue={issue} onSuccess={refetchLastPage} />
     </div>
   ) : null;
 }

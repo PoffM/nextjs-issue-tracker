@@ -184,6 +184,16 @@ export const issueRouter = t.router({
     .mutation(async ({ ctx, input: { issueId, ...eventAttributes } }) => {
       const user = await ctx.requireUser();
 
+      // Ignore the provided status when it's the same as the current status:
+      {
+        const currentIssue = await ctx.prisma.issue.findUnique({
+          where: { id: issueId },
+        });
+        if (currentIssue?.status === eventAttributes.status) {
+          delete eventAttributes.status;
+        }
+      }
+
       if (!compact(Object.values(eventAttributes)).length) {
         throw new Error("Submission can't be empty.");
       }

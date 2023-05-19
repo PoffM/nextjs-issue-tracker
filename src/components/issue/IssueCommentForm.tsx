@@ -18,12 +18,7 @@ interface IssueCommentFormProps {
 /** Form for adding IssueEvents (comments / status changes etc to an Issue) */
 export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
   const ctx = trpc.useContext();
-  const mutation = trpc.issue.addEvent.useMutation({
-    onSuccess: () => {
-      void ctx.issue.findOne.invalidate({ id: issue.id });
-      onSuccess?.();
-    },
-  });
+  const mutation = trpc.issue.addEvent.useMutation();
 
   const defaultValues: inferProcedureInput<AppRouter["issue"]["addEvent"]> = {
     issueId: issue.id,
@@ -42,6 +37,11 @@ export function IssueCommentForm({ issue, onSuccess }: IssueCommentFormProps) {
         // Omit the comment if it's blank:
         comment: input.comment?.trim() || undefined,
       })}
+      onSuccess={async () => {
+        await ctx.issue.findOne.invalidate({ id: issue.id });
+        onSuccess?.();
+        form.reset();
+      }}
     >
       <TextField field={form.field("comment")} label="Add a Comment" textarea />
       <div className="flex flex-col items-end gap-2 sm:flex-row sm:justify-end">
