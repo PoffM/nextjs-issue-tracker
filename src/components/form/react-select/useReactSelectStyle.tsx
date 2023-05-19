@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { GroupBase, StylesConfig } from "react-select";
-import { useColorMode } from "../../color-mode/useColorMode";
+import { useDarkMode } from "usehooks-ts";
 
 interface useReactSelectStyleReturn<
   Option = unknown,
@@ -19,7 +19,7 @@ export function useReactSelectStyle<
   IsMulti extends boolean = boolean,
   Group extends GroupBase<Option> = GroupBase<Option>
 >(): useReactSelectStyleReturn<Option, IsMulti, Group> {
-  const { colorMode } = useColorMode();
+  const { isDarkMode } = useDarkMode(true);
 
   return useMemo(() => {
     const colors = {
@@ -27,9 +27,7 @@ export function useReactSelectStyle<
       base100: "hsla(var(--b1) / var(--tw-bg-opacity, 1))",
       // For the hovered menu option:
       // Light color in light mode / dark color in dark mode:
-      hoveredOptionBgColor: `hsl(216, 100%, ${
-        colorMode === "dark" ? "20%" : "94%"
-      })`,
+      hoveredOptionBgColor: `hsl(216, 100%, ${isDarkMode ? "20%" : "94%"})`,
     };
 
     return {
@@ -64,5 +62,5 @@ export function useReactSelectStyle<
         input: (base) => ({ ...base, color: "inherit" }),
       },
     };
-  }, [colorMode]);
+  }, [isDarkMode]);
 }

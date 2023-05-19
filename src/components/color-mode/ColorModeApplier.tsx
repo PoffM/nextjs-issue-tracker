@@ -1,5 +1,5 @@
 import { useLayoutEffect } from "react";
-import { useColorMode } from "./useColorMode";
+import { useDarkMode } from "usehooks-ts";
 
 /**
  * Layout effect that only runs in the browser.
@@ -13,7 +13,9 @@ const useBrowserLayoutEffect =
  * Needed for Tailwind and DaisyUI.
  */
 export function ColorModeApplier() {
-  const { colorMode } = useColorMode();
+  const { isDarkMode } = useDarkMode(true);
+
+  const colorMode = isDarkMode ? "dark" : "light";
 
   useBrowserLayoutEffect(() => {
     document.documentElement.classList.remove("light", "dark");

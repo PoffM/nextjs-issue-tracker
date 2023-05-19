@@ -1,16 +1,12 @@
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
-import { useColorMode } from "./useColorMode";
+import { useDarkMode } from "usehooks-ts";
 
 export function ColorModeToggleButton() {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { isDarkMode, toggle } = useDarkMode(true);
 
   return (
-    <button type="button" onClick={toggleColorMode} className="btn btn-outline">
-      {colorMode === "dark" ? (
-        <BsSunFill size="20px" />
-      ) : (
-        <BsMoonFill size="20px" />
-      )}
+    <button type="button" onClick={toggle} className="btn-outline btn">
+      {isDarkMode ? <BsSunFill size="20px" /> : <BsMoonFill size="20px" />}
     </button>
   );
 }
