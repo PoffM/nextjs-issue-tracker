@@ -15,32 +15,34 @@ export default function IssuePage() {
 
   return (
     <main className="flex justify-center">
-      <ErrorAlert error={error} />
-      {issue && (
-        <div className="flex w-full max-w-[600px] flex-col gap-4">
-          <Head>
-            <title>{issue.title}</title>
-          </Head>
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold">{issue.title}</h1>
-          </div>
-          <IssueStatusBadge status={issue.status} />
-          <div>
+      <div className="flex w-full max-w-[600px] flex-col gap-4">
+        <ErrorAlert error={error} />
+        {issue && (
+          <>
+            <Head>
+              <title>{issue.title}</title>
+            </Head>
             <div className="flex items-center gap-2">
-              <label className="font-bold">Description</label>
+              <h1 className="text-3xl font-bold">{issue.title}</h1>
             </div>
-            <div>{issue.description}</div>
-          </div>
-          <div className="flex justify-between">
-            <Link href={`/issue/edit?id=${issue.id}`} className="btn">
-              Edit
-            </Link>
-            <AdminDeleteIssueButton issueId={issue.id} />
-          </div>
-          <div className="divider"></div>
-          <IssueEventList issue={issue} />
-        </div>
-      )}
+            <IssueStatusBadge status={issue.status} />
+            <div>
+              <div className="flex items-center gap-2">
+                <label className="font-bold">Description</label>
+              </div>
+              <div>{issue.description}</div>
+            </div>
+            <div className="flex justify-between">
+              <Link href={`/issue/edit?id=${issue.id}`} className="btn">
+                Edit
+              </Link>
+              <AdminDeleteIssueButton issueId={issue.id} />
+            </div>
+            <div className="divider"></div>
+            <IssueEventList issue={issue} />
+          </>
+        )}
+      </div>
     </main>
   );
 }
