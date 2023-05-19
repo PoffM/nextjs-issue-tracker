@@ -4,9 +4,9 @@ import { inferProcedureInput, trpc } from "../../utils/trpc";
 import { ErrorAlert } from "../ErrorAlert";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
-import { MutationForm } from "../form/MutationForm";
+import { MutationForm } from "../form/form-utils/MutationForm";
 import { SubmitButton } from "../form/SubmitButton";
-import { useTypeForm } from "../form/useTypeForm";
+import { useTypeForm } from "../form/form-utils/useTypeForm";
 
 export interface IssueFormProps {
   id?: number;

@@ -2,8 +2,8 @@ import { IssueStatus } from "@prisma/client";
 import clsx from "clsx";
 import { compact, startCase } from "lodash";
 import Select from "react-select";
-import { FieldProps, FieldWrapper } from "./FieldWrapper";
-import { useReactSelectStyle } from "./useReactSelectStyle";
+import { FieldProps, FieldWrapper } from "../form-utils/FieldWrapper";
+import { useReactSelectStyle } from "../react-select/useReactSelectStyle";
 
 interface IssueStatusOption {
   label: string;

@@ -8,7 +8,7 @@ import {
   useForm,
   UseFormProps,
 } from "react-hook-form";
-import { Defined } from "../../utils/util-types";
+import { Defined } from "../../../utils/util-types";
 
 /**
  * Links a form field to the form state.

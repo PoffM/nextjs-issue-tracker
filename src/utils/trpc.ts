@@ -150,7 +150,7 @@ type ProcedureNames<TRouter extends AnyRouter> = {
 /** Union of all TRPC procedure dot-paths, including queries and mutations */
 export type RouteKey = ProcedureNames<AppRouter>;
 
-/** Get the Trpc procedure given the dot-path. */
+/** Get the Trpc procedure for the given dot-path. */
 type GetProcedure<TRouteKey extends RouteKey> = PathValue<
   AppRouter["_def"]["procedures"],
   TRouteKey

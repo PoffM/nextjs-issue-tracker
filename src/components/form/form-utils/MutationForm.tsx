@@ -4,13 +4,13 @@ import { TRPCClientError, TRPCClientErrorLike } from "@trpc/client";
 import { toPairs } from "lodash";
 import { ReactNode } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
-import type { AppRouter } from "../../server/routers/appRouter";
+import type { AppRouter } from "../../../server/routers/appRouter";
 import {
   inferProcedureInput,
   inferProcedureOutput,
   RouteKey,
-} from "../../utils/trpc";
-import { ErrorAlert } from "../ErrorAlert";
+} from "../../../utils/trpc";
+import { ErrorAlert } from "../../ErrorAlert";
 
 export interface MutationFormProps<TPath extends RouteKey> {
   form: UseFormReturn<inferProcedureInput<TPath> & FieldValues>;

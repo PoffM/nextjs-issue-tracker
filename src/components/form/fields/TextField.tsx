@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { ComponentProps, ReactNode } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import { FieldProps, FieldWrapper } from "./FieldWrapper";
+import { FieldProps, FieldWrapper } from "../form-utils/FieldWrapper";
 
 export interface TextFieldProps extends FieldProps<string> {
   textarea?: boolean;

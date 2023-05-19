@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { startCase } from "lodash";
 import { ReactNode } from "react";
-import { FieldController, FieldHandle } from "../useTypeForm";
+import { FieldController, FieldHandle } from "./useTypeForm";
 
 export interface FieldProps<T> {
   className?: string;

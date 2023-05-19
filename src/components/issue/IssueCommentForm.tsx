@@ -5,9 +5,9 @@ import { AppRouter } from "../../server/routers/appRouter";
 import { trpc } from "../../utils/trpc";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
-import { MutationForm } from "../form/MutationForm";
+import { MutationForm } from "../form/form-utils/MutationForm";
 import { SubmitButton } from "../form/SubmitButton";
-import { useTypeForm } from "../form/useTypeForm";
+import { useTypeForm } from "../form/form-utils/useTypeForm";
 import { LoginButton } from "../LoginButton";
 
 interface IssueCommentFormProps {
