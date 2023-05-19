@@ -19,11 +19,13 @@ export function IssueStatusField({
   currentStatus,
   ...fieldProps
 }: IssueStatusFieldProps) {
+  const defaultOption = currentStatus && {
+    value: currentStatus,
+    label: `Keep Current Status (${startCase(currentStatus)})`,
+  };
+
   const options = compact([
-    currentStatus && {
-      value: undefined,
-      label: `Keep Current Status (${startCase(currentStatus)})`,
-    },
+    defaultOption,
     ...(Object.keys(IssueStatus) as IssueStatus[])
       .filter((it) => it !== currentStatus)
       .map((value) => ({
@@ -48,7 +50,9 @@ export function IssueStatusField({
           <Select<IssueStatusOption>
             {...fieldProps}
             options={options}
-            value={options.find((option) => option.value === value)}
+            value={
+              options.find((option) => option.value === value) ?? defaultOption
+            }
             onChange={(option) => onChange(option?.value)}
             {...reactSelectStyle}
           />
