@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import * as trpc from "@trpc/server";
 import { TRPCError } from "@trpc/server";
-import * as trpcNext from "@trpc/server/adapters/next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { env } from "./env";
@@ -48,19 +47,12 @@ const zUser = z.object({
  * Returns objects and functions which are instantiated per request, e.g. the current user.
  * @link https://trpc.io/docs/context
  */
-export async function requestContext(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  opts?: Partial<trpcNext.CreateNextContextOptions>
-) {
+export async function requestContext() {
   async function getSession() {
-    if (!opts?.req || !opts?.res) {
-      return null;
-    }
-
     // Async import to avoid circular dependency as nextAuth imports prisma:
     const { nextAuthOptions } = await import("../pages/api/auth/[...nextauth]");
 
-    return await getServerSession(opts.req, opts.res, nextAuthOptions);
+    return await getServerSession(nextAuthOptions);
   }
 
   async function getUserOrNull() {
