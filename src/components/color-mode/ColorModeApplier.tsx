@@ -1,12 +1,4 @@
-import { useLayoutEffect } from "react";
-import { useDarkMode } from "usehooks-ts";
-
-/**
- * Layout effect that only runs in the browser.
- * Avoids the warning log from Next.js.
- */
-const useBrowserLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : () => undefined;
+import { useDarkMode, useIsomorphicLayoutEffect } from "usehooks-ts";
 
 /**
  * Applies the color mode from localstorage to the document element.
@@ -17,7 +9,7 @@ export function ColorModeApplier() {
 
   const colorMode = isDarkMode ? "dark" : "light";
 
-  useBrowserLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(colorMode);
     document.documentElement.setAttribute("data-theme", colorMode);
