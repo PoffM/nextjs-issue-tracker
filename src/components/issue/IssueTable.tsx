@@ -1,3 +1,5 @@
+"use client";
+
 import { startCase } from "lodash";
 import Link from "next/link";
 import { ImSearch } from "react-icons/im";

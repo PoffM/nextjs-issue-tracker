@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import { startCase } from "lodash";
 import { ReactNode } from "react";

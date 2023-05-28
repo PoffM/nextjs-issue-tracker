@@ -1,3 +1,5 @@
+"use client";
+
 import { Issue } from "@prisma/client";
 import { useInView } from "react-intersection-observer";
 import { trpc } from "../../utils/trpc";

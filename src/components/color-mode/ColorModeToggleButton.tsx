@@ -1,3 +1,5 @@
+"use client";
+
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
 import { useDarkMode } from "usehooks-ts";
 

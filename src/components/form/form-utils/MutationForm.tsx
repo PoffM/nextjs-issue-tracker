@@ -1,3 +1,5 @@
+"use client";
+
 import { ErrorMessage } from "@hookform/error-message";
 import { UseMutationResult } from "@tanstack/react-query";
 import { TRPCClientError, TRPCClientErrorLike } from "@trpc/client";

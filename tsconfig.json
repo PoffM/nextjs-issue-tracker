@@ -14,14 +14,16 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "prisma/**/*.ts",
-    "./*.js"
+    "./*.js",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

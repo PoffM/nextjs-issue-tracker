@@ -1,3 +1,5 @@
+"use client";
+
 import { Issue } from "@prisma/client";
 import { inferProcedureInput } from "@trpc/server";
 import { useSession } from "next-auth/react";
@@ -8,7 +10,7 @@ import { TextField } from "../form/fields/TextField";
 import { MutationForm } from "../form/form-utils/MutationForm";
 import { SubmitButton } from "../form/SubmitButton";
 import { useTypeForm } from "../form/form-utils/useTypeForm";
-import { LoginButton } from "../LoginButton";
+import { LoginButton } from "../login/LoginButton";
 
 interface IssueCommentFormProps {
   issue: Issue;

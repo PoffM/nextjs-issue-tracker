@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import { ButtonHTMLAttributes } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +16,7 @@ export function SubmitButton({ formCtx, ...buttonProps }: SubmitButtonProps) {
       type="submit"
       {...buttonProps}
       className={clsx(
-        "btn btn-success min-w-[120px]",
+        "btn-success btn min-w-[120px]",
         isLoading && "loading",
         buttonProps.className
       )}

@@ -1,15 +1,17 @@
+"use client";
+
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { ErrorAlert } from "../../components/ErrorAlert";
-import { AdminDeleteIssueButton } from "../../components/issue/AdminDeleteIssueButton";
-import { IssueEventList } from "../../components/issue/IssueEventList";
-import { IssueStatusBadge } from "../../components/issue/IssueStatusBadge";
-import { trpc } from "../../utils/trpc";
+import { PageProps } from "../../../../.next/types/app/page";
+import { ErrorAlert } from "../../../components/ErrorAlert";
+import { AdminDeleteIssueButton } from "../../../components/issue/AdminDeleteIssueButton";
+import { IssueEventList } from "../../../components/issue/IssueEventList";
+import { IssueStatusBadge } from "../../../components/issue/IssueStatusBadge";
+import { trpc } from "../../../utils/trpc";
 
-export default function IssuePage() {
-  const { query } = useRouter();
-  const id = Number(query.id);
+export default function IssuePage({ params }: PageProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const id = Number(params.id);
 
   const { data: issue, error } = trpc.issue.findOne.useQuery({ id });
 

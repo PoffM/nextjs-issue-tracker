@@ -1,23 +1,31 @@
+"use client";
+
 import { Issue } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { shallowDiff } from "../../utils/object-shallow-diff";
 import { inferProcedureInput, trpc } from "../../utils/trpc";
 import { ErrorAlert } from "../ErrorAlert";
+import { SubmitButton } from "../form/SubmitButton";
 import { IssueStatusField } from "../form/fields/IssueStatusField";
 import { TextField } from "../form/fields/TextField";
 import { MutationForm } from "../form/form-utils/MutationForm";
-import { SubmitButton } from "../form/SubmitButton";
 import { useTypeForm } from "../form/form-utils/useTypeForm";
 
 export interface IssueFormProps {
   id?: number;
-  onSuccess?: (data: Issue) => void | Promise<void>;
 }
 
-export function IssueForm({ id, onSuccess }: IssueFormProps) {
+export function IssueForm({ id }: IssueFormProps) {
   const { data: issue, error } = trpc.issue.findOne.useQuery(
     { id: id ?? NaN },
     { enabled: id !== undefined }
   );
+
+  const router = useRouter();
+
+  function onSuccess(data: Issue) {
+    router.push(`/issue/${data.id}`);
+  }
 
   const formProps = { onSuccess };
 
@@ -34,7 +42,7 @@ export function IssueForm({ id, onSuccess }: IssueFormProps) {
 }
 
 interface IssueCreateFormProps {
-  onSuccess?: (data: Issue) => void | Promise<unknown>;
+  onSuccess: (data: Issue) => void | Promise<unknown>;
 }
 
 function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
@@ -48,7 +56,7 @@ function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
     <MutationForm<"issue.create">
       form={form}
       mutation={mutation}
-      onSuccess={({ data }) => onSuccess?.(data)}
+      onSuccess={async ({ data }) => onSuccess(data)}
     >
       <IssueFormFields form={form} />
     </MutationForm>
@@ -57,7 +65,7 @@ function IssueCreateForm({ onSuccess }: IssueCreateFormProps) {
 
 interface IssueUpdateFormProps {
   data: Issue;
-  onSuccess?: (data: Issue) => void | Promise<unknown>;
+  onSuccess: (data: Issue) => void | Promise<unknown>;
 }
 
 function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
@@ -74,11 +82,16 @@ function IssueUpdateForm({ data: issue, onSuccess }: IssueUpdateFormProps) {
 
   const mutation = trpc.issue.addEvent.useMutation();
 
+  const ctx = trpc.useContext();
+
   return (
     <MutationForm<"issue.addEvent">
       form={form}
       mutation={mutation}
-      onSuccess={({ data }) => onSuccess?.(data.issue)}
+      onSuccess={async ({ data }) => {
+        await ctx.issue.findOne.invalidate({ id: data.issue.id });
+        await onSuccess(data.issue);
+      }}
       preSubmitTransform={(data) => ({
         // Only submit changed values:
         ...shallowDiff(defaultValues, data),

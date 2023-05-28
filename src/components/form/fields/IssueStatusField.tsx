@@ -1,3 +1,5 @@
+"use client";
+
 import { IssueStatus } from "@prisma/client";
 import clsx from "clsx";
 import { compact, startCase } from "lodash";

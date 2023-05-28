@@ -12,7 +12,7 @@ const prismaGlobal = global as typeof global & {
   prisma?: PrismaClient;
 };
 
-const prisma: PrismaClient =
+export const prisma: PrismaClient =
   prismaGlobal.prisma ||
   new PrismaClient({
     log:

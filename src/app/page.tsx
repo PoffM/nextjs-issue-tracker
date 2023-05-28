@@ -1,12 +1,9 @@
-import type { NextPage } from "next";
 import { IssueTable } from "../components/issue/IssueTable";
 
-const Home: NextPage = () => {
+export default function Home() {
   return (
     <main>
       <IssueTable />
     </main>
   );
-};
-
-export default Home;
+}

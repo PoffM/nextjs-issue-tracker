@@ -1,3 +1,5 @@
+"use client";
+
 import { useDarkMode, useIsomorphicLayoutEffect } from "usehooks-ts";
 
 /**

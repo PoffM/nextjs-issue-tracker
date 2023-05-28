@@ -1,6 +1,8 @@
+"use client";
+
 import clsx from "clsx";
 import FocusTrap from "focus-trap-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
 import { ErrorAlert } from "../ErrorAlert";
