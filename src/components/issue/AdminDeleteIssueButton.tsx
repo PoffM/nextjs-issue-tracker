@@ -25,16 +25,18 @@ export function AdminDeleteIssueButton({
     },
   });
 
+  if (!currentUser?.roles.includes("ADMIN")) {
+    return null;
+  }
+
   return (
     <div>
-      {currentUser?.roles.includes("ADMIN") && (
-        <button
-          className="btn-link btn text-red-500"
-          onClick={() => setModalIsOpen(true)}
-        >
-          Delete Issue
-        </button>
-      )}
+      <button
+        className="btn-link btn text-red-500"
+        onClick={() => setModalIsOpen(true)}
+      >
+        Delete Issue
+      </button>
       <div
         className={clsx(
           "modal",
