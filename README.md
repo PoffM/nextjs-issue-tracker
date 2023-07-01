@@ -30,7 +30,7 @@ Full-stack TypeScript Issue Tracker web application.
 
 ## Requirements
 
-- Node >= 18
+- Node >= 20
 - Docker (for running Postgres)
 
 ## Local Development Setup
